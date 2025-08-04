@@ -109,6 +109,12 @@ Route::middleware('auth:sanctum')->group(function () {
         // Photo upload
         Route::post('/{resident}/photo', [ResidentController::class, 'uploadPhoto'])->name('upload-photo');
 
+        // Relationship endpoints
+        Route::get('/{resident}/relationships', [ResidentController::class, 'getResidentWithRelationships'])->name('relationships');
+        Route::get('/{resident}/households', [ResidentController::class, 'getResidentHouseholds'])->name('households');
+        Route::get('/{resident}/documents', [ResidentController::class, 'getResidentDocuments'])->name('documents');
+        Route::get('/{resident}/tickets', [ResidentController::class, 'getResidentTickets'])->name('tickets');
+
         // Main CRUD operations
         Route::get('/', [ResidentController::class, 'index'])->name('index');
         Route::post('/', [ResidentController::class, 'store'])->name('store');

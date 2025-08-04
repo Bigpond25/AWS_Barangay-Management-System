@@ -262,37 +262,48 @@ class Resident extends Model implements Auditable
     }
 
     /**
-     * Other relationships (unchanged)
+     * Document relationships
      */
-    // public function documents(): HasMany
-    // {
-    //     return $this->hasMany(Document::class);
-    // }
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class, 'resident_id', 'id');
+    }
 
-    // public function complaints(): HasMany
-    // {
-    //     return $this->hasMany(Complaint::class);
-    // }
+    /**
+     * Help desk relationships
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'resident_id', 'id');
+    }
 
-    // public function suggestions(): HasMany
-    // {
-    //     return $this->hasMany(Suggestion::class);
-    // }
+    public function complaints(): HasMany
+    {
+        return $this->hasMany(Complaint::class, 'resident_id', 'id');
+    }
 
-    // public function appointments(): HasMany
-    // {
-    //     return $this->hasMany(Appointment::class);
-    // }
+    public function suggestions(): HasMany
+    {
+        return $this->hasMany(Suggestion::class, 'resident_id', 'id');
+    }
 
-    // public function complainantBlotterCases(): HasMany
-    // {
-    //     return $this->hasMany(BlotterCase::class, 'complainant_resident_id');
-    // }
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'resident_id', 'id');
+    }
 
-    // public function respondentBlotterCases(): HasMany
-    // {
-    //     return $this->hasMany(BlotterCase::class, 'respondent_resident_id');
-    // }
+    /**
+     * Blotter case relationships
+     */
+    public function complainantBlotterCases(): HasMany
+    {
+        return $this->hasMany(Blotter::class, 'complainant_resident_id', 'id');
+    }
+
+    public function respondentBlotterCases(): HasMany
+    {
+        return $this->hasMany(Blotter::class, 'respondent_resident_id', 'id');
+    }
 
     public function createdBy(): BelongsTo
     {

@@ -180,12 +180,69 @@ export const ResidentFormDataSchema = z.object({
   profile_photo_url: z.string().optional(),
 });
 
-// Main Resident schema
+// Relationship schemas for nested data
+export const HouseholdRelationshipSchema = z.object({
+  household_id: z.string().uuid(),
+  household_number: z.string(),
+  relationship: z.enum([
+    'HEAD', 'SPOUSE', 'SON', 'DAUGHTER', 'FATHER', 'MOTHER',
+    'BROTHER', 'SISTER', 'GRANDFATHER', 'GRANDMOTHER', 'GRANDSON', 
+    'GRANDDAUGHTER', 'UNCLE', 'AUNT', 'NEPHEW', 'NIECE', 'COUSIN',
+    'IN_LAW', 'BOARDER', 'OTHER'
+  ]),
+  household_address: z.string(),
+  member_since: z.string(),
+});
+
+export const DocumentSummarySchema = z.object({
+  id: z.string().uuid(),
+  document_type: z.string(),
+  status: z.string(),
+  request_date: z.string(),
+  document_number: z.string().nullable(),
+  priority: z.string(),
+  payment_status: z.string(),
+});
+
+export const TicketSummarySchema = z.object({
+  id: z.string().uuid(),
+  subject: z.string(),
+  status: z.string(),
+  priority: z.string(),
+  created_at: z.string(),
+});
+
+export const AppointmentSummarySchema = z.object({
+  id: z.string().uuid(),
+  purpose: z.string(),
+  appointment_date: z.string(),
+  status: z.string(),
+  created_at: z.string(),
+});
+
+// Main Resident schema with relationships
 export const ResidentSchema = ResidentFormDataSchema.extend({
   id: z.string().uuid(),
   status: ResidentStatusSchema,
   created_at: z.string(),
   updated_at: z.string(),
+  
+  // Household relationships
+  households: z.array(HouseholdRelationshipSchema).optional(),
+  primary_household: HouseholdRelationshipSchema.nullable().optional(),
+  
+  // Document relationships
+  documents: z.array(DocumentSummarySchema).optional(),
+  pending_documents_count: z.number().optional(),
+  
+  // Help desk relationships
+  tickets: z.array(TicketSummarySchema).optional(),
+  appointments: z.array(AppointmentSummarySchema).optional(),
+  
+  // Computed relationship counts
+  total_documents: z.number().optional(),
+  total_tickets: z.number().optional(),
+  total_appointments: z.number().optional(),
 });
 
 // Updated ResidentParamsSchema without household_id

@@ -1,6 +1,25 @@
 <?php
 
+/**
+ * Database Configuration
+ * 
+ * Laravel configuration file - env() and database_path() functions are available
+ * in Laravel's configuration context. IDE warnings for these functions are false positives.
+ * 
+ * @phpstan-ignore-next-line
+ * @psalm-suppress UndefinedFunction
+ */
+
 use Illuminate\Support\Str;
+
+/**
+ * @var array{
+ *   default: string,
+ *   connections: array<string, array<string, mixed>>,
+ *   migrations: array<string, mixed>,
+ *   redis: array<string, mixed>
+ * }
+ */
 
 return [
 
@@ -16,7 +35,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -87,14 +106,20 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
+            'database' => env('DB_DATABASE', 'barangay_management'),
+            'username' => env('DB_USERNAME', 'postgres'),
             'password' => env('DB_PASSWORD', ''),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'sslmode' => env('DB_SSLMODE', 'require'),
+            'options' => extension_loaded('pdo_pgsql') ? array_filter([
+                PDO::PGSQL_ATTR_DISABLE_PREPARES => env('DB_DISABLE_PREPARES', false),
+                // AWS RDS optimizations
+                PDO::ATTR_TIMEOUT => env('DB_TIMEOUT', 60),
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
+            ]) : [],
         ],
 
         'sqlsrv' => [

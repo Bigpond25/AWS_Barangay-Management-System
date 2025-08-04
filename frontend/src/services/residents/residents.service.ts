@@ -373,6 +373,98 @@ export class ResidentsService extends BaseApiService {
     return response.data?.data || [];
   }
 
+  /**
+   * Get resident with relationships
+   */
+  async getResidentWithRelationships(id: string, includes: string[] = []): Promise<Resident> {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Invalid resident ID: ID must be a non-empty string');
+    }
+
+    const validIncludes = ['households', 'documents', 'tickets', 'appointments'];
+    const includeParams = includes.filter(inc => validIncludes.includes(inc));
+    const includeQuery = includeParams.length > 0 ? `?include=${includeParams.join(',')}` : '';
+
+    const responseSchema = ApiResponseSchema(ResidentSchema);
+    
+    const response = await this.request(
+      `/residents/${id}${includeQuery}`,
+      responseSchema,
+      { method: 'GET' }
+    );
+
+    if (!response.data) {
+      throw new Error('Resident not found');
+    }
+
+    return response.data;
+  }
+
+  /**
+   * Get resident households
+   */
+  async getResidentHouseholds(id: string) {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Invalid resident ID: ID must be a non-empty string');
+    }
+
+    const responseSchema = ApiResponseSchema(z.array(z.object({
+      household_id: z.string(),
+      household_number: z.string(),
+      relationship: z.string(),
+      household_address: z.string(),
+      member_since: z.string(),
+    })));
+    
+    const response = await this.request(
+      `/residents/${id}/households`,
+      responseSchema,
+      { method: 'GET' }
+    );
+
+    return response.data || [];
+  }
+
+  /**
+   * Get resident documents
+   */
+  async getResidentDocuments(id: string) {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Invalid resident ID: ID must be a non-empty string');
+    }
+
+    import { DocumentSummarySchema } from './residents.types';
+    const responseSchema = ApiResponseSchema(z.array(DocumentSummarySchema));
+    
+    const response = await this.request(
+      `/residents/${id}/documents`,
+      responseSchema,
+      { method: 'GET' }
+    );
+
+    return response.data || [];
+  }
+
+  /**
+   * Get resident tickets
+   */
+  async getResidentTickets(id: string) {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Invalid resident ID: ID must be a non-empty string');
+    }
+
+    import { TicketSummarySchema } from './residents.types';
+    const responseSchema = ApiResponseSchema(z.array(TicketSummarySchema));
+    
+    const response = await this.request(
+      `/residents/${id}/tickets`,
+      responseSchema,
+      { method: 'GET' }
+    );
+
+    return response.data || [];
+  }
+
   
 }
 

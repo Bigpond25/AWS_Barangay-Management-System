@@ -148,19 +148,35 @@ class ResidentController extends Controller
     /**
      * Display the specified resident
      */
-    public function show(Resident $resident): JsonResponse
+    public function show(Request $request, Resident $resident): JsonResponse
     {
         try {
-            $resident->load([
+            // Support for including relationships via query parameter
+            $includes = [];
+            if ($request->has('include')) {
+                $requestedIncludes = explode(',', $request->get('include'));
+                $validIncludes = ['households', 'documents', 'tickets', 'complaints', 'appointments', 'suggestions'];
+                $includes = array_intersect($requestedIncludes, $validIncludes);
+            }
+
+            // Always load basic relationships
+            $defaultIncludes = [
                 'households',
                 'householdsAsHead',
-                // 'documents',
-                // 'complaints',
-                // 'suggestions',
-                // 'appointments',
                 'createdBy:id,first_name,last_name',
                 'updatedBy:id,first_name,last_name'
-            ]);
+            ];
+
+            // Merge with requested includes
+            $allIncludes = array_merge($defaultIncludes, $includes);
+
+            $resident->load($allIncludes);
+
+            // Add computed relationship counts
+            $resident->total_documents = $resident->documents()->count();
+            $resident->pending_documents_count = $resident->documents()->where('status', 'PENDING')->count();
+            $resident->total_tickets = $resident->tickets()->count();
+            $resident->total_appointments = $resident->appointments()->count();
 
             return response()->json([
                 'data' => $resident
@@ -173,6 +189,186 @@ class ResidentController extends Controller
             ]);
             return response()->json([
                 'message' => 'Failed to retrieve resident',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get resident with all relationships loaded
+     */
+    public function getResidentWithRelationships(Request $request, Resident $resident): JsonResponse
+    {
+        try {
+            $resident->load([
+                'households.head:id,first_name,last_name',
+                'households.members:id,first_name,last_name',
+                'householdsAsHead.members:id,first_name,last_name',
+                'documents:id,type,status,submitted_at,processed_at,resident_id',
+                'tickets:id,type,status,subject,created_at,resident_id',
+                'appointments:id,type,status,date,time,purpose,resident_id',
+                'complaints:id,status,incident_date,created_at,resident_id',
+                'suggestions:id,status,subject,created_at,resident_id',
+                'createdBy:id,first_name,last_name',
+                'updatedBy:id,first_name,last_name'
+            ]);
+
+            // Add summary counts
+            $resident->summary = [
+                'total_documents' => $resident->documents->count(),
+                'pending_documents' => $resident->documents->where('status', 'PENDING')->count(),
+                'approved_documents' => $resident->documents->where('status', 'APPROVED')->count(),
+                'total_tickets' => $resident->tickets->count(),
+                'open_tickets' => $resident->tickets->where('status', 'OPEN')->count(),
+                'total_appointments' => $resident->appointments->count(),
+                'upcoming_appointments' => $resident->appointments->where('date', '>=', now()->toDateString())->count(),
+                'total_households' => $resident->households->count() + $resident->householdsAsHead->count()
+            ];
+
+            return response()->json([
+                'data' => $resident
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve resident with relationships', [
+                'resident_id' => $resident->id,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json([
+                'message' => 'Failed to retrieve resident with relationships',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get resident's households
+     */
+    public function getResidentHouseholds(Request $request, Resident $resident): JsonResponse
+    {
+        try {
+            $households = $resident->households()->with([
+                'head:id,first_name,last_name,middle_name',
+                'members:id,first_name,last_name,middle_name,relationship_to_head'
+            ])->get();
+
+            $householdsAsHead = $resident->householdsAsHead()->with([
+                'members:id,first_name,last_name,middle_name,relationship_to_head'
+            ])->get();
+
+            return response()->json([
+                'data' => [
+                    'member_of_households' => $households,
+                    'head_of_households' => $householdsAsHead,
+                    'total_households' => $households->count() + $householdsAsHead->count()
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve resident households', [
+                'resident_id' => $resident->id,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json([
+                'message' => 'Failed to retrieve resident households',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get resident's documents
+     */
+    public function getResidentDocuments(Request $request, Resident $resident): JsonResponse
+    {
+        try {
+            $query = $resident->documents();
+
+            // Filter by status if provided
+            if ($request->has('status')) {
+                $query->where('status', $request->get('status'));
+            }
+
+            // Filter by type if provided
+            if ($request->has('type')) {
+                $query->where('type', $request->get('type'));
+            }
+
+            // Sort by date
+            $sortBy = $request->get('sort_by', 'submitted_at');
+            $sortOrder = $request->get('sort_order', 'desc');
+            $query->orderBy($sortBy, $sortOrder);
+
+            $documents = $query->with([
+                'supportingDocuments:id,document_id,file_name,file_path',
+                'createdBy:id,first_name,last_name',
+                'updatedBy:id,first_name,last_name'
+            ])->paginate(15);
+
+            return response()->json([
+                'data' => $documents->items(),
+                'meta' => [
+                    'current_page' => $documents->currentPage(),
+                    'last_page' => $documents->lastPage(),
+                    'per_page' => $documents->perPage(),
+                    'total' => $documents->total()
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve resident documents', [
+                'resident_id' => $resident->id,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json([
+                'message' => 'Failed to retrieve resident documents',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get resident's tickets (appointments, complaints, suggestions)
+     */
+    public function getResidentTickets(Request $request, Resident $resident): JsonResponse
+    {
+        try {
+            $tickets = $resident->tickets();
+
+            // Filter by type if provided
+            if ($request->has('type')) {
+                $tickets->where('type', $request->get('type'));
+            }
+
+            // Filter by status if provided
+            if ($request->has('status')) {
+                $tickets->where('status', $request->get('status'));
+            }
+
+            // Sort by date
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortOrder = $request->get('sort_order', 'desc');
+            $tickets->orderBy($sortBy, $sortOrder);
+
+            $paginatedTickets = $tickets->paginate(15);
+
+            return response()->json([
+                'data' => $paginatedTickets->items(),
+                'meta' => [
+                    'current_page' => $paginatedTickets->currentPage(),
+                    'last_page' => $paginatedTickets->lastPage(),
+                    'per_page' => $paginatedTickets->perPage(),
+                    'total' => $paginatedTickets->total()
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve resident tickets', [
+                'resident_id' => $resident->id,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json([
+                'message' => 'Failed to retrieve resident tickets',
                 'error' => $e->getMessage()
             ], 500);
         }

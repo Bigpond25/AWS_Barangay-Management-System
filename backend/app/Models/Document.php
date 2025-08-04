@@ -130,6 +130,21 @@ class Document extends Model implements Auditable
         return $this->belongsTo(User::class, 'released_by');
     }
 
+    public function supportingDocuments()
+    {
+        return $this->hasMany(SupportingDocument::class, 'document_id', 'id');
+    }
+
+    public function createdByUser()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedByUser()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
     /**
      * Scopes
      */

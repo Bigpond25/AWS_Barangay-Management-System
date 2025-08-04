@@ -130,6 +130,34 @@ class Household extends Model implements Auditable
     }
 
     /**
+     * Convenience Methods for Household Relationships
+     */
+    public function head(): ?Resident
+    {
+        return $this->members()->wherePivot('relationship', 'HEAD')->first();
+    }
+
+    public function memberCount(): int
+    {
+        return $this->members()->count();
+    }
+
+    public function children(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->members()->wherePivotIn('relationship', ['SON', 'DAUGHTER'])->get();
+    }
+
+    public function adults(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->members()->wherePivotNotIn('relationship', ['SON', 'DAUGHTER'])->get();
+    }
+
+    public function spouses(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->members()->wherePivot('relationship', 'SPOUSE')->get();
+    }
+
+    /**
      * Scopes for filtering
      */
     public function scopeActive($query)
