@@ -13,6 +13,7 @@ import {
   FiChevronRight,
   FiUpload,
   FiCalendar,
+  FiShield,
 } from "react-icons/fi";
 import sanMiguelLogo from "@/assets/sanMiguelLogo.jpg";
 
@@ -79,6 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: "officials", label: "Barangay Officials", icon: FiUserCheck },
     { id: "reports", label: "Reports", icon: FiBarChart },
     { id: "users", label: "Manage Users", icon: FiUsers },
+    { id: "permissions", label: "Permissions", icon: FiShield },
     { id: "settings", label: "Settings", icon: FiSettings },
   ];
 

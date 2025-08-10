@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\FileUploadController;
 use App\Http\Controllers\Api\ImportController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\AgendaController;
+use App\Http\Controllers\Api\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,7 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Residents Management
-    Route::prefix('residents')->name('residents.')->group(function () {
+    Route::prefix('residents')->name('residents.')->middleware('permission:view-residents')->group(function () {
         // Statistics endpoints
         Route::get('/statistics', [ResidentController::class, 'statistics'])->name('statistics');
         Route::get('/age-groups', [ResidentController::class, 'ageGroups'])->name('age-groups');
@@ -103,11 +104,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/indigenous', [ResidentController::class, 'indigenous'])->name('indigenous');
 
         // Utility endpoints
-        Route::post('/check-duplicates', [ResidentController::class, 'checkDuplicates'])->name('check-duplicates');
-        Route::put('/{resident}/restore', [ResidentController::class, 'restore'])->name('restore');
+        Route::post('/check-duplicates', [ResidentController::class, 'checkDuplicates'])->name('check-duplicates')->middleware('permission:create-residents');
+        Route::put('/{resident}/restore', [ResidentController::class, 'restore'])->name('restore')->middleware('permission:edit-residents');
 
         // Photo upload
-        Route::post('/{resident}/photo', [ResidentController::class, 'uploadPhoto'])->name('upload-photo');
+        Route::post('/{resident}/photo', [ResidentController::class, 'uploadPhoto'])->name('upload-photo')->middleware('permission:edit-residents');
 
         // Relationship endpoints
         Route::get('/{resident}/relationships', [ResidentController::class, 'getResidentWithRelationships'])->name('relationships');
@@ -117,14 +118,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Main CRUD operations
         Route::get('/', [ResidentController::class, 'index'])->name('index');
-        Route::post('/', [ResidentController::class, 'store'])->name('store');
+        Route::post('/', [ResidentController::class, 'store'])->name('store')->middleware('permission:create-residents');
         Route::get('/{resident}', [ResidentController::class, 'show'])->name('show');
-        Route::put('/{resident}', [ResidentController::class, 'update'])->name('update');
-        Route::delete('/{resident}', [ResidentController::class, 'destroy'])->name('destroy');
+        Route::put('/{resident}', [ResidentController::class, 'update'])->name('update')->middleware('permission:edit-residents');
+        Route::delete('/{resident}', [ResidentController::class, 'destroy'])->name('destroy')->middleware('permission:delete-residents');
     });
 
     // Household Management
-    Route::prefix('households')->name('households.')->group(function () {
+    Route::prefix('households')->name('households.')->middleware('permission:view-households')->group(function () {
         Route::get('/statistics', [HouseholdController::class, 'statistics'])->name('statistics');
 
         // Special list endpoints (matching frontend service)
@@ -135,23 +136,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/by-ownership', [HouseholdController::class, 'byOwnership'])->name('by-ownership');
 
         // Utility endpoints
-        Route::post('/check-duplicates', [HouseholdController::class, 'checkDuplicates'])->name('check-duplicates');
+        Route::post('/check-duplicates', [HouseholdController::class, 'checkDuplicates'])->name('check-duplicates')->middleware('permission:create-households');
 
         // Member management endpoints
-        Route::put('/{household}/members', [HouseholdController::class, 'updateMembers'])->name('update-members');
-        Route::post('/{household}/members', [HouseholdController::class, 'addMember'])->name('add-member');
-        Route::delete('/{household}/members', [HouseholdController::class, 'removeMember'])->name('remove-member');
+        Route::put('/{household}/members', [HouseholdController::class, 'updateMembers'])->name('update-members')->middleware('permission:edit-households');
+        Route::post('/{household}/members', [HouseholdController::class, 'addMember'])->name('add-member')->middleware('permission:edit-households');
+        Route::delete('/{household}/members', [HouseholdController::class, 'removeMember'])->name('remove-member')->middleware('permission:edit-households');
 
         // Main CRUD operations
         Route::get('/', [HouseholdController::class, 'index'])->name('index');
-        Route::post('/', [HouseholdController::class, 'store'])->name('store');
+        Route::post('/', [HouseholdController::class, 'store'])->name('store')->middleware('permission:create-households');
         Route::get('/{household}', [HouseholdController::class, 'show'])->name('show');
-        Route::put('/{household}', [HouseholdController::class, 'update'])->name('update');
-        Route::delete('/{household}', [HouseholdController::class, 'destroy'])->name('destroy');
+        Route::put('/{household}', [HouseholdController::class, 'update'])->name('update')->middleware('permission:edit-households');
+        Route::delete('/{household}', [HouseholdController::class, 'destroy'])->name('destroy')->middleware('permission:delete-households');
     });
 
     // User Management
-    Route::prefix('users')->name('users.')->group(function () {
+    Route::prefix('users')->name('users.')->middleware('permission:manage-users')->group(function () {
         // Core CRUD
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::post('/', [UserController::class, 'store'])->name('store');
@@ -159,8 +160,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
 
-        // Current User
-        Route::prefix('me')->name('me.')->group(function () {
+        // Current User (accessible to all authenticated users)
+        Route::prefix('me')->name('me.')->withoutMiddleware('permission:manage-users')->group(function () {
             Route::get('/', [UserController::class, 'me'])->name('show');
             Route::put('/', [UserController::class, 'updateMe'])->name('update');
             Route::post('/change-password', [UserController::class, 'changeMyPassword'])->name('change-password');
@@ -307,4 +308,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{agenda}/duplicate', [AgendaController::class, 'duplicate']);
     });
     Route::apiResource('agendas', AgendaController::class);
+
+    // Permission Management
+    Route::prefix('permissions')->name('permissions.')->middleware('permission:manage-roles')->group(function () {
+        Route::get('/', [PermissionController::class, 'getPermissions'])->name('index');
+        Route::get('/roles', [PermissionController::class, 'getRolePermissions'])->name('roles');
+        Route::put('/roles/{role}', [PermissionController::class, 'updateRolePermissions'])->name('update-role');
+        Route::get('/users/{userId}', [PermissionController::class, 'getUserPermissions'])->name('user');
+    });
 });

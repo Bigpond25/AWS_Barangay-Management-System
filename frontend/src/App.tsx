@@ -48,6 +48,8 @@ import AgendaDetailPage from "./components/agenda/AgendaDetailPage";
 import UserManagement from "./components/userManagement/UserManagement";
 import EditUserPage from "./components/userManagement/EditUserPage";
 import ViewUserPage from "./components/userManagement/ViewUserPage";
+import PermissionManagementPage from "./components/permissions/PermissionManagementPage";
+import PermissionGuard from "./components/permissions/PermissionGuard";
 
 
 // Wrapper components to handle navigation prop
@@ -112,19 +114,35 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <ResidentManagement />,
+            element: (
+              <PermissionGuard permission="view-residents">
+                <ResidentManagement />
+              </PermissionGuard>
+            ),
           },
           {
             path: "add",
-            element: <AddNewResident />,
+            element: (
+              <PermissionGuard permission="create-residents">
+                <AddNewResident />
+              </PermissionGuard>
+            ),
           },
           {
             path: "edit/:id",
-            element: <EditResident />,
+            element: (
+              <PermissionGuard permission="edit-residents">
+                <EditResident />
+              </PermissionGuard>
+            ),
           },
           {
             path: "view/:id",
-            element: <ViewResident />,
+            element: (
+              <PermissionGuard permission="view-residents">
+                <ViewResident />
+              </PermissionGuard>
+            ),
           },
         ],
       },
@@ -242,21 +260,41 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <UserManagement />,
+            element: (
+              <PermissionGuard permission="manage-users">
+                <UserManagement />
+              </PermissionGuard>
+            ),
           },
           {
             path: "edit/:id",
-            element: <EditUserPage />,
+            element: (
+              <PermissionGuard permission="manage-users">
+                <EditUserPage />
+              </PermissionGuard>
+            ),
           },
           {
             path: "view/:id",
-            element: <ViewUserPage />,
+            element: (
+              <PermissionGuard permission="manage-users">
+                <ViewUserPage />
+              </PermissionGuard>
+            ),
           },
         ],
       },
       {
         path: "settings",
          element: <SettingsPage />,
+      },
+      {
+        path: "permissions",
+        element: (
+          <PermissionGuard permission="manage-roles">
+            <PermissionManagementPage />
+          </PermissionGuard>
+        ),
       },
       {
         path: "reports",
