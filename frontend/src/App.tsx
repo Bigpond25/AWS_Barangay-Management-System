@@ -50,6 +50,8 @@ import EditUserPage from "./components/userManagement/EditUserPage";
 import ViewUserPage from "./components/userManagement/ViewUserPage";
 import PermissionManagementPage from "./components/permissions/PermissionManagementPage";
 import PermissionGuard from "./components/permissions/PermissionGuard";
+import PermissionManagementPage from "./components/permissions/PermissionManagementPage";
+import PermissionGuard from "./components/permissions/PermissionGuard";
 
 
 // Wrapper components to handle navigation prop
@@ -341,6 +343,14 @@ const router = createBrowserRouter([
             element: <AgendaDetailPage />,
           },
         ],
+      },
+      {
+        path: "permissions",
+        element: (
+          <PermissionGuard roles={['SUPER_ADMIN', 'ADMIN']}>
+            <PermissionManagementPage />
+          </PermissionGuard>
+        ),
       },
       {
         path: "*",

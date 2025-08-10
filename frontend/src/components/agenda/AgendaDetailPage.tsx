@@ -22,7 +22,7 @@ import Breadcrumb from '@/components/_global/Breadcrumb';
 import { useAgenda, useUpdateAgenda } from '@/services/agenda/useAgenda';
 import { useNotifications } from '@/components/_global/NotificationSystem';
 import { MeetingMinutes } from './MeetingMinutes';
-import type { AgendaUpdateData } from '@/services/agenda/agenda.type';
+import type { AgendaFormData } from '@/services/agenda/agenda.types';
 
 const AgendaDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

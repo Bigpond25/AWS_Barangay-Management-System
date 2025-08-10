@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Eye } from 'lucide-react';
-import type { Agenda } from '@/services/agenda/agenda.type';
+import type { Agenda } from '@/services/agenda/agenda.types';
 
 interface AgendaCalendarProps {
   agendas: Agenda[];
@@ -66,9 +66,8 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
   };
 
   const getAgendasForDate = (day: number) => {
-    const dateToCheck = new Date(getCurrentYear(), getCurrentMonth(), day);
     return agendas.filter(agenda => {
-      const agendaDate = new Date(agenda.date_time);
+      const agendaDate = new Date(agenda.date);
       return (
         agendaDate.getDate() === day &&
         agendaDate.getMonth() === getCurrentMonth() &&
@@ -128,7 +127,7 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
             </div>
             
             <div className="flex-1 space-y-1 overflow-y-auto">
-              {dayAgendas.slice(0, 3).map((agenda, index) => (
+              {dayAgendas.slice(0, 3).map((agenda) => (
                 <div
                   key={agenda.id}
                   className="group relative"

@@ -4,8 +4,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { Plus, Settings, BarChart3, Users, Clock, AlertCircle } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { BarChart3, Users, Clock, AlertCircle } from 'lucide-react';
 
 import Breadcrumb from '@/components/_global/Breadcrumb';
 import { StatCard } from '@/components/__shared/StatCard';
@@ -13,25 +12,14 @@ import { useHelpDeskStatistics } from '@/services/helpDesk/useHelpDesk';
 
 import { HelpDeskOverview } from './components/HelpDeskOverview';
 import { ActiveTickets } from './components/ActiveTickets';
-import { QuickActions } from './components/QuickActions';
-import { TicketAssignments } from './components/TicketAssignments';
-import { HelpDeskAnalytics } from './components/HelpDeskAnalytics';
 
 type ManagementView = 'overview' | 'active' | 'assignments' | 'analytics';
 
-interface HelpDeskManagementPageProps {}
-
-export const HelpDeskManagementPage: React.FC<HelpDeskManagementPageProps> = () => {
-  const { t } = useTranslation();
+export const HelpDeskManagementPage: React.FC = () => {
   const [activeView, setActiveView] = useState<ManagementView>('overview');
 
   // Fetch help desk statistics
   const { data: statistics, isLoading: statsLoading } = useHelpDeskStatistics();
-
-  const breadcrumbItems = [
-    { label: 'Dashboard', href: '/' },
-    { label: 'Help Desk Management', href: '/help-desk/manage' },
-  ];
 
   const managementTabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -47,9 +35,9 @@ export const HelpDeskManagementPage: React.FC<HelpDeskManagementPageProps> = () 
       case 'active':
         return <ActiveTickets />;
       case 'assignments':
-        return <TicketAssignments />;
+        return <div className="p-4 text-center text-gray-500">Ticket Assignments view coming soon...</div>;
       case 'analytics':
-        return <HelpDeskAnalytics />;
+        return <div className="p-4 text-center text-gray-500">Analytics view coming soon...</div>;
       default:
         return <HelpDeskOverview />;
     }
@@ -61,7 +49,7 @@ export const HelpDeskManagementPage: React.FC<HelpDeskManagementPageProps> = () 
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-4">
-            <Breadcrumb items={breadcrumbItems} />
+            <Breadcrumb />
             <div className="mt-4 flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
@@ -71,7 +59,6 @@ export const HelpDeskManagementPage: React.FC<HelpDeskManagementPageProps> = () 
                   Manage and monitor all help desk tickets and staff assignments
                 </p>
               </div>
-              <QuickActions />
             </div>
           </div>
         </div>

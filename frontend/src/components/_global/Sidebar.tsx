@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   FiHome,
   FiUsers,
   FiFile,
   FiHelpCircle,
-  FiBriefcase,
   FiUserCheck,
   FiBarChart,
   FiSettings,
@@ -16,6 +15,7 @@ import {
   FiShield,
 } from "react-icons/fi";
 import sanMiguelLogo from "@/assets/sanMiguelLogo.jpg";
+import { usePermissionCheck } from "@/hooks/usePermissionCheck";
 
 interface SidebarProps {
   activeItem: string;
@@ -27,6 +27,23 @@ interface SidebarProps {
 interface SubmenuPosition {
   top: number;
   left: number;
+}
+
+interface SubmenuItem {
+  id: string;
+  label: string;
+  permission?: string;
+  roles?: string[];
+}
+
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  hasSubmenu?: boolean;
+  permission?: string;
+  roles?: string[];
+  submenu?: SubmenuItem[];
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -43,17 +60,31 @@ const Sidebar: React.FC<SidebarProps> = ({
   const sidebarRef = useRef<HTMLElement>(null);
   const menuItemRefs = useRef<Record<string, HTMLAnchorElement>>({});
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Permission checking
+  const { hasPermission, hasAnyRole } = usePermissionCheck();
 
-  const menuItems = [
+  const menuItems: MenuItem[] = useMemo(() => [
     { id: "dashboard", label: "Dashboard", icon: FiHome },
-    { id: "residents", label: "Resident Management", icon: FiUsers },
-    { id: "household", label: "Household Management", icon: FiUsers },
+    { 
+      id: "residents", 
+      label: "Resident Management", 
+      icon: FiUsers,
+      permission: "view-residents"
+    },
+    { 
+      id: "household", 
+      label: "Household Management", 
+      icon: FiUsers,
+      permission: "view-households"
+    },
     { id: "import", label: "Data Import", icon: FiUpload }, 
     {
       id: "process-document",
       label: "Process Document",
       icon: FiFile,
       hasSubmenu: true,
+      permission: "view-documents",
       submenu: [
         { id: "barangay-clearance", label: "Barangay Clearance" },
         { id: "business-permit", label: "Business Permit" },
@@ -79,13 +110,41 @@ const Sidebar: React.FC<SidebarProps> = ({
     // { id: "projects", label: "Projects & Programs", icon: FiBriefcase },
     { id: "officials", label: "Barangay Officials", icon: FiUserCheck },
     { id: "reports", label: "Reports", icon: FiBarChart },
-    { id: "users", label: "Manage Users", icon: FiUsers },
-    { id: "permissions", label: "Permissions", icon: FiShield },
+    { 
+      id: "users", 
+      label: "Manage Users", 
+      icon: FiUsers,
+      roles: ['SUPER_ADMIN', 'ADMIN']
+    },
+    { 
+      id: "permissions", 
+      label: "Permissions", 
+      icon: FiShield,
+      roles: ['SUPER_ADMIN', 'ADMIN']
+    },
     { id: "settings", label: "Settings", icon: FiSettings },
-  ];
+  ], []);
+
+  // Filter menu items based on permissions
+  const filteredMenuItems = useMemo(() => {
+    return menuItems.filter(item => {
+      // If item has roles requirement, check roles
+      if (item.roles) {
+        return hasAnyRole(item.roles);
+      }
+      
+      // If item has permission requirement, check permission
+      if (item.permission) {
+        return hasPermission(item.permission);
+      }
+      
+      // If no requirements, show the item
+      return true;
+    });
+  }, [menuItems, hasAnyRole, hasPermission]);
 
   // Helper function to find which menu should be expanded based on active item
-  const getActiveParentMenu = () => {
+  const getActiveParentMenu = useCallback(() => {
     // Check if active item is a parent menu
     const parentMenu = menuItems.find(item => item.id === activeItem);
     if (parentMenu?.hasSubmenu) {
@@ -106,10 +165,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     );
     
     return parent?.id || null;
-  };
+  }, [activeItem, menuItems]);
 
   // Calculate submenu position
-  const calculateSubmenuPosition = (menuId: string): SubmenuPosition => {
+  const calculateSubmenuPosition = useCallback((menuId: string): SubmenuPosition => {
     const menuElement = menuItemRefs.current[menuId];
     if (!menuElement) return { top: 0, left: 64 };
 
@@ -132,10 +191,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
 
     return { top, left };
-  };
+  }, []);
 
   // Update submenu positions
-  const updateSubmenuPositions = () => {
+  const updateSubmenuPositions = useCallback(() => {
     if (isMobile || isExpanded) return;
 
     const newPositions: Record<string, SubmenuPosition> = {};
@@ -145,7 +204,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       }
     });
     setSubmenuPositions(newPositions);
-  };
+  }, [isMobile, isExpanded, menuItems, calculateSubmenuPosition]);
 
   // Auto-expand parent menu based on active item
   useEffect(() => {
@@ -169,7 +228,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       // Collapsed sidebar - clear expanded menus
       setExpandedMenus([]);
     }
-  }, [activeItem, isExpanded, isMobile]);
+  }, [activeItem, isExpanded, isMobile, getActiveParentMenu, menuItems]);
 
   // Clear hover state when sidebar collapses
   useEffect(() => {
@@ -184,14 +243,14 @@ const Sidebar: React.FC<SidebarProps> = ({
       // Pre-calculate all positions for collapsed sidebar
       updateSubmenuPositions();
     }
-  }, [isExpanded, isMobile]);
+  }, [isExpanded, isMobile, updateSubmenuPositions]);
 
   // Update positions on scroll/resize
   useEffect(() => {
     if (!isMobile && !isExpanded) {
       updateSubmenuPositions();
     }
-  }, [expandedMenus]);
+  }, [expandedMenus, isExpanded, isMobile, updateSubmenuPositions]);
 
   // Listen for scroll events on sidebar
   useEffect(() => {
@@ -215,7 +274,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [expandedMenus, isExpanded, isMobile]);
+  }, [expandedMenus, isExpanded, isMobile, updateSubmenuPositions]);
 
   const toggleSubmenu = (menuId: string) => {
     // Don't allow toggling on mobile - submenus always expanded
@@ -236,7 +295,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     });
   };
 
-  const handleMenuClick = (e: React.MouseEvent, item: any) => {
+  const handleMenuClick = (e: React.MouseEvent, item: MenuItem) => {
     // Allow right-click and middle-click to work naturally for links
     if (e.button === 1 || e.button === 2) return;
 
@@ -309,7 +368,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  const isSubmenuActive = (submenu: any[]) => {
+  const isSubmenuActive = (submenu: SubmenuItem[]) => {
     return submenu.some((subItem) => subItem.id === activeItem);
   };
 
@@ -368,7 +427,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {menuItems.map((item) => (
+        {filteredMenuItems.map((item) => (
           <div
             key={item.id}
             className="relative"
