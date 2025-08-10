@@ -29,7 +29,7 @@ export const documentsKeys = {
   search: (term: string) => [...documentsKeys.all, 'search', term] as const,
   tracking: (id: string) => [...documentsKeys.all, 'tracking', id] as const,
   history: (id: string) => [...documentsKeys.all, 'history', id] as const,
-  byResident: (residentId: number) => [...documentsKeys.all, 'byResident', residentId] as const,
+  byResident: (residentId: string) => [...documentsKeys.all, 'byResident', residentId] as const,
   byType: (type: string) => [...documentsKeys.all, 'byType', type] as const,
   byStatus: (status: string) => [...documentsKeys.all, 'byStatus', status] as const,
   overdue: () => [...documentsKeys.all, 'overdue'] as const,
@@ -81,11 +81,11 @@ export function useDocumentTracking(id: string, enabled = true) {
 }
 
 // Documents by filters
-export function useDocumentsByResident(residentId: number, enabled = true) {
+export function useDocumentsByResident(residentId: string, enabled = true) {
   return useQuery({
     queryKey: documentsKeys.byResident(residentId),
     queryFn: () => documentsService.getDocumentsByResident(residentId),
-    enabled: enabled && !!residentId && residentId > 0,
+    enabled: enabled && !!residentId && residentId.trim() !== '',
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 }

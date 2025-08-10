@@ -41,7 +41,8 @@ export class DocumentsService extends BaseApiService {
   private transformDocument(doc: Document & { id: string | number }): Document {
     return {
       ...doc,
-      id: String(doc.id)
+      id: String(doc.id),
+      status: this.convertStatusFromBackend(doc.status as string)
     };
   }
 
@@ -70,7 +71,7 @@ export class DocumentsService extends BaseApiService {
     
     const statusMap: Record<DocumentStatus, string> = {
       'PENDING': 'pending',
-      'UNDER_REVIEW': 'processing',
+      'PROCESSING': 'processing', // Fixed: was 'under_review'
       'APPROVED': 'approved',
       'RELEASED': 'released',
       'REJECTED': 'rejected',
@@ -78,6 +79,25 @@ export class DocumentsService extends BaseApiService {
     };
     
     return statusMap[status] || status.toLowerCase();
+  }
+
+  /**
+   * Convert backend status values to frontend expected format
+   */
+  private convertStatusFromBackend(status?: string | null): DocumentStatus {
+    if (!status) return 'PENDING';
+    
+    const statusMap: Record<string, DocumentStatus> = {
+      'pending': 'PENDING',
+      'processing': 'PROCESSING', // Backend uses 'processing'
+      'under_review': 'PROCESSING', // Legacy support
+      'approved': 'APPROVED',
+      'released': 'RELEASED',
+      'rejected': 'REJECTED',
+      'cancelled': 'CANCELLED'
+    };
+    
+    return statusMap[status.toLowerCase()] || 'PENDING';
   }
 
   /**
@@ -250,8 +270,8 @@ export class DocumentsService extends BaseApiService {
   /**
    * Get documents by resident
    */
-  async getDocumentsByResident(residentId: number): Promise<Document[]> {
-    if (!residentId || residentId <= 0) {
+  async getDocumentsByResident(residentId: string): Promise<Document[]> {
+    if (!residentId || residentId.trim() === '') {
       throw new Error('Invalid resident ID');
     }
 

@@ -227,7 +227,7 @@ class DocumentSchema
     {
         return [
             'PENDING' => 'Pending',
-            'UNDER_REVIEW' => 'Under Review',
+            'PROCESSING' => 'Processing', // Fixed: renamed from UNDER_REVIEW
             'APPROVED' => 'Approved',
             'RELEASED' => 'Released',
             'REJECTED' => 'Rejected',

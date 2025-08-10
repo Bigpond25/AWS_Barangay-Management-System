@@ -12,6 +12,7 @@ import {
   FiChevronDown,
   FiChevronRight,
   FiUpload,
+  FiCalendar,
 } from "react-icons/fi";
 import sanMiguelLogo from "@/assets/sanMiguelLogo.jpg";
 
@@ -65,12 +66,15 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: FiHelpCircle,
       hasSubmenu: true,
       submenu: [
+        { id: "help-desk", label: "Help Desk Overview" },
+        { id: "management", label: "Help Desk Management" },
         { id: "schedule-appointment", label: "Schedule an appointment" },
         { id: "file-blotter", label: "File blotter report" },
         { id: "file-complaint", label: "File a complaint" },
         { id: "share-suggestions", label: "Share suggestions" },
       ],
     },
+    { id: "agenda", label: "Agenda Management", icon: FiCalendar },
     // { id: "projects", label: "Projects & Programs", icon: FiBriefcase },
     { id: "officials", label: "Barangay Officials", icon: FiUserCheck },
     { id: "reports", label: "Reports", icon: FiBarChart },

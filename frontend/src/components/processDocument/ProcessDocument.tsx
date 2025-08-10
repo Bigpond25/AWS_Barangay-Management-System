@@ -116,7 +116,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
       icon: FiClock,
       label: 'Pending'
     },
-    UNDER_REVIEW: {
+    PROCESSING: {
       color: 'bg-blue-100 text-blue-800',
       icon: FiEye,
       label: 'Processing'
@@ -207,8 +207,8 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
       case 'pending':
         return 'PENDING';
       case 'processing':
-      case 'under_review':
-        return 'UNDER_REVIEW';
+      case 'under_review': // Legacy support
+        return 'PROCESSING';
       case 'approved':
         return 'APPROVED';
       case 'released':
@@ -315,7 +315,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Processing</p>
-              <p className="text-2xl font-bold text-blue-600">{statusCounts.UNDER_REVIEW || 0}</p>
+              <p className="text-2xl font-bold text-blue-600">{statusCounts.PROCESSING || 0}</p>
             </div>
             <div className="p-3 bg-blue-100 rounded-full">
               <FiEye className="w-6 h-6 text-blue-600" />
@@ -399,7 +399,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
               >
                 <option value="ALL">All Status</option>
                 <option value="PENDING">Pending</option>
-                <option value="UNDER_REVIEW">Processing</option>
+                <option value="PROCESSING">Processing</option>
                 <option value="APPROVED">Approved</option>
                 <option value="RELEASED">Released</option>
                 <option value="REJECTED">Rejected</option>

@@ -50,10 +50,10 @@ const DocumentQueue: React.FC<DocumentQueueProps> = ({ onNavigate }) => {
       icon: FiClock,
       label: 'Pending'
     },
-    UNDER_REVIEW: {
+    PROCESSING: {
       color: 'bg-blue-100 text-blue-800 border-blue-200',
       icon: FiEye,
-      label: 'Under Review'
+      label: 'Processing'
     },
     APPROVED: {
       color: 'bg-green-100 text-green-800 border-green-200',
@@ -99,14 +99,14 @@ const DocumentQueue: React.FC<DocumentQueueProps> = ({ onNavigate }) => {
   // Map backend status values to frontend config keys
   const getStatusConfigKey = (status: string): string => {
     const lowerStatus = status.toLowerCase();
-    if (lowerStatus === 'processing') return 'UNDER_REVIEW';
+    if (lowerStatus === 'processing') return 'PROCESSING';
     return lowerStatus.toUpperCase();
   };
 
   const getProcessingProgress = (status: DocumentStatus) => {
     switch (status) {
       case 'PENDING': return 0;
-      case 'UNDER_REVIEW': return 25;
+      case 'PROCESSING': return 25;
       case 'APPROVED': return 75;
       case 'RELEASED': return 100;
       case 'REJECTED': return 0;

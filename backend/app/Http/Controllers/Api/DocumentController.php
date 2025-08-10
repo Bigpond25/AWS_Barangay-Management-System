@@ -888,7 +888,8 @@ class DocumentController extends Controller
     {
         $statusMap = [
             'PENDING' => 'pending',
-            'UNDER_REVIEW' => 'processing',
+            'PROCESSING' => 'processing', // Fixed: frontend now uses PROCESSING
+            'UNDER_REVIEW' => 'processing', // Legacy support
             'APPROVED' => 'approved',
             'RELEASED' => 'released',
             'REJECTED' => 'rejected',
@@ -905,7 +906,7 @@ class DocumentController extends Controller
     {
         $statusMap = [
             'pending' => 'PENDING',
-            'processing' => 'UNDER_REVIEW',
+            'processing' => 'PROCESSING', // Fixed: backend maps to PROCESSING
             'approved' => 'APPROVED',
             'released' => 'RELEASED',
             'rejected' => 'REJECTED',

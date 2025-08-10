@@ -105,7 +105,7 @@ export function useDocumentQueue() {
     if (!statistics) {
       return {
         PENDING: 0,
-        UNDER_REVIEW: 0,
+        PROCESSING: 0,
         APPROVED: 0,
         RELEASED: 0,
         REJECTED: 0,
@@ -114,7 +114,7 @@ export function useDocumentQueue() {
     }
     return {
       PENDING: statistics.pending_documents,
-      UNDER_REVIEW: statistics.processing_documents,
+      PROCESSING: statistics.processing_documents, // Fixed: was UNDER_REVIEW
       APPROVED: statistics.approved_documents,
       RELEASED: statistics.released_documents,
       REJECTED: statistics.rejected_documents,

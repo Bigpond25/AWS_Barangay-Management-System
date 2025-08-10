@@ -14,7 +14,7 @@ export const DocumentTypeSchema = z.enum([
 
 export const DocumentStatusSchema = z.enum([
   'PENDING',
-  'UNDER_REVIEW', 
+  'PROCESSING', // Backend uses 'processing' not 'under_review'
   'APPROVED',
   'RELEASED',
   'REJECTED',
@@ -80,7 +80,7 @@ export const DocumentFormDataSchema = z.object({
 
 // Main Document schema with system fields
 export const DocumentSchema = DocumentFormDataSchema.extend({
-  id: z.string(),
+  id: z.string().uuid(), // Backend uses UUID strings
   status: DocumentStatusSchema,
   payment_status: PaymentStatusSchema,
   
@@ -92,11 +92,11 @@ export const DocumentSchema = DocumentFormDataSchema.extend({
   approved_date: z.string().nullable().optional(), 
   released_date: z.string().nullable().optional(),
   
-  // Officials
+  // Officials - Backend uses UUID strings for user IDs
   certifying_official: z.string().nullable().optional(),
-  processed_by: z.number().nullable().optional(),
-  approved_by: z.number().nullable().optional(),
-  released_by: z.number().nullable().optional(),
+  processed_by: z.string().uuid().nullable().optional(),
+  approved_by: z.string().uuid().nullable().optional(),
+  released_by: z.string().uuid().nullable().optional(),
   
   // Additional tracking
   expiry_date: z.string().nullable().optional(),
@@ -105,9 +105,9 @@ export const DocumentSchema = DocumentFormDataSchema.extend({
   created_at: z.string(),
   updated_at: z.string(),
   
-  // Relations (loaded when needed)
+  // Relations (loaded when needed) - Backend uses UUID strings for all IDs
   resident: z.object({
-    id: z.number(),
+    id: z.string().uuid(),
     first_name: z.string(),
     last_name: z.string(),
     middle_name: z.string().nullable().optional(),
@@ -118,21 +118,21 @@ export const DocumentSchema = DocumentFormDataSchema.extend({
   }).nullable().optional(),
   
   processed_by_user: z.object({
-    id: z.number(),
+    id: z.string().uuid(),
     name: z.string(),
     role: z.string(),
     position: z.string().nullable().optional(),
   }).nullable().optional(),
   
   approved_by_user: z.object({
-    id: z.number(), 
+    id: z.string().uuid(), 
     name: z.string(),
     role: z.string(),
     position: z.string().nullable().optional(),
   }).nullable().optional(),
   
   released_by_user: z.object({
-    id: z.number(),
+    id: z.string().uuid(),
     name: z.string(),
     role: z.string(),
     position: z.string().nullable().optional(),
@@ -148,7 +148,7 @@ export const DocumentParamsSchema = z.object({
   status: DocumentStatusSchema.nullable().optional(),
   priority: DocumentPrioritySchema.nullable().optional(),
   payment_status: PaymentStatusSchema.nullable().optional(),
-  resident_id: z.number().nullable().optional(),
+  resident_id: z.string().uuid().nullable().optional(), // Backend uses UUID strings
   date_from: z.string().nullable().optional(),
   date_to: z.string().nullable().optional(),
   sort_by: z.string().nullable().optional(),
@@ -217,14 +217,14 @@ export const ReleaseDocumentDataSchema = z.object({
 
 // Processing history schema
 export const ProcessingHistoryItemSchema = z.object({
-  id: z.number(),
+  id: z.string().uuid(),
   document_id: z.string(),
   action: z.string(),
   status_from: z.string().nullable().optional(),
   status_to: z.string(),
-  processed_by: z.number(),
+  processed_by: z.string().uuid(),
   processed_by_user: z.object({
-    id: z.number(),
+    id: z.string().uuid(),
     name: z.string(),
     role: z.string(),
     position: z.string().nullable().optional(),
@@ -254,7 +254,7 @@ export const transformDocumentToFormData = (document: Document | null): Document
   if (!document) {
     return {
       document_type: 'BARANGAY_CLEARANCE',
-      resident_id: 0,
+      resident_id: '',
       applicant_name: '',
       purpose: '',
       applicant_address: '',

@@ -38,10 +38,13 @@ import './i18';
 import ViewBarangayOfficial from "./components/barangayOfficials/ViewBarangayOfficial";
 import ActivityLogManagement from "./components/activityLogs/ActivityLogManagement";
 import HelpDeskPage from "./components/helpDesk/HelpDeskPage";
+import HelpDeskManagementPage from "./components/helpDesk/HelpDeskManagement/HelpDeskManagementPage";
 import AppointmentsPage from "./components/helpDesk/Appointments/Appointments";
 import BlotterPage from "./components/helpDesk/Blotter/Blotter";
 import ComplaintsPage from "./components/helpDesk/Complaints/Complaints";
 import SuggestionsPage from "./components/helpDesk/Suggestions/Suggestions";
+import AgendaManagementPage from "./components/agenda/AgendaManagementPage";
+import AgendaDetailPage from "./components/agenda/AgendaDetailPage";
 import UserManagement from "./components/userManagement/UserManagement";
 import EditUserPage from "./components/userManagement/EditUserPage";
 import ViewUserPage from "./components/userManagement/ViewUserPage";
@@ -267,6 +270,10 @@ const router = createBrowserRouter([
             element: <HelpDeskPage />,
           },
           {
+            path: "management",
+            element: <HelpDeskManagementPage />,
+          },
+          {
             path: "schedule-appointment",
             element: <AppointmentsPage />,
           },
@@ -281,6 +288,19 @@ const router = createBrowserRouter([
           {
             path: "share-suggestions",
             element: <SuggestionsPage />,
+          },
+        ],
+      },
+      {
+        path: "agenda",
+        children: [
+          {
+            index: true,
+            element: <AgendaManagementPage />,
+          },
+          {
+            path: ":id",
+            element: <AgendaDetailPage />,
           },
         ],
       },
