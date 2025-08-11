@@ -11,6 +11,8 @@ import {
   ResidentStatisticsSchema,
   AgeGroupStatisticsSchema,
   SpecialListResponseSchema,
+  DocumentSummarySchema,
+  TicketSummarySchema,
   type Resident,
   type ResidentParams,
   type ResidentStatistics,
@@ -433,7 +435,6 @@ export class ResidentsService extends BaseApiService {
       throw new Error('Invalid resident ID: ID must be a non-empty string');
     }
 
-    import { DocumentSummarySchema } from './residents.types';
     const responseSchema = ApiResponseSchema(z.array(DocumentSummarySchema));
     
     const response = await this.request(
@@ -453,7 +454,6 @@ export class ResidentsService extends BaseApiService {
       throw new Error('Invalid resident ID: ID must be a non-empty string');
     }
 
-    import { TicketSummarySchema } from './residents.types';
     const responseSchema = ApiResponseSchema(z.array(TicketSummarySchema));
     
     const response = await this.request(

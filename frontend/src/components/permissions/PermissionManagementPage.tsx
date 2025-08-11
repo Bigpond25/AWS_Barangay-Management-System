@@ -15,10 +15,10 @@ import {
 } from 'lucide-react';
 import { usePermissions, useRolePermissions, useUpdateRolePermissions } from '@/services/permissions/usePermissions';
 import { 
-  UserRole,
   ROLE_DISPLAY_NAMES,
   CATEGORY_DISPLAY_NAMES
 } from '@/services/permissions/permissions.types';
+import type { UserRole } from '@/services/permissions/permissions.types';
 
 const PermissionManagementPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole>('VIEWER');

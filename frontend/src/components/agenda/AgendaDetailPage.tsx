@@ -27,10 +27,10 @@ import type { AgendaFormData } from '@/services/agenda/agenda.types';
 const AgendaDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { addNotification } = useNotifications();
+  const { showNotification } = useNotifications();
   
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState<Partial<AgendaUpdateData>>({});
+  const [editForm, setEditForm] = useState<Partial<AgendaFormData>>({});
 
   // Fetch agenda data
   const { 
@@ -42,20 +42,14 @@ const AgendaDetailPage: React.FC = () => {
 
   const updateAgendaMutation = useUpdateAgenda();
 
-  const breadcrumbItems = [
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Agenda Management', href: '/agenda-management' },
-    { label: agenda?.title || 'Agenda Details', href: `/agenda/${id}` }
-  ];
-
   const handleEdit = () => {
     if (agenda) {
       setEditForm({
         title: agenda.title,
         description: agenda.description,
-        date_time: agenda.date_time,
+        date: agenda.date,
+        time: agenda.time,
         location: agenda.location,
-        status: agenda.status
       });
       setIsEditing(true);
     }
@@ -67,10 +61,10 @@ const AgendaDetailPage: React.FC = () => {
     try {
       await updateAgendaMutation.mutateAsync({
         id,
-        data: editForm as AgendaUpdateData
+        data: editForm as AgendaFormData
       });
       
-      addNotification({
+      showNotification({
         type: 'success',
         title: 'Success',
         message: 'Agenda updated successfully.'
@@ -79,7 +73,7 @@ const AgendaDetailPage: React.FC = () => {
       setIsEditing(false);
       refetch();
     } catch {
-      addNotification({
+      showNotification({
         type: 'error',
         title: 'Error',
         message: 'Failed to update agenda. Please try again.'
@@ -92,7 +86,7 @@ const AgendaDetailPage: React.FC = () => {
     setEditForm({});
   };
 
-  const formatDateTime = (dateString: string) => {
+  const formatDateTime = (dateString: string, timeString: string) => {
     const date = new Date(dateString);
     return {
       date: date.toLocaleDateString('en-US', {
@@ -101,7 +95,7 @@ const AgendaDetailPage: React.FC = () => {
         month: 'long',
         day: 'numeric'
       }),
-      time: date.toLocaleTimeString('en-US', {
+      time: timeString || date.toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit'
       })
@@ -160,7 +154,7 @@ const AgendaDetailPage: React.FC = () => {
     );
   }
 
-  const { date, time } = formatDateTime(agenda.date_time);
+  const { date, time } = formatDateTime(agenda.date, agenda.time);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -168,7 +162,7 @@ const AgendaDetailPage: React.FC = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-4">
-            <Breadcrumb items={breadcrumbItems} />
+            <Breadcrumb />
             <div className="mt-4 flex items-center justify-between">
               <div className="flex-1">
                 {isEditing ? (
@@ -227,22 +221,9 @@ const AgendaDetailPage: React.FC = () => {
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center gap-3 mb-6">
                 {getStatusIcon(agenda.status)}
-                {isEditing ? (
-                  <select
-                    value={editForm.status || agenda.status}
-                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value as 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' })}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="SCHEDULED">Scheduled</option>
-                    <option value="IN_PROGRESS">In Progress</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="CANCELLED">Cancelled</option>
-                  </select>
-                ) : (
-                  <span className={`px-3 py-1 text-sm font-medium rounded-full border ${getStatusColor(agenda.status)}`}>
-                    {agenda.status}
-                  </span>
-                )}
+                <span className={`px-3 py-1 text-sm font-medium rounded-full border ${getStatusColor(agenda.status)}`}>
+                  {agenda.status}
+                </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -252,9 +233,9 @@ const AgendaDetailPage: React.FC = () => {
                     <p className="text-sm text-gray-500">Date</p>
                     {isEditing ? (
                       <input
-                        type="datetime-local"
-                        value={editForm.date_time || agenda.date_time}
-                        onChange={(e) => setEditForm({ ...editForm, date_time: e.target.value })}
+                        type="date"
+                        value={editForm.date || agenda.date}
+                        onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
                         className="font-medium text-gray-900 border border-gray-300 rounded px-2 py-1"
                       />
                     ) : (
@@ -267,7 +248,16 @@ const AgendaDetailPage: React.FC = () => {
                   <Clock className="w-5 h-5 text-gray-400" />
                   <div>
                     <p className="text-sm text-gray-500">Time</p>
-                    <p className="font-medium text-gray-900">{time}</p>
+                    {isEditing ? (
+                      <input
+                        type="time"
+                        value={editForm.time || agenda.time}
+                        onChange={(e) => setEditForm({ ...editForm, time: e.target.value })}
+                        className="font-medium text-gray-900 border border-gray-300 rounded px-2 py-1"
+                      />
+                    ) : (
+                      <p className="font-medium text-gray-900">{time}</p>
+                    )}
                   </div>
                 </div>
 

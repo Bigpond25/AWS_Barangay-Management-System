@@ -84,9 +84,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Import/Export functionality
-    Route::prefix('import')->group(function () {
-        Route::post('/residents', [ImportController::class, 'importResidents']);
-        Route::post('/households', [ImportController::class, 'importHouseholds']);
+    Route::prefix('import')->middleware('permission:manage-users')->group(function () {
+        Route::post('/residents', [ImportController::class, 'importResidents'])->middleware('permission:create-residents');
+        Route::post('/households', [ImportController::class, 'importHouseholds'])->middleware('permission:create-households');
         Route::get('/history', [ImportController::class, 'getImportHistory']);
     });
 
@@ -215,28 +215,28 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Barangay Officials Management
-    Route::prefix('barangay-officials')->group(function () {
+    Route::prefix('barangay-officials')->middleware('permission:view-officials')->group(function () {
         Route::get('/statistics', [BarangayOfficialController::class, 'statistics']);
         Route::get('/active', [BarangayOfficialController::class, 'getActiveOfficials']);
         Route::get('/position/{position}', [BarangayOfficialController::class, 'getByPosition']);
         Route::get('/committee/{committee}', [BarangayOfficialController::class, 'getByCommittee']);
-        Route::get('/export', [BarangayOfficialController::class, 'export']);
-        Route::post('/check-duplicate', [BarangayOfficialController::class, 'checkDuplicate']);
-        Route::patch('/{barangayOfficial}/performance', [BarangayOfficialController::class, 'updatePerformance']);
-        Route::post('/{barangayOfficial}/archive', [BarangayOfficialController::class, 'archive']);
-        Route::post('/{barangayOfficial}/reactivate', [BarangayOfficialController::class, 'reactivate']);
+        Route::get('/export', [BarangayOfficialController::class, 'export'])->middleware('permission:view-reports');
+        Route::post('/check-duplicate', [BarangayOfficialController::class, 'checkDuplicate'])->middleware('permission:create-officials');
+        Route::patch('/{barangayOfficial}/performance', [BarangayOfficialController::class, 'updatePerformance'])->middleware('permission:edit-officials');
+        Route::post('/{barangayOfficial}/archive', [BarangayOfficialController::class, 'archive'])->middleware('permission:edit-officials');
+        Route::post('/{barangayOfficial}/reactivate', [BarangayOfficialController::class, 'reactivate'])->middleware('permission:edit-officials');
     });
-    Route::apiResource('barangay-officials', BarangayOfficialController::class);
+    Route::apiResource('barangay-officials', BarangayOfficialController::class)->middleware('permission:view-officials');
 
     // Help Desk Management (Administrative)
-    Route::prefix('help-desk')->group(function () {
+    Route::prefix('help-desk')->middleware('permission:view-complaints')->group(function () {
         Route::get('/', [TicketController::class, 'index']);
         Route::get('/statistics', [TicketController::class, 'statistics']);
-        Route::delete('/{id}', [TicketController::class, 'destroy']);
+        Route::delete('/{id}', [TicketController::class, 'destroy'])->middleware('permission:delete-complaints');
     });
 
     // Settings Management
-    Route::prefix('settings')->group(function () {
+    Route::prefix('settings')->middleware('permission:system-settings')->group(function () {
         Route::get('/', [SettingController::class, 'index']);
         Route::put('/', [SettingController::class, 'update']);
         Route::post('/reset', [SettingController::class, 'reset']);
@@ -257,13 +257,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Projects Management
-    Route::prefix('projects')->group(function () {
+    Route::prefix('projects')->middleware('permission:view-projects')->group(function () {
         Route::get('/statistics', [ProjectController::class, 'statistics']);
     });
-    Route::apiResource('projects', ProjectController::class);
+    Route::apiResource('projects', ProjectController::class)->middleware('permission:view-projects');
 
     // Reports
-    Route::prefix('reports')->group(function () {
+    Route::prefix('reports')->middleware('permission:view-reports')->group(function () {
         Route::get('/statistics', [ReportsController::class, 'getStatisticsOverview']);
         Route::get('/age-group-distribution', [ReportsController::class, 'getAgeGroupDistribution']);
         Route::get('/special-population-registry', [ReportsController::class, 'getSpecialPopulationRegistry']);
@@ -275,39 +275,39 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Document Management
-    Route::prefix('documents')->group(function () {
+    Route::prefix('documents')->middleware('permission:view-documents')->group(function () {
         Route::get('/', [DocumentController::class, 'index']);
-        Route::post('/', [DocumentController::class, 'store']);
+        Route::post('/', [DocumentController::class, 'store'])->middleware('permission:create-documents');
         Route::get('/statistics', [DocumentController::class, 'statistics']);
         Route::get('/overdue', [DocumentController::class, 'overdue']);
         Route::get('/pending', [DocumentController::class, 'pending']);
         Route::get('/{id}', [DocumentController::class, 'show']);
-        Route::put('/{id}', [DocumentController::class, 'update']);
-        Route::delete('/{id}', [DocumentController::class, 'destroy']);
+        Route::put('/{id}', [DocumentController::class, 'update'])->middleware('permission:edit-documents');
+        Route::delete('/{id}', [DocumentController::class, 'destroy'])->middleware('permission:delete-documents');
         Route::get('/{id}/tracking', [DocumentController::class, 'tracking']);
         Route::get('/{id}/history', [DocumentController::class, 'history']);
         Route::get('/{id}/pdf', [DocumentController::class, 'pdf']);
-        Route::post('/{id}/process', [DocumentController::class, 'process']);
-        Route::post('/{id}/approve', [DocumentController::class, 'approve']);
-        Route::post('/{id}/reject', [DocumentController::class, 'reject']);
-        Route::post('/{id}/release', [DocumentController::class, 'release']);
-        Route::post('/{id}/cancel', [DocumentController::class, 'cancel']);
+        Route::post('/{id}/process', [DocumentController::class, 'process'])->middleware('permission:process-documents');
+        Route::post('/{id}/approve', [DocumentController::class, 'approve'])->middleware('permission:approve-documents');
+        Route::post('/{id}/reject', [DocumentController::class, 'reject'])->middleware('permission:approve-documents');
+        Route::post('/{id}/release', [DocumentController::class, 'release'])->middleware('permission:release-documents');
+        Route::post('/{id}/cancel', [DocumentController::class, 'cancel'])->middleware('permission:edit-documents');
     });
 
     // File Upload
-    Route::post('/upload', [FileUploadController::class, 'upload']);
+    Route::post('/upload', [FileUploadController::class, 'upload'])->middleware('permission:create-documents');
 
     // Agendas Management
-    Route::prefix('agendas')->group(function () {
+    Route::prefix('agendas')->middleware('permission:view-projects')->group(function () {
         Route::get('/statistics', [AgendaController::class, 'statistics']);
         Route::get('/calendar', [AgendaController::class, 'calendar']);
         Route::get('/date-range', [AgendaController::class, 'dateRange']);
         Route::get('/search', [AgendaController::class, 'search']);
-        Route::get('/export', [AgendaController::class, 'export']);
-        Route::patch('/{agenda}/status', [AgendaController::class, 'updateStatus']);
-        Route::post('/{agenda}/duplicate', [AgendaController::class, 'duplicate']);
+        Route::get('/export', [AgendaController::class, 'export'])->middleware('permission:view-reports');
+        Route::patch('/{agenda}/status', [AgendaController::class, 'updateStatus'])->middleware('permission:edit-projects');
+        Route::post('/{agenda}/duplicate', [AgendaController::class, 'duplicate'])->middleware('permission:create-projects');
     });
-    Route::apiResource('agendas', AgendaController::class);
+    Route::apiResource('agendas', AgendaController::class)->middleware('permission:view-projects');
 
     // Permission Management
     Route::prefix('permissions')->name('permissions.')->middleware('permission:manage-roles')->group(function () {

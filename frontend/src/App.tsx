@@ -31,7 +31,6 @@ import DataImport from "./components/import/DataImport";
 import ReportsPage from "./components/reports/ReportsPage";
 import SettingsPage from "./components/_settings/SettingsPage";
 import LoginPage from "./components/_auth/LoginPage";
-import SignupPage from "./components/_auth/SignupPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import './i18';
@@ -48,8 +47,6 @@ import AgendaDetailPage from "./components/agenda/AgendaDetailPage";
 import UserManagement from "./components/userManagement/UserManagement";
 import EditUserPage from "./components/userManagement/EditUserPage";
 import ViewUserPage from "./components/userManagement/ViewUserPage";
-import PermissionManagementPage from "./components/permissions/PermissionManagementPage";
-import PermissionGuard from "./components/permissions/PermissionGuard";
 import PermissionManagementPage from "./components/permissions/PermissionManagementPage";
 import PermissionGuard from "./components/permissions/PermissionGuard";
 
@@ -153,19 +150,35 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <HouseholdManagement />,
+            element: (
+              <PermissionGuard permission="view-households">
+                <HouseholdManagement />
+              </PermissionGuard>
+            ),
           },
           {
             path: "add",
-            element: <AddNewHousehold />,
+            element: (
+              <PermissionGuard permission="create-households">
+                <AddNewHousehold />
+              </PermissionGuard>
+            ),
           },
           {
             path: "edit/:id",
-            element: <EditHousehold />,
+            element: (
+              <PermissionGuard permission="edit-households">
+                <EditHousehold />
+              </PermissionGuard>
+            ),
           },
           {
             path: "view/:id",
-            element: <ViewHousehold />,
+            element: (
+              <PermissionGuard permission="view-households">
+                <ViewHousehold />
+              </PermissionGuard>
+            ),
           },
         ],
       },
@@ -174,44 +187,80 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <ActivityLogManagement />,
+            element: (
+              <PermissionGuard permission="view-reports">
+                <ActivityLogManagement />
+              </PermissionGuard>
+            ),
           },
           {
             path: "add",
-            element: <AddNewHousehold />,
+            element: (
+              <PermissionGuard permission="create-households">
+                <AddNewHousehold />
+              </PermissionGuard>
+            ),
           },
         ],
       },
       {
         path: "import",
-        element: <DataImport />,
+        element: (
+          <PermissionGuard permission="manage-users">
+            <DataImport />
+          </PermissionGuard>
+        ),
       },
       {
         path: "process-document",
         children: [
           {
             index: true,
-            element: <ProcessDocumentWrapper />,
+            element: (
+              <PermissionGuard permission="view-documents">
+                <ProcessDocumentWrapper />
+              </PermissionGuard>
+            ),
           },
           {
             path: "document-queue",
-            element: <DocumentQueueWrapper />,
+            element: (
+              <PermissionGuard permission="view-documents">
+                <DocumentQueueWrapper />
+              </PermissionGuard>
+            ),
           },
           {
             path: "barangay-clearance",
-            element: <BarangayClearanceFormWrapper />,
+            element: (
+              <PermissionGuard permission="create-documents">
+                <BarangayClearanceFormWrapper />
+              </PermissionGuard>
+            ),
           },
           {
             path: "business-permit",
-            element: <BusinessPermitFormWrapper />,
+            element: (
+              <PermissionGuard permission="create-documents">
+                <BusinessPermitFormWrapper />
+              </PermissionGuard>
+            ),
           },
           {
             path: "certificate-indigency",
-            element: <CertificateOfIndigencyFormWrapper />,
+            element: (
+              <PermissionGuard permission="create-documents">
+                <CertificateOfIndigencyFormWrapper />
+              </PermissionGuard>
+            ),
           },
           {
             path: "certificate-residency",
-            element: <CertificateOfResidencyFormWrapper />,
+            element: (
+              <PermissionGuard permission="create-documents">
+                <CertificateOfResidencyFormWrapper />
+              </PermissionGuard>
+            ),
           },
 
         ],
@@ -221,23 +270,43 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <BarangayOfficialsPage />,
+            element: (
+              <PermissionGuard permission="view-officials">
+                <BarangayOfficialsPage />
+              </PermissionGuard>
+            ),
           },
           {
             path: "add",
-            element: <AddBarangayOfficial />,
+            element: (
+              <PermissionGuard permission="create-officials">
+                <AddBarangayOfficial />
+              </PermissionGuard>
+            ),
           },
           {
             path: "edit",
-            element: <ListBarangayOfficalsToEdit />,
+            element: (
+              <PermissionGuard permission="edit-officials">
+                <ListBarangayOfficalsToEdit />
+              </PermissionGuard>
+            ),
           },
           {
             path: "edit/:id",
-            element: <EditBarangayOfficial />,
+            element: (
+              <PermissionGuard permission="edit-officials">
+                <EditBarangayOfficial />
+              </PermissionGuard>
+            ),
           },
           {
             path: "view/:id",
-            element: <ViewBarangayOfficial />
+            element: (
+              <PermissionGuard permission="view-officials">
+                <ViewBarangayOfficial />
+              </PermissionGuard>
+            ),
           }
         ]
       },
@@ -288,7 +357,11 @@ const router = createBrowserRouter([
       },
       {
         path: "settings",
-         element: <SettingsPage />,
+        element: (
+          <PermissionGuard permission="system-settings">
+            <SettingsPage />
+          </PermissionGuard>
+        ),
       },
       {
         path: "permissions",
@@ -300,34 +373,42 @@ const router = createBrowserRouter([
       },
       {
         path: "reports",
-        element: <ReportsPage />,
+        element: (
+          <PermissionGuard permission="view-reports">
+            <ReportsPage />
+          </PermissionGuard>
+        ),
       },
       {
         path: "help-desk",
         children: [
           {
             index: true,
-            element: <HelpDeskPage />,
+            element: <HelpDeskPage />, // Keep public for citizen access
           },
           {
             path: "management",
-            element: <HelpDeskManagementPage />,
+            element: (
+              <PermissionGuard permission="view-complaints">
+                <HelpDeskManagementPage />
+              </PermissionGuard>
+            ),
           },
           {
             path: "schedule-appointment",
-            element: <AppointmentsPage />,
+            element: <AppointmentsPage />, // Keep public for citizen access
           },
           {
             path: "file-blotter",
-            element: <BlotterPage />,
+            element: <BlotterPage />, // Keep public for citizen access
           },
           {
             path: "file-complaint",
-            element: <ComplaintsPage />,
+            element: <ComplaintsPage />, // Keep public for citizen access
           },
           {
             path: "share-suggestions",
-            element: <SuggestionsPage />,
+            element: <SuggestionsPage />, // Keep public for citizen access
           },
         ],
       },
@@ -336,21 +417,21 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <AgendaManagementPage />,
+            element: (
+              <PermissionGuard permission="view-projects">
+                <AgendaManagementPage />
+              </PermissionGuard>
+            ),
           },
           {
             path: ":id",
-            element: <AgendaDetailPage />,
+            element: (
+              <PermissionGuard permission="view-projects">
+                <AgendaDetailPage />
+              </PermissionGuard>
+            ),
           },
         ],
-      },
-      {
-        path: "permissions",
-        element: (
-          <PermissionGuard roles={['SUPER_ADMIN', 'ADMIN']}>
-            <PermissionManagementPage />
-          </PermissionGuard>
-        ),
       },
       {
         path: "*",

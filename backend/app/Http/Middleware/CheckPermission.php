@@ -47,9 +47,9 @@ class CheckPermission
             'ADMIN' => [
                 'view-residents', 'create-residents', 'edit-residents', 'delete-residents', 'export-residents',
                 'view-households', 'create-households', 'edit-households', 'delete-households',
-                'view-documents', 'create-documents', 'process-documents', 'approve-documents', 'release-documents', 'delete-documents',
+                'view-documents', 'create-documents', 'edit-documents', 'process-documents', 'approve-documents', 'release-documents', 'delete-documents',
                 'view-projects', 'create-projects', 'edit-projects', 'delete-projects', 'manage-project-team',
-                'view-complaints', 'create-complaints', 'assign-complaints', 'resolve-complaints',
+                'view-complaints', 'create-complaints', 'assign-complaints', 'resolve-complaints', 'delete-complaints',
                 'view-suggestions', 'create-suggestions', 'review-suggestions',
                 'view-blotter-cases', 'create-blotter-cases', 'investigate-blotter-cases', 'mediate-blotter-cases',
                 'view-appointments', 'create-appointments', 'manage-appointments',
@@ -60,7 +60,7 @@ class CheckPermission
             'BARANGAY_CAPTAIN' => [
                 'view-residents', 'create-residents', 'edit-residents', 'export-residents',
                 'view-households', 'create-households', 'edit-households',
-                'view-documents', 'create-documents', 'process-documents', 'approve-documents', 'release-documents',
+                'view-documents', 'create-documents', 'edit-documents', 'process-documents', 'approve-documents', 'release-documents',
                 'view-projects', 'create-projects', 'edit-projects', 'manage-project-team',
                 'view-complaints', 'assign-complaints', 'resolve-complaints',
                 'view-suggestions', 'review-suggestions',
@@ -72,20 +72,20 @@ class CheckPermission
             'BARANGAY_SECRETARY' => [
                 'view-residents', 'create-residents', 'edit-residents',
                 'view-households', 'create-households', 'edit-households',
-                'view-documents', 'create-documents', 'process-documents', 'release-documents',
+                'view-documents', 'create-documents', 'edit-documents', 'process-documents', 'release-documents',
                 'view-appointments', 'create-appointments', 'manage-appointments',
                 'view-complaints', 'create-complaints',
                 'view-reports'
             ],
             'BARANGAY_TREASURER' => [
                 'view-residents', 'view-households',
-                'view-documents', 'create-documents', 'process-documents',
+                'view-documents', 'create-documents', 'edit-documents', 'process-documents',
                 'view-appointments', 'create-appointments',
                 'view-reports', 'generate-reports'
             ],
             'BARANGAY_COUNCILOR' => [
                 'view-residents', 'view-households',
-                'view-documents', 'create-documents',
+                'view-documents', 'create-documents', 'edit-documents',
                 'view-projects', 'view-complaints',
                 'view-suggestions', 'review-suggestions',
                 'view-blotter-cases', 'mediate-blotter-cases',
@@ -95,20 +95,20 @@ class CheckPermission
             'BARANGAY_CLERK' => [
                 'view-residents', 'create-residents', 'edit-residents',
                 'view-households', 'create-households', 'edit-households',
-                'view-documents', 'create-documents', 'process-documents',
+                'view-documents', 'create-documents', 'edit-documents', 'process-documents',
                 'view-appointments', 'create-appointments',
                 'view-complaints', 'create-complaints'
             ],
             'HEALTH_WORKER' => [
                 'view-residents', 'edit-residents',
                 'view-households',
-                'view-documents', 'create-documents',
+                'view-documents', 'create-documents', 'edit-documents',
                 'view-appointments', 'create-appointments'
             ],
             'SOCIAL_WORKER' => [
                 'view-residents', 'edit-residents',
                 'view-households',
-                'view-documents', 'create-documents',
+                'view-documents', 'create-documents', 'edit-documents',
                 'view-appointments', 'create-appointments',
                 'view-complaints', 'create-complaints'
             ],
@@ -120,7 +120,7 @@ class CheckPermission
             'DATA_ENCODER' => [
                 'view-residents', 'create-residents', 'edit-residents',
                 'view-households', 'create-households', 'edit-households',
-                'view-documents', 'create-documents'
+                'view-documents', 'create-documents', 'edit-documents'
             ],
             'VIEWER' => [
                 'view-residents', 'view-households', 'view-documents',

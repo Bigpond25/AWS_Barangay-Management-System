@@ -5,19 +5,17 @@
 
 import React, { useState } from 'react';
 import { Calendar, Clock, Users, Plus, Search, Filter, Eye, Edit, Trash2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 import Breadcrumb from '@/components/_global/Breadcrumb';
 import { useAgendas, useDeleteAgenda } from '@/services/agenda/useAgenda';
 import { useNotifications } from '@/components/_global/NotificationSystem';
 import { AgendaCalendar } from './AgendaCalendar';
-import type { Agenda } from '@/services/agenda/agenda.type';
+import type { Agenda } from '@/services/agenda/agenda.types';
 
 type AgendaView = 'calendar' | 'list' | 'upcoming';
 
 const AgendaManagementPage: React.FC = () => {
-  const { t } = useTranslation();
-  const { addNotification } = useNotifications();
+  const { showNotification } = useNotifications();
   const [currentView, setCurrentView] = useState<AgendaView>('list');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -26,29 +24,27 @@ const AgendaManagementPage: React.FC = () => {
 
   // Fetch agendas data
   const { 
-    data: agendas = [], 
+    data: agendasResponse, 
     isLoading: agendasLoading,
     refetch: refetchAgendas 
   } = useAgendas();
 
   const deleteAgendaMutation = useDeleteAgenda();
 
-  const breadcrumbItems = [
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Agenda Management', href: '/agenda-management' }
-  ];
+  // Extract agenda array from paginated response
+  const agendas = Array.isArray(agendasResponse) ? agendasResponse : agendasResponse?.data || [];
 
   // Filter agendas based on search and status
-  const filteredAgendas = agendas.filter(agenda => {
+  const filteredAgendas = agendas.filter((agenda: Agenda) => {
     const matchesSearch = agenda.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         agenda.description?.toLowerCase().includes(searchTerm.toLowerCase());
+                         (agenda.description && agenda.description.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = statusFilter === 'ALL' || agenda.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   // Get upcoming agendas (next 7 days)
-  const upcomingAgendas = agendas.filter(agenda => {
-    const agendaDate = new Date(agenda.date_time);
+  const upcomingAgendas = agendas.filter((agenda: Agenda) => {
+    const agendaDate = new Date(agenda.date);
     const now = new Date();
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     return agendaDate >= now && agendaDate <= nextWeek;
@@ -57,7 +53,7 @@ const AgendaManagementPage: React.FC = () => {
   const handleDeleteAgenda = async (agenda: Agenda) => {
     try {
       await deleteAgendaMutation.mutateAsync(agenda.id);
-      addNotification({
+      showNotification({
         type: 'success',
         title: 'Success',
         message: `Agenda "${agenda.title}" has been deleted successfully.`
@@ -65,8 +61,8 @@ const AgendaManagementPage: React.FC = () => {
       setShowDeleteModal(false);
       setSelectedAgenda(null);
       refetchAgendas();
-    } catch (error) {
-      addNotification({
+    } catch {
+      showNotification({
         type: 'error',
         title: 'Error',
         message: 'Failed to delete agenda. Please try again.'
@@ -74,15 +70,15 @@ const AgendaManagementPage: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (date: string, time?: string) => {
+    const dateObj = new Date(date);
+    const dateStr = dateObj.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
+    return time ? `${dateStr} at ${time}` : dateStr;
   };
 
   const getStatusColor = (status: string) => {
@@ -97,8 +93,8 @@ const AgendaManagementPage: React.FC = () => {
 
   const renderAgendaStats = () => {
     const totalAgendas = agendas.length;
-    const scheduledCount = agendas.filter(a => a.status === 'SCHEDULED').length;
-    const completedCount = agendas.filter(a => a.status === 'COMPLETED').length;
+    const scheduledCount = agendas.filter((a: Agenda) => a.status === 'SCHEDULED').length;
+    const completedCount = agendas.filter((a: Agenda) => a.status === 'COMPLETED').length;
     const upcomingCount = upcomingAgendas.length;
 
     return (
@@ -243,7 +239,7 @@ const AgendaManagementPage: React.FC = () => {
                 <div className="flex items-center gap-6 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    <span>{formatDate(agenda.date_time)}</span>
+                    <span>{formatDate(agenda.date, agenda.time)}</span>
                   </div>
                   {agenda.location && (
                     <div className="flex items-center gap-1">
@@ -335,7 +331,7 @@ const AgendaManagementPage: React.FC = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-4">
-            <Breadcrumb items={breadcrumbItems} />
+            <Breadcrumb />
             <div className="mt-4 flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
