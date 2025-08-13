@@ -49,13 +49,17 @@ class CheckPermission
                 'view-households', 'create-households', 'edit-households', 'delete-households',
                 'view-documents', 'create-documents', 'edit-documents', 'process-documents', 'approve-documents', 'release-documents', 'delete-documents',
                 'view-projects', 'create-projects', 'edit-projects', 'delete-projects', 'manage-project-team',
-                'view-complaints', 'create-complaints', 'assign-complaints', 'resolve-complaints', 'delete-complaints',
-                'view-suggestions', 'create-suggestions', 'review-suggestions',
-                'view-blotter-cases', 'create-blotter-cases', 'investigate-blotter-cases', 'mediate-blotter-cases',
-                'view-appointments', 'create-appointments', 'manage-appointments',
-                'view-officials', 'create-officials', 'edit-officials', 'delete-officials',
+                'view-complaints', 'create-complaints', 'edit-complaints', 'delete-complaints', 'assign-complaints', 'resolve-complaints',
+                'view-suggestions', 'create-suggestions', 'edit-suggestions', 'delete-suggestions', 'review-suggestions',
+                'view-blotters', 'create-blotters', 'edit-blotters', 'delete-blotters', 'investigate-blotter-cases', 'mediate-blotter-cases',
+                'view-appointments', 'create-appointments', 'edit-appointments', 'delete-appointments', 'manage-appointments',
+                'view-barangay-officials', 'create-barangay-officials', 'edit-barangay-officials', 'delete-barangay-officials',
+                'view-settings', 'edit-settings', 'system-settings',
                 'view-reports', 'generate-reports', 'view-analytics',
-                'manage-users', 'manage-roles', 'system-settings'
+                'manage-users', 'create-users', 'edit-users', 'delete-users',
+                'manage-roles', 'view-activity-logs',
+                'import-data', 'export-data',
+                'manage-consents', 'view-user-consents', 'view-all-consents', 'export-consents'
             ],
             'BARANGAY_CAPTAIN' => [
                 'view-residents', 'create-residents', 'edit-residents', 'export-residents',

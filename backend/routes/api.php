@@ -5,7 +5,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ResidentController;
 use App\Http\Controllers\Api\HouseholdController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\Use    // Dashboard
+    Route::prefix('dashboard')->middleware('permission:view-dashboard')->group(function () {
+        Route::get('/statistics', [DashboardController::class, 'statistics']);
+        Route::get('/demographics', [DashboardController::class, 'demographics']);
+        Route::get('/notifications', [DashboardController::class, 'notifications']);
+        Route::get('/activities', [DashboardController::class, 'activities']);
+        Route::get('/barangay-officials', [DashboardController::class, 'barangayOfficials']);
+    });ler;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ComplaintController;
@@ -21,6 +28,7 @@ use App\Http\Controllers\Api\ImportController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\ConsentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,13 +95,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('import')->middleware('permission:manage-users')->group(function () {
         Route::post('/residents', [ImportController::class, 'importResidents'])->middleware('permission:create-residents');
         Route::post('/households', [ImportController::class, 'importHouseholds'])->middleware('permission:create-households');
-        Route::get('/history', [ImportController::class, 'getImportHistory']);
+        Route::get('/history', [ImportController::class, 'getImportHistory'])->middleware('permission:view-reports');
     });
 
     // Residents Management
     Route::prefix('residents')->name('residents.')->middleware('permission:view-residents')->group(function () {
         // Statistics endpoints
-        Route::get('/statistics', [ResidentController::class, 'statistics'])->name('statistics');
+        Route::get('/statistics', [ResidentController::class, 'statistics'])->middleware('permission:view-reports')->name('statistics');
         Route::get('/age-groups', [ResidentController::class, 'ageGroups'])->name('age-groups');
 
         // Special list endpoints (matching frontend service)
@@ -126,7 +134,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Household Management
     Route::prefix('households')->name('households.')->middleware('permission:view-households')->group(function () {
-        Route::get('/statistics', [HouseholdController::class, 'statistics'])->name('statistics');
+        Route::get('/statistics', [HouseholdController::class, 'statistics'])->middleware('permission:view-reports')->name('statistics');
 
         // Special list endpoints (matching frontend service)
         Route::get('/four-ps', [HouseholdController::class, 'fourPs'])->name('four-ps');
@@ -168,7 +176,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         // Password Management
-        Route::prefix('{id}')->group(function () {
+        Route::prefix('{id}')->middleware('permission:manage-users')->group(function () {
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('change-password');
             Route::post('/reset-password', [UserController::class, 'resetPassword'])->name('reset-password');
         });
@@ -177,14 +185,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}/status', [UserController::class, 'changeStatus'])->name('change-status');
 
         // Verification & Communication
-        Route::prefix('{id}')->group(function () {
+        Route::prefix('{id}')->middleware('permission:manage-users')->group(function () {
             Route::post('/verify', [UserController::class, 'verify'])->name('verify');
             Route::post('/resend-verification', [UserController::class, 'resendVerification'])->name('resend-verification');
             Route::post('/send-credentials', [UserController::class, 'sendCredentials'])->name('send-credentials');
         });
 
         // Validation
-        Route::prefix('check')->name('check.')->group(function () {
+        Route::prefix('check')->name('check.')->middleware('permission:create-users')->group(function () {
             Route::get('/username', [UserController::class, 'checkUsername'])->name('username');
             Route::get('/email', [UserController::class, 'checkEmail'])->name('email');
         });
@@ -196,9 +204,9 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         // Security & Monitoring
-        Route::prefix('{id}')->group(function () {
+        Route::prefix('{id}')->middleware('permission:view-users')->group(function () {
             Route::get('/activity', [UserController::class, 'activity'])->name('activity');
-            Route::prefix('sessions')->name('sessions.')->group(function () {
+            Route::prefix('sessions')->name('sessions.')->middleware('permission:manage-users')->group(function () {
                 Route::get('/', [UserController::class, 'sessions'])->name('index');
                 Route::delete('/{sessionId}', [UserController::class, 'terminateSession'])->name('terminate');
                 Route::delete('/', [UserController::class, 'terminateAllSessions'])->name('terminate-all');
@@ -206,17 +214,17 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         // Bulk & Import/Export
-        Route::post('/bulk-action', [UserController::class, 'bulkAction'])->name('bulk-action');
+        Route::post('/bulk-action', [UserController::class, 'bulkAction'])->middleware('permission:manage-users')->name('bulk-action');
         Route::get('/export', [UserController::class, 'export'])->name('export');
         Route::post('/import', [UserController::class, 'import'])->name('import');
 
         // Statistics
-        Route::get('/statistics', [UserController::class, 'statistics'])->name('statistics');
+        Route::get('/statistics', [UserController::class, 'statistics'])->middleware('permission:view-reports')->name('statistics');
     });
 
     // Barangay Officials Management
     Route::prefix('barangay-officials')->middleware('permission:view-officials')->group(function () {
-        Route::get('/statistics', [BarangayOfficialController::class, 'statistics']);
+        Route::get('/statistics', [BarangayOfficialController::class, 'statistics'])->middleware('permission:view-reports');
         Route::get('/active', [BarangayOfficialController::class, 'getActiveOfficials']);
         Route::get('/position/{position}', [BarangayOfficialController::class, 'getByPosition']);
         Route::get('/committee/{committee}', [BarangayOfficialController::class, 'getByCommittee']);
@@ -231,7 +239,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Help Desk Management (Administrative)
     Route::prefix('help-desk')->middleware('permission:view-complaints')->group(function () {
         Route::get('/', [TicketController::class, 'index']);
-        Route::get('/statistics', [TicketController::class, 'statistics']);
+        Route::get('/statistics', [TicketController::class, 'statistics'])->middleware('permission:view-reports');
         Route::delete('/{id}', [TicketController::class, 'destroy'])->middleware('permission:delete-complaints');
     });
 
@@ -248,7 +256,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Dashboard
-    Route::prefix('dashboard')->group(function () {
+    Route::prefix('dashboard')->middleware('permission:view-dashboard')->group(function () {
         Route::get('/statistics', [DashboardController::class, 'statistics']);
         Route::get('/demographics', [DashboardController::class, 'demographics']);
         Route::get('/notifications', [DashboardController::class, 'notifications']);
@@ -315,5 +323,26 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/roles', [PermissionController::class, 'getRolePermissions'])->name('roles');
         Route::put('/roles/{role}', [PermissionController::class, 'updateRolePermissions'])->name('update-role');
         Route::get('/users/{userId}', [PermissionController::class, 'getUserPermissions'])->name('user');
+    });
+
+    // Data Consent Management
+    Route::prefix('consents')->name('consents.')->group(function () {
+        // Public consent routes (for consent recording)
+        Route::post('/', [ConsentController::class, 'recordConsent'])->name('record');
+        Route::get('/types', [ConsentController::class, 'getConsentTypes'])->name('types');
+        
+        // Protected consent routes
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/check', [ConsentController::class, 'checkConsent'])->name('check');
+            Route::put('/{consentId}/withdraw', [ConsentController::class, 'withdrawConsent'])->name('withdraw');
+            Route::get('/user/{userId?}', [ConsentController::class, 'getUserConsents'])->name('user');
+            Route::get('/active/{userId?}', [ConsentController::class, 'getActiveConsents'])->name('active');
+            
+            // Admin only routes
+            Route::middleware('permission:manage-consents')->group(function () {
+                Route::get('/all', [ConsentController::class, 'getAllConsents'])->name('all');
+                Route::get('/export', [ConsentController::class, 'exportConsents'])->name('export');
+            });
+        });
     });
 });

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Schemas\ResidentSchema;
+use App\Traits\HasEncryptedFields;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +18,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class Resident extends Model implements Auditable
 {
-    use HasFactory, HasUuids, SoftDeletes, \OwenIt\Auditing\Auditable;
+    use HasFactory, HasUuids, SoftDeletes, HasEncryptedFields, LogsActivity, \OwenIt\Auditing\Auditable;
 
     protected $auditModel = ActivityLog::class;
     protected $keyType = 'string';
@@ -81,6 +83,28 @@ class Resident extends Model implements Auditable
         
         parent::__construct($attributes);
     }
+
+    /**
+     * Define encrypted fields for HasEncryptedFields trait
+     */
+    protected $encrypted = [
+        'first_name',
+        'last_name',
+        'mobile_number',
+        'email_address',
+        'complete_address',
+        'current_address'
+    ];
+
+    /**
+     * Define fields that should have search hashes
+     */
+    protected $hashed = [
+        'first_name',
+        'last_name',
+        'mobile_number',
+        'email_address'
+    ];
 
     /**
      * Boot the model
