@@ -4,15 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ResidentController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\HouseholdController;
-use App\Http\Controllers\Api\Use    // Dashboard
-    Route::prefix('dashboard')->middleware('permission:view-dashboard')->group(function () {
-        Route::get('/statistics', [DashboardController::class, 'statistics']);
-        Route::get('/demographics', [DashboardController::class, 'demographics']);
-        Route::get('/notifications', [DashboardController::class, 'notifications']);
-        Route::get('/activities', [DashboardController::class, 'activities']);
-        Route::get('/barangay-officials', [DashboardController::class, 'barangayOfficials']);
-    });ler;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ComplaintController;
