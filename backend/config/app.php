@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Storage Provider
+    |--------------------------------------------------------------------------
+    |
+    | This value determines which storage provider to use for file uploads.
+    | Options: 'local', 'supabase'
+    |
+    */
+
+    'storage_provider' => env('STORAGE_PROVIDER', 'supabase'),
+
 ];

@@ -265,7 +265,7 @@ const CertificateOfIndigencyPrint: React.FC = () => {
                 <p className="text-base leading-relaxed text-justify mb-6">
                   <span className="font-semibold">Additional Information:</span>
                   {indigencyReason && <span> Reason: {indigencyReason}.</span>}
-                  {monthlyIncome !== undefined && <span> Monthly Income: ₱{monthlyIncome.toLocaleString()}.</span>}
+                  {monthlyIncome !== undefined && monthlyIncome !== null && <span> Monthly Income: ₱{monthlyIncome.toLocaleString()}.</span>}
                   {familySize !== undefined && <span> Family Size: {familySize} members.</span>}
                 </p>
               )}
@@ -284,7 +284,7 @@ const CertificateOfIndigencyPrint: React.FC = () => {
             </div>
 
             <CertificateFooter 
-              certifyingOfficial={document.certifying_official}
+              certifyingOfficial={document.certifying_official || undefined}
               dateIssued={dateIssued}
               orNumber={orNumber}
               amountPaid={document.processing_fee}

@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ConsentController;
+use App\Http\Controllers\Api\StorageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +90,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/residents', [ImportController::class, 'importResidents'])->middleware('permission:create-residents');
         Route::post('/households', [ImportController::class, 'importHouseholds'])->middleware('permission:create-households');
         Route::get('/history', [ImportController::class, 'getImportHistory'])->middleware('permission:view-reports');
+    });
+
+    // Storage functionality
+    Route::prefix('storage')->group(function () {
+        Route::post('/upload', [StorageController::class, 'upload']);
+        Route::delete('/delete', [StorageController::class, 'delete']);
+        Route::get('/url', [StorageController::class, 'getUrl']);
+        Route::get('/metadata', [StorageController::class, 'getMetadata']);
+        Route::get('/test-connection', [StorageController::class, 'testConnection']);
+        Route::post('/signed-upload-url', [StorageController::class, 'getSignedUploadUrl']);
     });
 
     // Residents Management

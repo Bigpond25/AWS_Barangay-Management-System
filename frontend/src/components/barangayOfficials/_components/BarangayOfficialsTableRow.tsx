@@ -51,8 +51,8 @@ export const BarangayOfficialsTableRow: React.FC<BarangayOfficialsTableRowProps>
                 {official.term_start ? new Date(official.term_start).toLocaleDateString() : 'N/A'} to {official.term_end ? new Date(official.term_end).toLocaleDateString() : 'N/A'}
             </td>
             <td className="px-6 py-4 whitespace-nowrap">
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeColor(official?.status)}`}>
-                    {official?.status}
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeColor(official?.status || 'INACTIVE')}`}>
+                    {official?.status || 'INACTIVE'}
                 </span>
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

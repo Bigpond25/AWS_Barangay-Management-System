@@ -5,6 +5,7 @@ import { residentsService } from '../../../services/residents/residents.service'
 import { householdsService } from '../../../services/households/households.service';
 import type { Resident } from '../../../services/residents/residents.types';
 import type { HouseholdMember, RelationshipType, Household } from '../../../services/households/households.types';
+import { getResidentAge } from '@/utils/ageUtils';
 
 interface HouseholdMembersProps {
   householdId: string;
@@ -197,7 +198,7 @@ const HouseholdMembers: React.FC<HouseholdMembersProps> = ({
              {householdHead?.first_name} {householdHead?.last_name}
            </p>
            <p className="text-sm text-blue-600">
-             {t('households.form.members.age')}: {householdHead?.age} | {t('households.form.members.gender')}: {householdHead?.gender}
+             {t('households.form.members.age')}: {householdHead ? getResidentAge(householdHead) : 'N/A'} | {t('households.form.members.gender')}: {householdHead?.gender}
            </p>
          </div>
          <span className="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -251,7 +252,7 @@ const HouseholdMembers: React.FC<HouseholdMembersProps> = ({
                    >
                      <div>
                        <p className="font-medium">{resident.first_name} {resident.last_name}</p>
-                       <p className="text-sm text-gray-600">Age: {resident.age} | Gender: {resident.gender}</p>
+                       <p className="text-sm text-gray-600">Age: {getResidentAge(resident)} | Gender: {resident.gender}</p>
                      </div>
                    </button>
                  ))}

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('street_sitio');
             $table->string('barangay');
             $table->text('complete_address');
+            $table->string('complete_address_hash')->nullable()->index();
             
             // Economic Information
             $table->enum('monthly_income', [

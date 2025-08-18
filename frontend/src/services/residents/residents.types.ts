@@ -118,7 +118,6 @@ export const ResidentFormDataSchema = z.object({
       },
       { message: 'residents.form.error.birthDateFuture' }
     ),
-  age: z.number().positive('residents.form.error.agePositive').optional(),
   birth_place: z.string().min(1, 'residents.form.error.birthPlaceRequired'),
   gender: GenderSchema,
 
@@ -226,6 +225,9 @@ export const ResidentSchema = ResidentFormDataSchema.extend({
   status: ResidentStatusSchema,
   created_at: z.string(),
   updated_at: z.string(),
+  
+  // Computed fields
+  age: z.number().optional(), // Computed from birth_date on backend
   
   // Household relationships
   households: z.array(HouseholdRelationshipSchema).optional(),
@@ -337,7 +339,6 @@ export const transformResidentToFormData = (resident: Resident | null): Resident
       middle_name: '',
       suffix: '',
       birth_date: '',
-      age: 0,
       birth_place: '',
       gender: 'MALE',
       civil_status: 'SINGLE',
@@ -389,7 +390,6 @@ export const transformResidentToFormData = (resident: Resident | null): Resident
     middle_name: resident.middle_name || '',
     suffix: resident.suffix || '',
     birth_date: resident.birth_date ? new Date(resident.birth_date).toISOString().slice(0, 10) : '',
-    age: resident.age || 0,
     birth_place: resident.birth_place,
     gender: resident.gender as Gender || 'MALE',
     civil_status: resident.civil_status as CivilStatus || 'SINGLE',

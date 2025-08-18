@@ -50,6 +50,7 @@ class Resident extends Model implements Auditable
     protected $appends = [
         'full_name',
         'initials', 
+        'age',
         'calculated_age',
         'formatted_birth_date',
         'complete_address_display',
@@ -119,14 +120,12 @@ class Resident extends Model implements Auditable
                 $model->created_by = Auth::id();
             }
             
-            // Auto-calculate age when creating
+            // Auto-set senior citizen status based on calculated age
             if ($model->birth_date) {
-                $model->age = Carbon::parse($model->birth_date)->age;
-            }
-            
-            // Auto-set senior citizen status if age >= 60
-            if ($model->age >= 60) {
-                $model->senior_citizen = true;
+                $calculatedAge = Carbon::parse($model->birth_date)->age;
+                if ($calculatedAge >= 60) {
+                    $model->senior_citizen = true;
+                }
             }
         });
 
@@ -135,12 +134,10 @@ class Resident extends Model implements Auditable
                 $model->updated_by = Auth::id();
             }
             
-            // Recalculate age if birth_date changed
+            // Update senior citizen status if birth_date changed
             if ($model->isDirty('birth_date') && $model->birth_date) {
-                $model->age = Carbon::parse($model->birth_date)->age;
-                
-                // Update senior citizen status
-                $model->senior_citizen = $model->age >= 60;
+                $calculatedAge = Carbon::parse($model->birth_date)->age;
+                $model->senior_citizen = $calculatedAge >= 60;
             }
         });
     }
@@ -176,6 +173,11 @@ class Resident extends Model implements Auditable
     public function getCalculatedAgeAttribute(): int
     {
         return $this->birth_date ? $this->birth_date->age : 0;
+    }
+
+    public function getAgeAttribute(): int
+    {
+        return $this->getCalculatedAgeAttribute();
     }
 
     public function getFormattedBirthDateAttribute(): string
@@ -441,22 +443,26 @@ class Resident extends Model implements Auditable
 
     public function scopeByAgeRange($query, $minAge, $maxAge)
     {
-        return $query->whereBetween('age', [$minAge, $maxAge]);
+        // Calculate age using birth_date for age range queries
+        return $query->whereRaw('EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN ? AND ?', [$minAge, $maxAge]);
     }
 
     public function scopeMinors($query)
     {
-        return $query->where('age', '<', 18);
+        // Calculate age using birth_date for minors (< 18 years old)
+        return $query->whereRaw('EXTRACT(YEAR FROM AGE(birth_date)) < 18');
     }
 
     public function scopeAdults($query)
     {
-        return $query->whereBetween('age', [18, 59]);
+        // Calculate age using birth_date for adults (18-59 years old)
+        return $query->whereRaw('EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN 18 AND 59');
     }
 
     public function scopeSeniors($query)
     {
-        return $query->where('age', '>=', 60);
+        // Use the senior_citizen boolean field or calculate from birth_date
+        return $query->where('senior_citizen', true);
     }
 
     public function scopeVoters($query)

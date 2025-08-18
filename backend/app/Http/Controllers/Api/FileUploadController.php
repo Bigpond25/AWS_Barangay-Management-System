@@ -4,13 +4,20 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Contracts\StorageInterface;
 
 class FileUploadController extends Controller
 {
+    private StorageInterface $storageService;
+
+    public function __construct(StorageInterface $storageService)
+    {
+        $this->storageService = $storageService;
+    }
+
     /**
      * Handle file upload for resident profile photos.
      *
@@ -26,26 +33,39 @@ class FileUploadController extends Controller
 
             $file = $request->file('file');
             
-            // Store the file and let Laravel generate the filename
-            $path = $file->store('public/residents/photos');
+            // Generate unique filename with extension
+            $extension = $file->getClientOriginalExtension();
+            $filename = Str::uuid() . '.' . $extension;
             
-            // Extract just the filename from the path
-            $filename = basename($path);
+            // Use Supabase storage service instead of local storage
+            $result = $this->storageService->uploadFile(
+                $file,
+                'residents-photos', // Use residents-photos bucket
+                'profile-photos/' . $filename, // Generate unique path with filename
+                true // Public access
+            );
 
-            // Double-check file existence
-            if (!Storage::exists($path)) {
-                Log::error('File not found after upload: ' . $path);
+            if ($result['success']) {
+                Log::info('Profile photo uploaded to Supabase', [
+                    'path' => $result['path'],
+                    'url' => $result['url']
+                ]);
+
                 return response()->json([
-                    'error' => 'File was not saved to storage.',
-                    'filename' => $filename,
+                    'success' => true,
+                    'filename' => basename($result['path']),
+                    'path' => $result['path'],
+                    'url' => $result['url'],
+                    'bucket' => $result['bucket']
+                ]);
+            } else {
+                Log::error('Supabase upload failed', ['error' => $result['error']]);
+                return response()->json([
+                    'error' => 'File upload failed',
+                    'message' => $result['error'],
                 ], 500);
             }
 
-            // Return only the filename - frontend will build the full URL
-            return response()->json([
-                'filename' => $filename,
-                'path' => $path,
-            ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'error' => 'Validation failed',

@@ -70,6 +70,13 @@ return new class extends Migration
             $table->text('remarks')->nullable();
             $table->string('certifying_official')->nullable();
             
+            // File Storage
+            $table->string('file_path', 500)->nullable();
+            $table->string('file_bucket', 100)->nullable();
+            $table->string('file_storage_path', 500)->nullable();
+            $table->string('file_storage_provider', 50)->default('local');
+            $table->boolean('file_migrated_to_supabase')->default(false);
+            
             // Staff Processing
             $table->uuid('processed_by')->nullable();
             $table->uuid('approved_by')->nullable();
@@ -96,6 +103,7 @@ return new class extends Migration
             $table->index('status');
             $table->index(['status', 'needed_date']);
             $table->index(['created_at']);
+            $table->index('file_migrated_to_supabase');
         });
     }
 

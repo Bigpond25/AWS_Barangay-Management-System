@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { Resident } from '@/services/residents/residents.types';
 import { formatters } from '@/utilities/formatters';
 import { InfoField } from '../InfoField';
+import { getResidentAge, formatAge } from '@/utils/ageUtils';
 
 interface BasicInfoSectionProps {
   resident: Resident;
@@ -58,7 +59,7 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ resident }) 
         />
         <InfoField
           label={t('residents.form.fields.age')}
-          value={resident.age ? `${resident.age} years old` : undefined}
+          value={formatAge(getResidentAge(resident))}
         />
         <InfoField
           label={t('residents.form.fields.birthPlace')}

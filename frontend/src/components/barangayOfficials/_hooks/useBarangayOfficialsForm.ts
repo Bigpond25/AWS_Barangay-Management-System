@@ -22,7 +22,7 @@ export function useBarangayOfficialsForm({ mode, barangayOfficialId, onSuccess }
     
     const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
 
-    const form = useForm<BarangayOfficialFormData>({
+    const form = useForm({
         resolver: zodResolver(BarangayOfficialFormDataSchema),
         defaultValues: {
             resident_search: '',
@@ -151,17 +151,20 @@ export function useBarangayOfficialsForm({ mode, barangayOfficialId, onSuccess }
     }, [mode, reset]);
 
     // Form submission
-    const handleSubmit = form.handleSubmit(async (data: BarangayOfficialFormData) => {
+    const handleSubmit = form.handleSubmit(async (data) => {
         console.log('Form handleSubmit called with data:', data);
         
+        // Cast to proper type through unknown since we know this is BarangayOfficialFormData
+        const typedData = data as unknown as BarangayOfficialFormData;
+        
         // Transform data to ensure null values become empty strings
-        const transformedData = {
-            ...data,
-            mobile_number: data.mobile_number || '',
-            email_address: data.email_address || '',
-            middle_name: data.middle_name || '',
-            suffix: data.suffix || '',
-            profile_photo_url: data.profile_photo_url || '',
+        const transformedData: BarangayOfficialFormData = {
+            ...typedData,
+            mobile_number: typedData.mobile_number || '',
+            email_address: typedData.email_address || '',
+            middle_name: typedData.middle_name || '',
+            suffix: typedData.suffix || '',
+            profile_photo_url: typedData.profile_photo_url || '',
         };
         
         try {

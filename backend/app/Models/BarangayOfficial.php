@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use OwenIt\Auditing\Contracts\Auditable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Schemas\BarangayOfficialSchema;
 
 class BarangayOfficial extends Model implements Auditable
 {
@@ -41,9 +42,9 @@ class BarangayOfficial extends Model implements Auditable
     {
         $user = Auth::user() ? Auth::user()->name : 'System';
         return match($event) {
-            'created' => "{$user} created a new appointment record",
-            'updated' => "{$user} updated appointment information", 
-            'deleted' => "{$user} deleted a appointment record",
+            'created' => "{$user} created a new barangay official record",
+            'updated' => "{$user} updated barangay official information", 
+            'deleted' => "{$user} deleted a barangay official record",
             default => "{$user} performed {$event} action"
         };
     }
@@ -51,56 +52,20 @@ class BarangayOfficial extends Model implements Auditable
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = [
-        'prefix',
-        'resident_id',
-        'position',
-        'committee_assignment',
-        'term_start',
-        'term_end',
-        'term_number',
-        'is_current_term',
-        'status'
-    ];
+    // Use schema for fillable fields
+    protected $fillable;
+    protected $casts;
 
-    protected $casts = [
-        'term_start' => 'date',
-        'term_end' => 'date',
-        'is_current_term' => 'boolean',
-        'term_number' => 'integer'
-    ];
-
-    // Define enum constants
-    const POSITIONS = [
-        'BARANGAY_CAPTAIN',
-        'BARANGAY_SECRETARY',
-        'BARANGAY_TREASURER',
-        'KAGAWAD',
-        'SK_CHAIRPERSON', 
-        'SK_KAGAWAD', 
-        'BARANGAY_CLERK', 
-        'BARANGAY_TANOD',
-    ];
-
-    const COMMITTEES = [
-        'Health',
-        'Education',
-        'Public Safety',
-        'Environment',
-        'Peace and Order',
-        'Sports and Recreation',
-        'Women and Family',
-        'Senior Citizens'
-    ];
-
-    const STATUSES = [
-        'ACTIVE',
-        'INACTIVE',
-        'SUSPENDED',
-        'RESIGNED',
-        'TERMINATED',
-        'DECEASED'
-    ];
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        
+        // Load fillable fields and casts from schema
+        $this->fillable = BarangayOfficialSchema::getFillableFields();
+        $this->casts = array_merge(BarangayOfficialSchema::getCasts(), [
+            'id' => 'string',
+        ]);
+    }
 
     // Relationships
     public function resident(): BelongsTo

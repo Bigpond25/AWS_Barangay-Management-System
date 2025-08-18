@@ -5,8 +5,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Resident } from '@/services/residents/residents.types';
-import { STORAGE_BASE_URL } from '@/services/__shared/_storage/storage.types';
+import { buildImageUrl, getPlaceholderImageUrl } from '@/utils/imageUtils';
 import { formatters } from '@/utilities/formatters';
+import { getResidentAge } from '@/utils/ageUtils';
 
 interface ResidentProfileHeaderProps {
   resident: Resident;
@@ -30,24 +31,8 @@ export const ResidentProfileHeader: React.FC<ResidentProfileHeaderProps> = ({
   };
 
   const getAgeDisplay = (): string => {
-    if (resident.age) {
-      return t('residents.view.profile.ageYears', { age: resident.age });
-    }
-    
-    // Calculate age from birth_date if age is not provided
-    if (resident.birth_date) {
-      const birthDate = new Date(resident.birth_date);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      return t('residents.view.profile.ageYears', { age });
-    }
-    
-    return t('common.notSpecified');
+    const age = getResidentAge(resident);
+    return t('residents.view.profile.ageYears', { age });
   };
 
   return (
@@ -59,14 +44,14 @@ export const ResidentProfileHeader: React.FC<ResidentProfileHeaderProps> = ({
       <div className="relative">
         <img
           src={resident.profile_photo_url
-            ? `${STORAGE_BASE_URL}/${resident.profile_photo_url}`
-            : "https://placehold.co/96x96/e5e7eb/6b7280?text=No+Photo"
+            ? buildImageUrl(resident.profile_photo_url)
+            : getPlaceholderImageUrl(96, 'No Photo')
           }
           alt={getFullName()}
           className="w-24 h-24 rounded-full object-cover border-4 border-smblue-100 shadow-sm"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = "https://placehold.co/96x96/e5e7eb/6b7280?text=No+Photo";
+            target.src = getPlaceholderImageUrl(96, 'No Photo');
           }}
         />
         

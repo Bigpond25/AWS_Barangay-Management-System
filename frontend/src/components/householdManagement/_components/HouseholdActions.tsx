@@ -37,7 +37,7 @@ const HouseholdActions: React.FC<HouseholdActionsProps> = ({
         <FiEdit className="w-4 h-4" />
       </button>
       <button 
-        onClick={() => onDelete(household.id, household.household_number)}
+        onClick={() => onDelete(household.id, household.household_number || '')}
         className="cursor-pointer no-underline text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
         title={isDeleting ? t('households.actions.deleting') : t('households.actions.delete')}
         disabled={isDeleting}

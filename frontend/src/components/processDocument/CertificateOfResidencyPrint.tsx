@@ -268,7 +268,7 @@ const CertificateOfResidencyPrint: React.FC = () => {
             </div>
 
             <CertificateFooter 
-              certifyingOfficial={document.certifying_official}
+              certifyingOfficial={document.certifying_official || undefined}
               dateIssued={dateIssued}
               orNumber={orNumber}
               amountPaid={document.processing_fee}

@@ -499,12 +499,12 @@ class ResidentController extends Controller
             // Base query for active residents
             $activeResidents = Resident::active();
             
-            // Age group calculations
+            // Age group calculations using birth_date
             $currentDate = now()->format('Y-m-d');
             $ageGroups = [
-                'children' => (clone $activeResidents)->where('age', '<', 18)->count(),
-                'adults' => (clone $activeResidents)->whereBetween('age', [18, 59])->count(),
-                'seniors' => (clone $activeResidents)->where('age', '>=', 60)->count(),
+                'children' => (clone $activeResidents)->whereRaw('EXTRACT(YEAR FROM AGE(birth_date)) < 18')->count(),
+                'adults' => (clone $activeResidents)->whereRaw('EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN 18 AND 59')->count(),
+                'seniors' => (clone $activeResidents)->where('senior_citizen', true)->count(),
             ];
 
             // Get employed residents count
@@ -601,7 +601,7 @@ class ResidentController extends Controller
                     '45-49' => Resident::active()->byAgeRange(45, 49)->count(),
                     '50-54' => Resident::active()->byAgeRange(50, 54)->count(),
                     '55-59' => Resident::active()->byAgeRange(55, 59)->count(),
-                    '60+' => Resident::active()->where('age', '>=', 60)->count(),
+                    '60+' => Resident::active()->where('senior_citizen', true)->count(),
                 ]
             ];
 
@@ -720,16 +720,42 @@ class ResidentController extends Controller
             ]);
 
             $photo = $request->file('photo');
-            $path = $photo->store('residents/photos', 'public');
             
-            $resident->update([
-                'profile_photo_url' => asset('storage/' . $path),
-                'updated_by' => auth('sanctum')->id()
-            ]);
+            // Use Supabase storage if configured, otherwise fall back to local storage
+            if (config('services.supabase.url') && app()->bound('App\Contracts\StorageInterface')) {
+                $storageService = app('App\Contracts\StorageInterface');
+                $result = $storageService->uploadFile(
+                    $photo,
+                    'residents-photos',
+                    "{$resident->id}/profile",
+                    true // public bucket
+                );
+                
+                if ($result['success']) {
+                    $resident->update([
+                        'profile_photo_url' => $result['path'], // Store relative path, not full URL
+                        'photo_bucket' => $result['bucket'],
+                        'photo_path' => $result['path'],
+                        'photo_storage_provider' => 'supabase',
+                        'photo_migrated_to_supabase' => true,
+                        'updated_by' => auth('sanctum')->id()
+                    ]);
+                } else {
+                    throw new \Exception($result['error'] ?? 'Upload failed');
+                }
+            } else {
+                // Fallback to local storage
+                $path = $photo->store('residents/photos', 'public');
+                $resident->update([
+                    'profile_photo_url' => $path, // Store relative path, not full URL
+                    'photo_storage_provider' => 'local',
+                    'updated_by' => auth('sanctum')->id()
+                ]);
+            }
 
             Log::info('Profile photo uploaded successfully', [
                 'resident_id' => $resident->id,
-                'photo_path' => $path
+                'storage_provider' => $resident->photo_storage_provider ?? 'local'
             ]);
 
             return response()->json([

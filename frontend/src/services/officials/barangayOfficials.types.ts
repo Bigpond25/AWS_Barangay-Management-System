@@ -49,54 +49,108 @@ export const PrefixSchema = z.enum([
 // Basically without the computed fields and search param for forms
 export const BarangayOfficialBaseSchema = z.object({
   // Foreign Key
-  resident_id: z.string().uuid('barangayOfficials.form.validation.invalidUUID'),
+  resident_id: z.string().uuid('barangayOfficials.form.validation.invalidUUID').nullable().optional(),
 
-  // Basic information
-  prefix: PrefixSchema,
+  // Basic information (match database fields)
   first_name: z.string().min(1, 'barangayOfficials.form.validation.firstNameRequired'),
   middle_name: z.string().nullable().optional(),
   last_name: z.string().min(1, 'barangayOfficials.form.validation.lastNameRequired'),
-  suffix: z.string().optional(),
+  suffix: z.string().nullable().optional(),
+  full_name: z.string().nullable().optional(),
 
-  birth_date: z.string().min(1, 'barangayOfficials.form.validation.birthDateRequired'), 
-  gender: GenderSchema,
-  nationality: NationalitySchema.nullable().optional(),
-  civil_status: CivilStatusSchema,
-  educational_attainment: EducationalAttainmentSchema,
+  // Additional personal info from comprehensive schema
+  birth_date: z.string().nullable().optional(),
+  gender: GenderSchema.nullable().optional(),
 
-  // Contact Information
-  mobile_number: z.string().optional(),
-  email_address: z.union([z.string().email('barangayOfficials.form.validation.invalidEmailAddress'), z.literal('')]).optional(),
-
-  // Address Information
-  complete_address: z.string().min(1, 'barangayOfficials.form.validation.completeAddressRequired'),
+  // Contact Information (matching database field names)
+  contact_number: z.string().nullable().optional(), // was mobile_number
+  email_address: z.string().nullable().optional(),
+  address: z.string().nullable().optional(), // was complete_address
 
   // Position Information
   position: OfficialPositionSchema,
-  
-  // committee_assignment: z.preprocess(
-  //   (val) => val === '' ? undefined : val,
-  //   CommitteeAssignmentSchema
-  // ).refine(val => val !== undefined, {
-  //   message: 'barangayOfficials.form.validation.committeeAssignmentRequired',
-  // }),
-  committee_assignment: CommitteeAssignmentSchema,
+  committee: z.string().nullable().optional(), // existing field from migration
+  position_title: z.string().nullable().optional(),
+  committee_assignments: z.array(z.string()).nullable().optional(),
+  committee_memberships: z.array(z.string()).nullable().optional(),
+  description: z.string().nullable().optional(), // existing field
 
   // Term Information
-  term_start: z.string().min(1, 'barangayOfficials.form.validation.termStartRequired'),
-  term_end: z.string().min(1, 'barangayOfficials.form.validation.termEndRequired'),
-  term_number: z.number().optional(),
-  is_current_term: z.boolean().optional(),
+  term_start: z.string().nullable().optional(),
+  term_end: z.string().nullable().optional(),
+  term_number: z.number().nullable().optional(),
+  is_current_term: z.boolean().nullable().optional(),
+
+  // Election Information
+  election_date: z.string().nullable().optional(),
+  votes_received: z.number().nullable().optional(),
+  is_elected: z.boolean().nullable().optional(),
+  appointment_document: z.string().nullable().optional(),
 
   // Status
-  status: OfficialStatusSchema,
+  status: OfficialStatusSchema.nullable().optional(),
+  status_date: z.string().nullable().optional(),
+  status_reason: z.string().nullable().optional(),
+
+  // Educational & Professional Background
+  educational_background: z.string().nullable().optional(),
+  work_experience: z.string().nullable().optional(),
+  skills_expertise: z.string().nullable().optional(),
+  trainings_attended: z.array(z.string()).nullable().optional(),
+  certifications: z.array(z.string()).nullable().optional(),
+
+  // Performance & Accomplishments
+  major_accomplishments: z.string().nullable().optional(),
+  projects_initiated: z.array(z.string()).nullable().optional(),
+  performance_notes: z.string().nullable().optional(),
+  performance_rating: z.number().nullable().optional(),
+
+  // Emergency Contact
+  emergency_contact_name: z.string().nullable().optional(),
+  emergency_contact_number: z.string().nullable().optional(),
+  emergency_contact_relationship: z.string().nullable().optional(),
+
+  // Social Media & Communication
+  social_media_accounts: z.array(z.string()).nullable().optional(),
+
+  // Documents & Files
+  documents: z.array(z.string()).nullable().optional(),
+  profile_photo: z.string().nullable().optional(), // was profile_picture in original migration
+  digital_signature: z.string().nullable().optional(),
+
+  // Oath & Legal
+  oath_taking_date: z.string().nullable().optional(),
+  oath_taking_notes: z.string().nullable().optional(),
+  legal_issues: z.string().nullable().optional(),
+  ethical_violations: z.string().nullable().optional(),
+
+  // Attendance & Participation
+  session_attendance_rate: z.number().nullable().optional(),
+  committee_participation: z.string().nullable().optional(),
+  community_engagement: z.string().nullable().optional(),
+
+  // Additional Information
+  remarks: z.string().nullable().optional(),
+  bio_summary: z.string().nullable().optional(),
+  personal_mission: z.string().nullable().optional(),
 
   // System fields
-  created_at: z.string(),
-  updated_at: z.string(),
+  order_index: z.number().nullable().optional(), // existing field
+  created_by: z.string().nullable().optional(),
+  updated_by: z.string().nullable().optional(),
 
-  // Profile photo
-  profile_photo_url: z.string().nullable().optional(), 
+  // Legacy compatibility fields (keeping these as optional for backward compatibility)
+  prefix: PrefixSchema.nullable().optional(),
+  nationality: NationalitySchema.nullable().optional(),
+  civil_status: CivilStatusSchema.nullable().optional(),
+  educational_attainment: EducationalAttainmentSchema.nullable().optional(),
+  mobile_number: z.string().nullable().optional(), // alias for contact_number
+  complete_address: z.string().nullable().optional(), // alias for address
+  committee_assignment: CommitteeAssignmentSchema.nullable().optional(), // legacy field name
+
+  // For forms only
+  resident_search: z.string().optional(),
+  profile_photo_url: z.string().nullable().optional(),
 })
 
 // Form data schema - excludes system fields that are handled by backend
@@ -138,7 +192,7 @@ export const BarangayOfficialFormDataSchema = z.object({
   is_current_term: z.boolean().optional(),
 
   // Status
-  status: OfficialStatusSchema.optional().default('ACTIVE'),
+  status: OfficialStatusSchema.default('ACTIVE'),
 
   // Profile photo (optional for forms)
   profile_photo_url: z.string().nullable().optional(),
@@ -212,28 +266,33 @@ export function transformBarangayOfficialToFormData(official: BarangayOfficial |
 
   const formData = {
     resident_search: '',
-    resident_id: official.resident_id,
-    prefix: official.prefix,
+    resident_id: official.resident_id || '',
+    prefix: official.prefix || 'Mr.',
     first_name: official.first_name,
     middle_name: official.middle_name || '',
     last_name: official.last_name,
     suffix: official.suffix || '',
-    birth_date: official.birth_date,
-    gender: official.gender,
-    nationality: official.nationality,
-    civil_status: official.civil_status,
-    educational_attainment: official.educational_attainment,
-    mobile_number: official.mobile_number || '',
+    birth_date: official.birth_date || '',
+    gender: official.gender || 'MALE',
+    nationality: official.nationality || 'FILIPINO',
+    civil_status: official.civil_status || 'SINGLE',
+    educational_attainment: official.educational_attainment || 'NO_FORMAL_EDUCATION',
+    mobile_number: official.mobile_number || official.contact_number || '',
     email_address: official.email_address || '',
-    complete_address: official.complete_address,
+    complete_address: official.complete_address || official.address || '',
     position: official.position,
-    committee_assignment: official.committee_assignment,
-    term_start: new Date(official.term_start).toLocaleDateString('en-US'), // MM/DD/YYYY format
-    term_end: new Date(official.term_end).toLocaleDateString('en-US'), // MM/DD/YYYY format
-    term_number: official.term_number,
-    is_current_term: official.is_current_term,
-    status: official.status,
-    profile_photo_url: official.profile_photo_url || ''
+    committee_assignment: (official.committee_assignment && 
+      CommitteeAssignmentSchema.safeParse(official.committee_assignment).success) ? 
+      official.committee_assignment as CommitteeAssignment : 
+      (official.committee && CommitteeAssignmentSchema.safeParse(official.committee).success) ? 
+      official.committee as CommitteeAssignment : 
+      'Health' as CommitteeAssignment,
+    term_start: official.term_start ? new Date(official.term_start).toLocaleDateString('en-US') : '',
+    term_end: official.term_end ? new Date(official.term_end).toLocaleDateString('en-US') : '',
+    term_number: official.term_number || 0,
+    is_current_term: official.is_current_term || false,
+    status: official.status || 'ACTIVE',
+    profile_photo_url: official.profile_photo_url || official.profile_photo || ''
   };
   
   console.log(formData);

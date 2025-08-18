@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect, useCallback } from 'react';
 import { Shield, Info, Eye, X, Check } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+
+// Simple toast notification function
+const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+  // Simple implementation - can be replaced with a proper toast system
+  if (type === 'error') {
+    alert(`Error: ${message}`);
+  } else {
+    alert(`Success: ${message}`);
+  }
+};
 
 interface ConsentType {
   id: string;
@@ -60,14 +64,8 @@ export default function ConsentManagement() {
   const [consents, setConsents] = useState<UserConsent[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
-  const { toast } = useToast();
-  const { user } = useAuth();
 
-  useEffect(() => {
-    fetchUserConsents();
-  }, []);
-
-  const fetchUserConsents = async () => {
+  const fetchUserConsents = useCallback(async () => {
     try {
       const response = await fetch('/api/consents/user', {
         headers: {
@@ -82,15 +80,15 @@ export default function ConsentManagement() {
       }
     } catch (error) {
       console.error('Error fetching consents:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load consent information',
-        variant: 'destructive'
-      });
+      showToast('Failed to load consent information', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchUserConsents();
+  }, [fetchUserConsents]);
 
   const handleConsentChange = async (consentType: string, granted: boolean) => {
     setUpdating(consentType);
@@ -115,10 +113,7 @@ export default function ConsentManagement() {
         });
 
         if (response.ok) {
-          toast({
-            title: 'Success',
-            description: 'Consent granted successfully'
-          });
+          showToast('Consent granted successfully');
           fetchUserConsents();
         } else {
           throw new Error('Failed to record consent');
@@ -139,10 +134,7 @@ export default function ConsentManagement() {
           });
 
           if (response.ok) {
-            toast({
-              title: 'Success',
-              description: 'Consent withdrawn successfully'
-            });
+            showToast('Consent withdrawn successfully');
             fetchUserConsents();
           } else {
             throw new Error('Failed to withdraw consent');
@@ -151,11 +143,7 @@ export default function ConsentManagement() {
       }
     } catch (error) {
       console.error('Error updating consent:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update consent preference',
-        variant: 'destructive'
-      });
+      showToast('Failed to update consent preference', 'error');
     } finally {
       setUpdating(null);
     }
@@ -189,14 +177,14 @@ export default function ConsentManagement() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <Info className="h-5 w-5" />
             Important Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div className="p-6">
           <p className="text-sm text-gray-600 mb-2">
             Your privacy is important to us. You can control how your data is used by managing these consent preferences.
             Some consents are required for basic functionality, while others are optional.
@@ -204,8 +192,8 @@ export default function ConsentManagement() {
           <p className="text-sm text-gray-600">
             You can withdraw your consent at any time, though this may affect your ability to use certain features.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <div className="grid gap-4">
         {CONSENT_TYPES.map((consentType) => {
@@ -214,25 +202,25 @@ export default function ConsentManagement() {
           const isUpdating = updating === consentType.id;
 
           return (
-            <Card key={consentType.id} className="transition-all hover:shadow-md">
-              <CardContent className="p-6">
+            <div key={consentType.id} className="bg-white rounded-lg shadow-md border border-gray-200 transition-all hover:shadow-lg">
+              <div className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-semibold text-gray-900">{consentType.name}</h3>
                       {consentType.required && (
-                        <Badge variant="secondary" className="text-xs">Required</Badge>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Required</span>
                       )}
                       {isGranted ? (
-                        <Badge variant="default" className="text-xs bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                           <Check className="h-3 w-3 mr-1" />
                           Active
-                        </Badge>
+                        </span>
                       ) : (
-                        <Badge variant="outline" className="text-xs">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-300">
                           <X className="h-3 w-3 mr-1" />
                           Not Active
-                        </Badge>
+                        </span>
                       )}
                     </div>
                     <p className="text-sm text-gray-600 mb-3">{consentType.description}</p>
@@ -244,17 +232,19 @@ export default function ConsentManagement() {
                   </div>
                   <div className="ml-4">
                     <div className="flex items-center space-x-2">
-                      <Checkbox
+                      <input
+                        type="checkbox"
                         id={consentType.id}
                         checked={isGranted}
                         disabled={isUpdating || (consentType.required && isGranted)}
-                        onCheckedChange={(checked) => 
-                          handleConsentChange(consentType.id, checked as boolean)
+                        onChange={(e) => 
+                          handleConsentChange(consentType.id, e.target.checked)
                         }
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
                       />
                       <label 
                         htmlFor={consentType.id}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        className="text-sm font-medium leading-none text-gray-700"
                       >
                         {isGranted ? 'Granted' : 'Grant'}
                       </label>
@@ -266,17 +256,17 @@ export default function ConsentManagement() {
                     )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           );
         })}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Data Rights</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-lg shadow-md border border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold">Data Rights</h3>
+        </div>
+        <div className="p-6">
           <div className="space-y-3">
             <p className="text-sm text-gray-600">
               Under data protection laws, you have the following rights:
@@ -290,14 +280,14 @@ export default function ConsentManagement() {
               <li>• Right to object to processing</li>
             </ul>
             <div className="pt-3 border-t">
-              <Button variant="outline" size="sm">
+              <button className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 <Eye className="h-4 w-4 mr-2" />
                 Download My Data
-              </Button>
+              </button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -55,7 +55,7 @@ export function useResidentForm({ mode, residentId, onSuccess }: UseResidentForm
     mode: 'onBlur'
   });
 
-  // Auto-calculate age from birth date
+  // Auto-populate senior citizen status based on birth date
   const watchBirthDate = form.watch('birth_date');
   useEffect(() => {
     if (watchBirthDate) {
@@ -68,26 +68,12 @@ export function useResidentForm({ mode, residentId, onSuccess }: UseResidentForm
         age--;
       }
       
-      if (isNaN(age) || age < 0 || age > 150) {
-        form.setValue('age', 0);
-      } else {
-        form.setValue('age', age);
+      // Auto-set senior citizen status if age >= 60
+      if (!isNaN(age) && age >= 0 && age <= 150) {
+        form.setValue('senior_citizen', age >= 60);
       }
-    } else {
-      form.setValue('age', 0);
     }
   }, [watchBirthDate, form]);
-
-  // Auto-populate senior citizen status based on age
-  const watchAge = form.watch('age');
-  useEffect(() => {
-    if (watchAge) {
-      const age = watchAge
-      if (age >= 60) {
-        form.setValue('senior_citizen', true);
-      }
-    }
-  }, [watchAge, form]);
 
   // Watch profile_photo_url field and sync with preview state
   const watchProfilePhotoUrl = form.watch('profile_photo_url');

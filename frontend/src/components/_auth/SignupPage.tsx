@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import type { UserRole, Department } from '../../services/users/users.types';
 
 const SignupPage: React.FC = () => {
   const { register, isLoading } = useAuth();
@@ -63,8 +64,8 @@ const SignupPage: React.FC = () => {
         first_name: formData.firstName,
         last_name: formData.lastName,
         middle_name: formData.middleName,
-        role: formData.role,
-        department: formData.department,
+        role: formData.role as UserRole,
+        department: formData.department as Department,
         position: formData.position,
         employee_id: formData.employeeId,
         phone: formData.phone,
@@ -231,15 +232,20 @@ const SignupPage: React.FC = () => {
                 required
               >
                 <option value="">Select Department</option>
-                <option value="Executive Office">Executive Office</option>
-                <option value="Secretary Office">Secretary Office</option>
-                <option value="Treasury Office">Treasury Office</option>
-                <option value="Council">Council</option>
-                <option value="SK Office">SK Office</option>
-                <option value="Records Office">Records Office</option>
-                <option value="Administration">Administration</option>
-                <option value="General Staff">General Staff</option>
-                <option value="IT Department">IT Department</option>
+                <option value="ADMINISTRATION">Administration</option>
+                <option value="HEALTH_SERVICES">Health Services</option>
+                <option value="SOCIAL_SERVICES">Social Services</option>
+                <option value="SECURITY_PUBLIC_SAFETY">Security & Public Safety</option>
+                <option value="FINANCE_TREASURY">Finance & Treasury</option>
+                <option value="RECORDS_MANAGEMENT">Records Management</option>
+                <option value="COMMUNITY_DEVELOPMENT">Community Development</option>
+                <option value="DISASTER_RISK_REDUCTION">Disaster Risk Reduction</option>
+                <option value="ENVIRONMENTAL_MANAGEMENT">Environmental Management</option>
+                <option value="YOUTH_SPORTS_DEVELOPMENT">Youth & Sports Development</option>
+                <option value="SENIOR_CITIZEN_AFFAIRS">Senior Citizen Affairs</option>
+                <option value="WOMENS_AFFAIRS">Women's Affairs</option>
+                <option value="BUSINESS_PERMITS">Business Permits</option>
+                <option value="INFRASTRUCTURE_DEVELOPMENT">Infrastructure Development</option>
               </select>
             </div>
 

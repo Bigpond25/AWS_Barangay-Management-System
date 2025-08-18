@@ -16,7 +16,9 @@ return new class extends Migration
             
             // Basic Information
             $table->string('first_name');
+            $table->string('first_name_hash')->nullable()->index();
             $table->string('last_name');
+            $table->string('last_name_hash')->nullable()->index();
             $table->string('middle_name')->nullable();
             $table->string('suffix')->nullable();
             $table->date('birth_date');
@@ -38,8 +40,10 @@ return new class extends Migration
             
             // Contact Information
             $table->string('mobile_number')->nullable();
+            $table->string('mobile_number_hash')->nullable()->index();
             $table->string('landline_number')->nullable();
             $table->string('email_address')->nullable();
+            $table->string('email_address_hash')->nullable()->index();
             
             // Address Information
             $table->string('region')->nullable();
@@ -98,6 +102,10 @@ return new class extends Migration
             
             // Profile & Status
             $table->string('profile_photo_url')->nullable();
+            $table->string('photo_storage_provider')->default('local');
+            $table->string('photo_bucket')->nullable();
+            $table->string('photo_path')->nullable();
+            $table->boolean('photo_migrated_to_supabase')->default(false);
             $table->enum('status', ['ACTIVE', 'INACTIVE', 'DECEASED', 'TRANSFERRED'])->default('ACTIVE');
             
             // Audit fields
@@ -117,6 +125,8 @@ return new class extends Migration
             $table->index(['status', 'is_senior_citizen']);
             $table->index(['status', 'is_pwd']);
             $table->index(['barangay', 'status']);
+            $table->index(['photo_migrated_to_supabase']);
+            $table->index(['photo_storage_provider']);
         });
     }
 

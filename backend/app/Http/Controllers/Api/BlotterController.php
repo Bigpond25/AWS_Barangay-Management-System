@@ -7,15 +7,23 @@ use App\Models\Blotter;
 use App\Models\OtherPersonInvolved;
 use App\Models\SupportingDocument;
 use App\Models\Ticket;
+use App\Contracts\StorageInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class BlotterController extends Controller
 {
+    private StorageInterface $storageService;
+
+    public function __construct(StorageInterface $storageService)
+    {
+        $this->storageService = $storageService;
+    }
     /**
      * View a specific blotter
      */
@@ -406,15 +414,30 @@ class BlotterController extends Controller
                 ], 404);
             }
 
-            // Store the file
+            // Store the file using Supabase
             $file = $request->file('photo');
-            $path = $file->store('blotter-documents', 'public');
-            $url = Storage::url($path);
+            $extension = $file->getClientOriginalExtension();
+            $filename = Str::uuid() . '.' . $extension;
+            
+            $result = $this->storageService->uploadFile(
+                $file,
+                'supporting-documents',
+                'blotter-documents/' . $filename,
+                false // Private access for supporting documents
+            );
+
+            if (!$result['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload file: ' . $result['error'],
+                    'data' => null
+                ], 500);
+            }
 
             // Create supporting document record
             SupportingDocument::create([
                 'blotter_id' => $blotter->id,
-                'url' => $url
+                'url' => $result['url']
             ]);
 
             // Load relationships for response

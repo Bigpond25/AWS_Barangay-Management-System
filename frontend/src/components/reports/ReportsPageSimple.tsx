@@ -11,7 +11,7 @@ export default function ReportsPageSimple() {
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     years: [],
     quarters: ["Q1", "Q2", "Q3", "Q4", "All Quarters"],
-    puroks: []
+    streets: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -114,10 +114,12 @@ export default function ReportsPageSimple() {
                   <div className="text-2xl font-bold text-yellow-600">{statisticsData.totalIssuedClearance}</div>
                   <div className="text-sm text-gray-600">Issued Documents</div>
                 </div>
+                {/* Temporarily removed ongoing projects until backend implements this field
                 <div className="text-center">
                   <div className="text-2xl font-bold text-indigo-600">{statisticsData.ongoingProjects}</div>
                   <div className="text-sm text-gray-600">Ongoing Projects</div>
                 </div>
+                */}
               </div>
             </div>
           )}

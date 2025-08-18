@@ -27,6 +27,12 @@ return new class extends Migration
             $table->string('original_filename')->nullable();
             $table->text('description')->nullable();
             
+            // Storage Information
+            $table->string('file_bucket', 100)->nullable();
+            $table->string('file_storage_path', 500)->nullable();
+            $table->string('file_storage_provider', 50)->default('local');
+            $table->boolean('file_migrated_to_supabase')->default(false);
+            
             // Audit fields
             $table->uuid('uploaded_by')->nullable();
             $table->timestamps();
@@ -42,6 +48,7 @@ return new class extends Migration
             $table->index('blotter_id');
             $table->index('complaint_id');
             $table->index('file_type');
+            $table->index('file_migrated_to_supabase');
         });
     }
 

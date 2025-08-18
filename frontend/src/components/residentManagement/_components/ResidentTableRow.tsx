@@ -2,7 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiEye, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { type Resident } from '@/services/residents/residents.types';
-import { STORAGE_BASE_URL } from '@/services/__shared/_storage/storage.types';
+import { buildImageUrl, getPlaceholderImageUrl } from '@/utils/imageUtils';
+import { getResidentAge } from '@/utils/ageUtils';
 
 interface ResidentTableRowProps {
   resident: Resident;
@@ -21,17 +22,22 @@ export const ResidentTableRow: React.FC<ResidentTableRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const getResidentCategory = (resident: Resident): string => {
+  const getResidentCategories = (resident: Resident): string => {
     const categories = [];
     if (resident.senior_citizen) categories.push(t('residents.categories.seniorCitizen'));
     if (resident.person_with_disability) categories.push(t('residents.categories.pwd'));
     if (resident.four_ps_beneficiary) categories.push(t('residents.categories.fourPs'));
-    if (resident.is_household_head) categories.push(t('residents.categories.householdHead'));
+    
+    // Check if resident is household head by checking their primary household relationship
+    const isHouseholdHead = resident.primary_household?.relationship === 'HEAD' || 
+                           resident.households?.some(household => household.relationship === 'HEAD');
+    if (isHouseholdHead) categories.push(t('residents.categories.householdHead'));
+    
     if (resident.indigenous_people) categories.push(t('residents.categories.indigenous'));
     
     return categories.length > 0 ? categories.join(', ') : t('residents.categories.regular');
   };
-
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE':
@@ -51,21 +57,8 @@ export const ResidentTableRow: React.FC<ResidentTableRowProps> = ({
     return t(`residents.status.${status.toLowerCase()}`, status);
   };
 
-  const calculateAge = (birthDate: string): number => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    
-    return age;
-  };
-
   const fullName = `${resident.first_name} ${resident.middle_name ? resident.middle_name + ' ' : ''}${resident.last_name}${resident.suffix ? ', ' + resident.suffix : ''}`;
-  const age = resident.age || calculateAge(resident.birth_date);
+  const age = getResidentAge(resident);
   const gender = resident.gender === 'MALE' ? 'Male' : 'Female';
   const phone = resident.mobile_number || resident.landline_number || 'N/A';
   const email = resident.email_address || 'N/A';
@@ -77,11 +70,15 @@ export const ResidentTableRow: React.FC<ResidentTableRowProps> = ({
           <img
             src={
               resident.profile_photo_url
-                ? `${STORAGE_BASE_URL}/${resident.profile_photo_url}`
-                : "https://placehold.co/80"
+                ? buildImageUrl(resident.profile_photo_url || '')
+                : getPlaceholderImageUrl(80, 'No Photo')
             }
             alt={fullName}
             className="w-10 h-10 rounded-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = getPlaceholderImageUrl(80, 'No Photo');
+            }}
           />
           <div className="ml-4">
             <div className="text-sm font-medium text-gray-900">
@@ -101,7 +98,7 @@ export const ResidentTableRow: React.FC<ResidentTableRowProps> = ({
         {resident.complete_address}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-        {getResidentCategory(resident)}
+        {getResidentCategories(resident)}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(resident.status)}`}>

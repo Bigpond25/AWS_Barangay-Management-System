@@ -13,6 +13,7 @@ import { useDocumentForm } from './_hooks/useDocumentForm';
 import { DocumentFormDataSchema, type DocumentFormData } from '../../services/documents/documents.types';
 import { type Resident } from '../../services/residents/residents.types';
 import { useNotifications } from '../_global/NotificationSystem';
+import { getResidentAge } from '@/utils/ageUtils';
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { DocumentFormField } from './_components/DocumentFormField';
 import Breadcrumb from '../_global/Breadcrumb';
@@ -250,7 +251,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
                     </div>
                     <div className="text-sm text-gray-500">{resident.complete_address}</div>
                     <div className="text-xs text-gray-400">
-                      Age: {resident.age} • {resident.civil_status}
+                      Age: {getResidentAge(resident)} • {resident.civil_status}
                     </div>
                   </div>
                 </div>
@@ -309,7 +310,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
-              <div className="text-sm text-gray-900">{selectedResident.age}</div>
+              <div className="text-sm text-gray-900">{getResidentAge(selectedResident)}</div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Civil Status</label>

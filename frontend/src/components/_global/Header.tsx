@@ -179,7 +179,7 @@ const Header: React.FC<HeaderProps> = ({
             >
               <FiUser className="header-pre-mobile:mr-0 mr-0 @2xl/header:mr-2 w-5 h-5 flex-shrink-0" />
               <span className="font-medium hidden @2xl/header:inline whitespace-nowrap">
-                {user?.full_name || `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || 'User'}
+                {`${user?.first_name || ''} ${user?.last_name || ''}`.trim() || 'User'}
               </span>
               <FiChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -189,7 +189,7 @@ const Header: React.FC<HeaderProps> = ({
               <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                 {/* User Info Button */}
                 <button onClick={handleUserClick} className="cursor-pointer text-left w-full px-4 py-2 border-b border-gray-100 hover:bg-gray-200">
-                  <p className="font-medium text-gray-900">{user?.full_name || `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || 'User'}</p>
+                  <p className="font-medium text-gray-900">{`${user?.first_name || ''} ${user?.last_name || ''}`.trim() || 'User'}</p>
                   <p className="text-sm text-gray-500">{user?.email}</p>
                   <p className="text-xs text-gray-400">{user?.role} • {user?.department}</p>
                 </button>

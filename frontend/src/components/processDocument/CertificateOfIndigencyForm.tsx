@@ -11,6 +11,7 @@ import { useNotifications } from '../_global/NotificationSystem';
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { DocumentFormField } from './_components/DocumentFormField';
 import Breadcrumb from '../_global/Breadcrumb';
+import { getResidentAge } from '@/utils/ageUtils';
 
 interface CertificateOfIndigencyFormProps {
   onNavigate: (page: string) => void;
@@ -247,7 +248,7 @@ const CertificateOfIndigencyForm: React.FC<CertificateOfIndigencyFormProps> = ({
                     </div>
                     <div className="text-sm text-gray-500">{resident.complete_address}</div>
                     <div className="text-xs text-gray-400">
-                      Age: {resident.age} • {resident.civil_status}
+                      Age: {getResidentAge(resident)} • {resident.civil_status}
                     </div>
                   </div>
                 </div>
@@ -324,7 +325,7 @@ const CertificateOfIndigencyForm: React.FC<CertificateOfIndigencyFormProps> = ({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
-                <div className="text-sm text-gray-900">{selectedResident.age}</div>
+                <div className="text-sm text-gray-900">{getResidentAge(selectedResident)}</div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Civil Status</label>

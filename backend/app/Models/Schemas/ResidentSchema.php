@@ -154,13 +154,6 @@ class ResidentSchema
                 'fillable' => true,
                 'cast' => 'date'
             ],
-            'age' => [
-                'type' => 'integer',
-                'nullable' => true,
-                'fillable' => true,
-                'min' => 0,
-                'max' => 150
-            ],
             'birth_place' => [
                 'type' => 'string',
                 'max' => 255,
@@ -425,6 +418,31 @@ class ResidentSchema
                 'type' => 'string',
                 'max' => 500,
                 'nullable' => true,
+                'fillable' => true
+            ],
+
+            // Storage provider tracking fields
+            'photo_storage_provider' => [
+                'type' => 'string',
+                'max' => 50,
+                'default' => 'local',
+                'fillable' => true
+            ],
+            'photo_bucket' => [
+                'type' => 'string',
+                'max' => 100,
+                'nullable' => true,
+                'fillable' => true
+            ],
+            'photo_path' => [
+                'type' => 'string',
+                'max' => 500,
+                'nullable' => true,
+                'fillable' => true
+            ],
+            'photo_migrated_to_supabase' => [
+                'type' => 'boolean',
+                'default' => false,
                 'fillable' => true
             ],
 
