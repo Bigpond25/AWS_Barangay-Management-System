@@ -18,6 +18,11 @@ import BarangayClearancePrint from "./components/processDocument/BarangayClearan
 import CertificateOfResidencyPrint from "./components/processDocument/CertificateOfResidencyPrint";
 import CertificateOfIndigencyPrint from "./components/processDocument/CertificateOfIndigencyPrint";
 import BusinessPermitPrint from "./components/processDocument/BusinessPermitPrint";
+import BarangayClearancePreview from "./components/processDocument/previews/BarangayClearancePreview";
+import CertificateOfResidencyPreview from "./components/processDocument/previews/CertificateOfResidencyPreview";
+import CertificateOfIndigencyPreview from "./components/processDocument/previews/CertificateOfIndigencyPreview";
+import BusinessPermitPreview from "./components/processDocument/previews/BusinessPermitPreview";
+import DocumentPreviews from "./components/processDocument/DocumentPreviews";
 import HouseholdManagement from "./components/householdManagement/HouseholdManagement";
 import AddNewHousehold from "./components/householdManagement/AddNewHousehold";
 import EditHousehold from "./components/householdManagement/EditHousehold";
@@ -227,6 +232,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard permission="view-documents">
                 <DocumentQueueWrapper />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "previews",
+            element: (
+              <PermissionGuard permission="view-documents">
+                <DocumentPreviews />
               </PermissionGuard>
             ),
           },
@@ -469,6 +482,39 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requireAuth={true}>
         <BusinessPermitPrint />
+      </ProtectedRoute>
+    ),
+  },
+  // Document Preview Routes (with sample data)
+  {
+    path: "/preview/barangay-clearance",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <BarangayClearancePreview />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/preview/certificate-residency",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <CertificateOfResidencyPreview />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/preview/certificate-indigency",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <CertificateOfIndigencyPreview />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/preview/business-permit",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <BusinessPermitPreview />
       </ProtectedRoute>
     ),
   },

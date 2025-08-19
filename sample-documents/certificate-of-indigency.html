@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Indigency - Sample</title>
+    <style>
+        /* Print specifications for Letter size (8.5 x 11 inches) */
+        @media print {
+            @page {
+                size: 8.5in 11in; /* Explicit Letter size dimensions */
+                margin-top: 3.3cm;    /* Top margin - blank space for letterhead */
+                margin-left: 5.2cm;   /* Left margin - blank space for binding */
+                margin-right: 2.54cm; /* Right margin - 1 inch default */
+                margin-bottom: 2.54cm; /* Bottom margin - 1 inch default */
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 11pt;
+                line-height: 1.3;
+                color: black;
+                background: white;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .document-container {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                padding: 0;
+                page-break-inside: avoid;
+                height: auto;
+                max-height: calc(27.94cm - 3.3cm - 2.54cm);
+            }
+        }
+        
+        /* Screen styles */
+        @media screen {
+            body {
+                margin: 0;
+                padding: 20px;
+                font-family: 'Times New Roman', Times, serif;
+                background-color: #f5f5f5;
+            }
+            
+            .document-container {
+                max-width: 21.59cm;
+                margin: 0 auto;
+                background: white;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                margin-left: calc(5.2cm + 20px);
+                margin-top: calc(3.3cm + 20px);
+                padding-right: 2.54cm;
+                padding-bottom: 2.54cm;
+                border-left: 3px dashed #ccc;
+                border-top: 3px dashed #ccc;
+                min-height: calc(27.94cm - 3.3cm - 2.54cm);
+            }
+            
+            /* Visual margin indicators */
+            body::before {
+                content: 'Left Margin: 5.2cm';
+                position: fixed;
+                top: 50%;
+                left: 10px;
+                transform: rotate(-90deg);
+                background: rgba(255, 0, 0, 0.1);
+                padding: 5px 10px;
+                font-size: 12px;
+                color: #666;
+                z-index: 1000;
+            }
+            
+            body::after {
+                content: 'Top Margin: 3.3cm';
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 255, 0.1);
+                padding: 5px 10px;
+                font-size: 12px;
+                color: #666;
+                z-index: 1000;
+            }
+        }
+        
+        /* Document styles */
+        .document-title {
+            text-align: center;
+            font-size: 18pt;
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+        
+        .document-content {
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .greeting {
+            font-size: 12pt;
+            margin-bottom: 25px;
+        }
+        
+        .certification-text {
+            font-size: 12pt;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .main-statement {
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .highlight-name {
+            background-color: #333;
+            color: white;
+            padding: 2px 6px;
+            font-weight: bold;
+        }
+        
+        .highlight-address {
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        
+        .highlight-requester {
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        
+        .highlight-purpose {
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        
+        .highlight-date {
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        
+        .purpose-section {
+            margin: 25px 0;
+        }
+        
+        .purpose-text {
+            font-size: 12pt;
+            margin-bottom: 8px;
+        }
+        
+        .issued-section {
+            margin: 30px 0;
+        }
+        
+        .issued-text {
+            font-size: 12pt;
+        }
+        
+        .bottom-section {
+            display: flex;
+            margin-top: 50px;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .left-column {
+            width: 45%;
+        }
+        
+        .right-column {
+            width: 45%;
+            text-align: right;
+        }
+        
+        .remarks-section {
+            border-left: 2px solid #000;
+            padding-left: 15px;
+        }
+        
+        .remarks-title {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .remarks-content {
+            font-size: 10pt;
+        }
+        
+        .remark-line {
+            margin-bottom: 5px;
+        }
+        
+        .signature-section {
+            margin-bottom: 20px;
+        }
+        
+        .signature-name {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .signature-title {
+            font-size: 11pt;
+            font-style: italic;
+        }
+        
+        .qr-code {
+            margin-top: 15px;
+        }
+        
+        .qr-placeholder {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8pt;
+            margin-left: auto;
+            background-color: #f9f9f9;
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-top: 40px;
+        }
+        
+        .barcode-section {
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+        }
+        
+        .barcode-placeholder {
+            width: 150px;
+            height: 30px;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8pt;
+            margin-right: 15px;
+            background-color: #f9f9f9;
+        }
+        
+        .record-info {
+            text-align: left;
+        }
+        
+        .record-label {
+            font-size: 10pt;
+            margin-bottom: 2px;
+        }
+        
+        .record-number {
+            font-size: 14pt;
+            font-weight: bold;
+        }
+        
+        /* Print controls */
+        .print-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .print-controls button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .print-controls button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Print Controls (hidden when printing) -->
+    <div class="print-controls no-print">
+        <button onclick="window.print()">🖨️ Print Document</button>
+        <button onclick="window.close()">✖️ Close</button>
+    </div>
+
+    <div class="document-container">
+        <!-- Document Title -->
+        <div class="document-title">
+            CERTIFICATE OF INDIGENCY
+        </div>
+
+        <!-- Document Content -->
+        <div class="document-content">
+            <div class="greeting">To whom it may concern:</div>
+            
+            <div class="certification-text">
+                This is to certify that <span class="highlight-name">ASUNCION REY FELIZARDO</span>
+            </div>
+            
+            <div class="certification-text">
+                presently residing at <span class="highlight-address">12-D TIMES STREET</span>
+            </div>
+            
+            <div class="certification-text">
+                <strong>BARANGAY WEST TRIANGLE, QUEZON CITY.</strong>
+            </div>
+            
+            <div class="certification-text main-statement">
+                It is further certified that the above-named person claims that their family has no 
+                regular income to support their daily subsistence.
+            </div>
+            
+            <div class="purpose-section">
+                <div class="purpose-text">
+                    This certification is being issued upon the request of 
+                    <span class="highlight-requester">Miguel Felizardo, Jr.. (son of</span>
+                </div>
+                <div class="purpose-text">
+                    for <span class="highlight-purpose">MEDICAL / FINANCIAL ASSISTANCE PURPOSE.</span>
+                </div>
+            </div>
+            
+            <div class="issued-section">
+                <div class="issued-text">
+                    Issued this <span class="highlight-date">21 July 2025</span> 
+                    at Barangay West Triangle, Quezon City.
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Section -->
+        <div class="bottom-section">
+            <div class="left-column">
+                <div class="remarks-section">
+                    <div class="remarks-title">REMARKS</div>
+                    <div class="remarks-content">
+                        <div class="remark-line">7-30-24 Social Pension</div>
+                        <div class="remark-line">3-17-25 Med/Fin</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <div class="signature-section">
+                    <div class="signature-name">ELMER TIMOTHY J. LIGON</div>
+                    <div class="signature-title">Punong Barangay</div>
+                </div>
+                
+                <div class="qr-code">
+                    <div class="qr-placeholder">[QR CODE]</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer with barcode and record number -->
+        <div class="footer">
+            <div class="barcode-section">
+                <div class="barcode-placeholder">[BARCODE]</div>
+                <div class="record-info">
+                    <div class="record-label">Record No.</div>
+                    <div class="record-number">505</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Bond Acknowledgement Receipt - Sample</title>
+    <style>
+        /* Print specifications for Letter size (8.5 x 11 inches) */
+        @media print {
+            @page {
+                size: 8.5in 11in; /* Explicit Letter size dimensions */
+                margin-top: 3.3cm;    /* Top margin - blank space for letterhead */
+                margin-left: 5.2cm;   /* Left margin - blank space for binding */
+                margin-right: 2.54cm; /* Right margin - 1 inch default */
+                margin-bottom: 2.54cm; /* Bottom margin - 1 inch default */
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 9pt;
+                line-height: 1.1;
+                color: black;
+                background: white;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .document-container {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                padding: 0;
+                page-break-inside: avoid;
+                height: auto;
+                max-height: calc(27.94cm - 3.3cm - 2.54cm);
+            }
+        }
+        
+        /* Screen styles */
+        @media screen {
+            body {
+                margin: 0;
+                padding: 20px;
+                font-family: 'Times New Roman', Times, serif;
+                background-color: #f5f5f5;
+            }
+            
+            .document-container {
+                max-width: 21.59cm;
+                margin: 0 auto;
+                background: white;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                margin-left: calc(5.2cm + 20px);
+                margin-top: calc(3.3cm + 20px);
+                padding-right: 2.54cm;
+                padding-bottom: 2.54cm;
+                border-left: 3px dashed #ccc;
+                border-top: 3px dashed #ccc;
+                min-height: calc(27.94cm - 3.3cm - 2.54cm);
+            }
+            
+            /* Visual margin indicators */
+            body::before {
+                content: 'Left Margin: 5.2cm';
+                position: fixed;
+                top: 50%;
+                left: 10px;
+                transform: rotate(-90deg);
+                background: rgba(255, 0, 0, 0.1);
+                padding: 5px 10px;
+                font-size: 12px;
+                color: #666;
+                z-index: 1000;
+            }
+            
+            body::after {
+                content: 'Top Margin: 3.3cm';
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 255, 0.1);
+                padding: 5px 10px;
+                font-size: 12px;
+                color: #666;
+                z-index: 1000;
+            }
+        }
+        
+        /* Document styles */
+        .document-header {
+            text-align: center;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .logo {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 80px;
+            height: 80px;
+            background-color: #2196F3;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8pt;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .header-text {
+            margin: 0 100px;
+            padding-top: 10px;
+        }
+        
+        .triangle-text {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 2px 0;
+        }
+        
+        .district-text {
+            font-size: 11pt;
+            margin: 2px 0;
+        }
+        
+        .receipt-title {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 15px 0;
+            letter-spacing: 1px;
+        }
+        
+        .date-section {
+            position: absolute;
+            right: 0;
+            top: 60px;
+        }
+        
+        .date-box {
+            border: 1px solid #000;
+            padding: 5px 10px;
+            background-color: #f0f0f0;
+            font-weight: bold;
+            font-size: 11pt;
+        }
+        
+        .form-section {
+            margin: 8px 0;
+        }
+        
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .form-label {
+            font-size: 10pt;
+            font-style: italic;
+            margin-right: 10px;
+            min-width: 120px;
+        }
+        
+        .form-field {
+            border: 1px solid #000;
+            padding: 5px;
+            background-color: #e8e8e8;
+            font-weight: bold;
+            font-size: 10pt;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .amount-section {
+            margin: 8px 0;
+        }
+        
+        .amount-row {
+            display: flex;
+            margin-bottom: 5px;
+            align-items: center;
+        }
+        
+        .amount-label {
+            font-size: 10pt;
+            font-style: italic;
+            margin-right: 10px;
+            min-width: 140px;
+        }
+        
+        .amount-label-right {
+            font-size: 10pt;
+            font-style: italic;
+            margin-right: 10px;
+            width: 120px;
+            text-align: center;
+        }
+        
+        .amount-field {
+            border: 1px solid #000;
+            padding: 5px;
+            background-color: #e8e8e8;
+            font-weight: bold;
+            font-size: 10pt;
+            width: 120px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        
+        .words-field {
+            border: 1px solid #000;
+            padding: 5px;
+            background-color: #e8e8e8;
+            font-weight: bold;
+            font-size: 10pt;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .purpose-section {
+            margin: 8px 0;
+        }
+        
+        .purpose-text {
+            font-size: 10pt;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .purpose-field {
+            border: 1px solid #000;
+            padding: 6px;
+            background-color: #e8e8e8;
+            font-weight: bold;
+            font-size: 10pt;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        .location-field {
+            border: 1px solid #000;
+            padding: 5px;
+            background-color: #e8e8e8;
+            font-weight: bold;
+            font-size: 10pt;
+            text-align: center;
+        }
+        
+        .signature-section {
+            display: flex;
+            margin: 12px 0;
+            justify-content: space-between;
+        }
+        
+        .signature-block {
+            width: 45%;
+            text-align: center;
+        }
+        
+        .signature-title {
+            font-size: 10pt;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .signature-name {
+            font-size: 10pt;
+            font-weight: bold;
+            margin-bottom: 2px;
+            padding: 25px 0 3px 0;
+            border-bottom: 1px solid #000;
+        }
+        
+        .signature-position {
+            font-size: 9pt;
+            font-style: italic;
+        }
+        
+        .conditions-section {
+            margin: 10px 0;
+        }
+        
+        .conditions-title {
+            font-size: 10pt;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        
+        .conditions-list {
+            font-size: 8pt;
+            line-height: 1.2;
+            text-align: justify;
+        }
+        
+        .condition-item {
+            margin-bottom: 4px;
+        }
+        
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 10px;
+        }
+        
+        .conforme-text {
+            font-size: 12pt;
+            font-weight: bold;
+        }
+        
+        .qr-code {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7pt;
+            background-color: #f9f9f9;
+        }
+        
+        /* Print controls */
+        .print-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .print-controls button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .print-controls button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Print Controls (hidden when printing) -->
+    <div class="print-controls no-print">
+        <button onclick="window.print()">🖨️ Print Document</button>
+        <button onclick="window.close()">✖️ Close</button>
+    </div>
+
+    <div class="document-container">
+        <!-- Document Header -->
+        <div class="document-header">
+            <div class="logo">QUEZON<br>CITY<br>LOGO</div>
+            
+            <div class="header-text">
+                <div class="triangle-text">TRIANGLE</div>
+                <div class="district-text">District I, Quezon City</div>
+                <div class="receipt-title">CASH BOND ACKNOWLEDGEMENT RECEIPT</div>
+            </div>
+            
+            <div class="date-section">
+                <div class="date-box">10 July 2025</div>
+            </div>
+        </div>
+
+        <!-- Received From Section -->
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-label">Received From</div>
+                <div class="form-field">MERALCO / UCCP</div>
+            </div>
+        </div>
+
+        <!-- Amount Section -->
+        <div class="amount-section">
+            <div class="amount-row">
+                <div class="amount-label">the amount of (words)</div>
+                <div class="amount-label-right">Bond Amount (figure)</div>
+                <div class="amount-field">10,000.00</div>
+            </div>
+            <div class="amount-row">
+                <div style="min-width: 140px;"></div>
+                <div class="words-field">TEN THOUSAND PESOS</div>
+                <div style="width: 120px; margin-right: 10px;"></div>
+            </div>
+        </div>
+
+        <!-- Purpose Section -->
+        <div class="purpose-section">
+            <div class="purpose-text">representing cash bond deposit for the</div>
+            <div class="purpose-field">INSTALLATION OF ONE (1) CONCRETE POLE</div>
+            
+            <div class="form-row" style="margin-top: 10px;">
+                <div class="form-label">at</div>
+                <div class="location-field">BAYANIHAN ST., BRGY. WEST TRIANGLE, QUEZON CITY</div>
+            </div>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-block">
+                <div class="signature-title">Received by:</div>
+                <div class="signature-name">RIVA C. ANCHETA</div>
+                <div class="signature-position">Barangay Treasurer</div>
+            </div>
+            
+            <div class="signature-block">
+                <div class="signature-title">Noted by:</div>
+                <div class="signature-name">ELMER TIMOTHY J. LIGON</div>
+                <div class="signature-position">Punong Barangay</div>
+            </div>
+        </div>
+
+        <!-- Refund Conditions -->
+        <div class="conditions-section">
+            <div class="conditions-title">Refund conditions: (As per IRR of Ord. 02, S-2008)</div>
+            
+            <div class="conditions-list">
+                <div class="condition-item">
+                    a) The owner/contractor/subcontractor shall request for the refund of bond deposit after the 
+                    completion of the project and payment of indemnity, if any.
+                </div>
+                <div class="condition-item">
+                    b) The owner/contractor/subcontractor should submit the as-built drawing together with the 
+                    certificate of project completion to the Barangay.
+                </div>
+                <div class="condition-item">
+                    c) The owner/contractor/subcontractor should submit a certificate of no damage or certificate of no 
+                    claim from surrounding neighbors and/or commercial establishments.
+                </div>
+                <div class="condition-item">
+                    d) Corresponding Permit from the QC Building Official, QC Planning Office and other concerned 
+                    government agencies shall be submitted to the Barangay Secretary prior to release of the Cash Bond 
+                    Deposit.
+                </div>
+                <div class="condition-item">
+                    e) Upon completion and submission of the required certificates, the Barangay Secretary shall subject 
+                    such documents for verification and authentication. If legitimacy is established, the Barangay 
+                    Treasurer upon recommendation of the barangay secretary shall release the bond deposit after 5 
+                    working days, less the accumulated amount of deductions, if any.
+                </div>
+                <div class="condition-item">
+                    f) Original Acknowledgement Receipt shall be surrendered prior to release of the cash bond.
+                </div>
+                <div class="condition-item">
+                    g) Cash bond on road works shall be refunded six (6) months after the completion of the project for 
+                    the Barangay to determine the sturdiness of the filled/used materials and likewise to ensure that the 
+                    completed work or project have not cracked, swelled or sunken.
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer-section">
+            <div class="conforme-text">CONFORME</div>
+            <div class="qr-code">[QR CODE]</div>
+        </div>
+    </div>
+</body>
+</html>

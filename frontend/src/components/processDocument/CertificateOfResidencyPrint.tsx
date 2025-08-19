@@ -9,6 +9,7 @@ import { FiPrinter, FiX, FiAlertCircle } from 'react-icons/fi';
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { useDocument } from '@/services/documents/useDocuments';
 import type { Document } from '@/services/documents/documents.types';
+import PrintStyles from './_components/PrintStyles';
 
 const CertificateHeader: React.FC = () => (
   <div className="text-center mb-8">
@@ -170,48 +171,7 @@ const CertificateOfResidencyPrint: React.FC = () => {
 
   return (
     <>
-      <style>{`
-        @media print {
-          @page {
-            margin: 0.5in;
-            size: A4;
-          }
-          * {
-            visibility: visible !important;
-            color: black !important;
-            background: white !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-          }
-          body {
-            background: white !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          .print\\:hidden {
-            display: none !important;
-          }
-          .certificate-content {
-            page-break-inside: avoid;
-            height: auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-          .no-print {
-            display: none !important;
-          }
-        }
-        
-        @media screen {
-          .certificate-content {
-            min-height: calc(100vh - 6rem);
-          }
-        }
-      `}</style>
+      <PrintStyles />
       
       <div className="min-h-screen bg-gray-50 print:bg-white">
         {/* Print Controls - Hidden when printing */}
@@ -234,7 +194,7 @@ const CertificateOfResidencyPrint: React.FC = () => {
 
         {/* Certificate Content */}
         <div className="max-w-4xl mx-auto p-8 certificate-content print:p-0">
-          <div className="bg-white p-8 shadow-lg print:shadow-none print:p-6">
+          <div className="bg-white p-8 shadow-lg print:shadow-none print:p-0 certificate-body">
             <CertificateHeader />
             
             <div className="text-center mb-8">

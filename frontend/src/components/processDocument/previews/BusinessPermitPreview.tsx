@@ -1,15 +1,11 @@
 // ============================================================================
-// processDocument/BusinessPermitPrint.tsx - Modern Business Permit Print
+// previews/BusinessPermitPreview.tsx - Business Permit Preview with Sample Data
 // ============================================================================
 
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { FiPrinter, FiX, FiAlertCircle } from 'react-icons/fi';
-
-import { LoadingSpinner } from '../__shared/LoadingSpinner';
-import { useDocument } from '@/services/documents/useDocuments';
-import type { Document } from '@/services/documents/documents.types';
-import PrintStyles from './_components/PrintStyles';
+import { useNavigate } from 'react-router-dom';
+import { FiPrinter, FiX, FiEye } from 'react-icons/fi';
+import PrintStyles from '../_components/PrintStyles';
 
 const CertificateHeader: React.FC = () => (
   <div className="text-center mb-8">
@@ -67,16 +63,8 @@ const CertificateFooter: React.FC<CertificateFooterProps> = ({
   </div>
 );
 
-const BusinessPermitPrint: React.FC = () => {
-  const { documentId } = useParams<{ documentId: string }>();
+const BusinessPermitPreview: React.FC = () => {
   const navigate = useNavigate();
-  
-  // Modern TanStack Query data fetching
-  const { 
-    data: document, 
-    isLoading, 
-    error 
-  } = useDocument(documentId || '', !!documentId);
 
   const handlePrint = () => {
     window.print();
@@ -86,97 +74,43 @@ const BusinessPermitPrint: React.FC = () => {
     navigate('/process-document');
   };
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <LoadingSpinner size="lg" />
-          <p className="mt-4 text-gray-600">Loading document...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (error || !document) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center bg-white p-8 rounded-lg shadow-lg max-w-md">
-          <FiAlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Document Not Found</h3>
-          <p className="text-red-600 mb-6">
-            {error?.message || 'The requested document could not be found or loaded.'}
-          </p>
-          <button
-            onClick={handleClose}
-            className="bg-smblue-400 text-white px-6 py-2 rounded-lg hover:bg-smblue-500 transition-colors"
-          >
-            Back to Documents
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Validate document type
-  if (document.document_type !== 'BUSINESS_PERMIT') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center bg-white p-8 rounded-lg shadow-lg max-w-md">
-          <FiAlertCircle className="w-16 h-16 text-orange-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Invalid Document Type</h3>
-          <p className="text-orange-600 mb-6">
-            This document is not a Business Permit. Expected: Business Permit, Got: {document.document_type.replace(/_/g, ' ')}
-          </p>
-          <button
-            onClick={handleClose}
-            className="bg-smblue-400 text-white px-6 py-2 rounded-lg hover:bg-smblue-500 transition-colors"
-          >
-            Back to Documents
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Format applicant name
-  const applicantName = document.applicant_name || 
-    `${document.resident?.first_name || ''} ${document.resident?.middle_name || ''} ${document.resident?.last_name || ''}`.trim() ||
-    'N/A';
-
-  // Format address
-  const applicantAddress = document.applicant_address || 
-    document.resident?.complete_address || 
-    'Brgy. Sikatuna Village, Samal, Bataan';
-
-  // Generate OR number
-  const orNumber = document.document_number || `OR-${(document.id || 0).toString().padStart(6, '0')}`;
-
-  // Format date issued
-  const dateIssued = document.approved_date ? 
-    new Date(document.approved_date).toLocaleDateString('en-US', { 
+  // Sample data for preview
+  const sampleData = {
+    applicantName: 'ROSARIO BUSINESS ENTERPRISES',
+    applicantAddress: 'Corner Main St. & Rizal Ave., Brgy. Sikatuna Village, Samal, Bataan',
+    purpose: 'business permit application',
+    documentNumber: 'BP-2024-01-0001',
+    processingFee: 150.00,
+    certifyingOfficial: 'MAYOR RICARDO SANTOS',
+    businessName: 'Rosario\'s Grocery and General Merchandise',
+    businessType: 'Retail Store - General Merchandise',
+    businessAddress: 'Lot 15, Block 3, Purok 2, Brgy. Sikatuna Village, Samal, Bataan',
+    businessOwner: 'ROSARIO DELA CRUZ SANTOS',
+    dateIssued: new Date().toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
-    }) : 
-    new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-
-  // Business-specific information from document fields
-  const businessName = document.business_name || document.applicant_name || 'Business Name Not Specified';
-  const businessType = document.business_type || 'Business Type Not Specified';
-  const businessAddress = document.business_address || applicantAddress;
-  const businessOwner = document.business_owner || applicantName;
+    })
+  };
 
   return (
     <>
       <PrintStyles />
       
       <div className="min-h-screen bg-gray-50 print:bg-white">
+        {/* Preview Notice - Hidden when printing */}
+        <div className="no-print print:hidden fixed top-4 left-4 z-10">
+          <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-lg max-w-sm">
+            <div className="flex items-center">
+              <FiEye className="w-5 h-5 mr-2" />
+              <div>
+                <p className="font-medium">Preview Mode</p>
+                <p className="text-sm">This is a template preview with sample data</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Print Controls - Hidden when printing */}
         <div className="no-print print:hidden fixed top-4 right-4 z-10 space-x-2">
           <button
@@ -184,7 +118,7 @@ const BusinessPermitPrint: React.FC = () => {
             className="bg-smblue-400 text-white px-6 py-3 rounded-lg hover:bg-smblue-500 shadow-lg font-medium transition-colors flex items-center space-x-2"
           >
             <FiPrinter className="w-4 h-4" />
-            <span>Print Certificate</span>
+            <span>Print Preview</span>
           </button>
           <button
             onClick={handleClose}
@@ -210,9 +144,9 @@ const BusinessPermitPrint: React.FC = () => {
               </p>
               
               <p className="text-base leading-relaxed text-justify mb-6">
-                This is to certify that <span className="font-semibold underline">{applicantName.toUpperCase()}</span>, 
+                This is to certify that <span className="font-semibold underline">{sampleData.businessOwner}</span>, 
                 of legal age, Filipino citizen, and a resident of 
-                <span className="font-semibold"> {applicantAddress}</span>, 
+                <span className="font-semibold"> {sampleData.applicantAddress}</span>, 
                 has been granted permission to operate a business within the jurisdiction of this barangay.
               </p>
 
@@ -220,12 +154,12 @@ const BusinessPermitPrint: React.FC = () => {
                 <h3 className="text-lg font-semibold mb-3 text-center">BUSINESS DETAILS</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <p><span className="font-semibold">Business Name:</span> {businessName}</p>
-                    <p><span className="font-semibold">Business Type:</span> {businessType}</p>
+                    <p><span className="font-semibold">Business Name:</span> {sampleData.businessName}</p>
+                    <p><span className="font-semibold">Business Type:</span> {sampleData.businessType}</p>
                   </div>
                   <div className="space-y-2">
-                    <p><span className="font-semibold">Business Owner:</span> {businessOwner}</p>
-                    <p><span className="font-semibold">Business Address:</span> {businessAddress}</p>
+                    <p><span className="font-semibold">Business Owner:</span> {sampleData.businessOwner}</p>
+                    <p><span className="font-semibold">Business Address:</span> {sampleData.businessAddress}</p>
                   </div>
                 </div>
               </div>
@@ -237,7 +171,7 @@ const BusinessPermitPrint: React.FC = () => {
               </p>
 
               <p className="text-base leading-relaxed text-justify mb-6">
-                This certification is issued for <span className="font-semibold">{document.purpose?.toLowerCase() || 'business permit purposes'}</span> and for whatever legal purpose it may serve the applicant.
+                This certification is issued for <span className="font-semibold">{sampleData.purpose}</span> and for whatever legal purpose it may serve the applicant.
               </p>
 
               <p className="text-base leading-relaxed text-justify">
@@ -248,10 +182,10 @@ const BusinessPermitPrint: React.FC = () => {
             </div>
 
             <CertificateFooter 
-              certifyingOfficial={document.certifying_official}
-              dateIssued={dateIssued}
-              orNumber={orNumber}
-              amountPaid={document.processing_fee}
+              certifyingOfficial={sampleData.certifyingOfficial}
+              dateIssued={sampleData.dateIssued}
+              orNumber={sampleData.documentNumber}
+              amountPaid={sampleData.processingFee}
             />
           </div>
         </div>
@@ -260,4 +194,4 @@ const BusinessPermitPrint: React.FC = () => {
   );
 };
 
-export default BusinessPermitPrint; 
+export default BusinessPermitPreview;

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Summons - Sample</title>
+    <style>
+        /* Print specifications for Letter size (8.5 x 11 inches) */
+        @media print {
+            @page {
+                size: 8.5in 11in; /* Explicit Letter size dimensions */
+                margin-top: 3.3cm;    /* Top margin - blank space for letterhead */
+                margin-left: 5.2cm;   /* Left margin - blank space for binding */
+                margin-right: 2.54cm; /* Right margin - 1 inch default */
+                margin-bottom: 2.54cm; /* Bottom margin - 1 inch default */
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 10pt;
+                line-height: 1.2;
+                color: black;
+                background: white;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .document-container {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                padding: 0;
+                page-break-inside: avoid;
+                height: auto;
+                max-height: calc(27.94cm - 3.3cm - 2.54cm);
+            }
+        }
+        
+        /* Screen styles */
+        @media screen {
+            body {
+                margin: 0;
+                padding: 20px;
+                font-family: 'Times New Roman', Times, serif;
+                background-color: #f5f5f5;
+            }
+            
+            .document-container {
+                max-width: 21.59cm;
+                margin: 0 auto;
+                background: white;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                margin-left: calc(5.2cm + 20px);
+                margin-top: calc(3.3cm + 20px);
+                padding-right: 2.54cm;
+                padding-bottom: 2.54cm;
+                border-left: 3px dashed #ccc;
+                border-top: 3px dashed #ccc;
+                min-height: calc(27.94cm - 3.3cm - 2.54cm);
+            }
+            
+            /* Visual margin indicators */
+            body::before {
+                content: 'Left Margin: 5.2cm';
+                position: fixed;
+                top: 50%;
+                left: 10px;
+                transform: rotate(-90deg);
+                background: rgba(255, 0, 0, 0.1);
+                padding: 5px 10px;
+                font-size: 12px;
+                color: #666;
+                z-index: 1000;
+            }
+            
+            body::after {
+                content: 'Top Margin: 3.3cm';
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 255, 0.1);
+                padding: 5px 10px;
+                font-size: 12px;
+                color: #666;
+                z-index: 1000;
+            }
+        }
+        
+        /* Document styles */
+        .document-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .logo-left {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 80px;
+            height: 80px;
+            background-color: #4CAF50;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8pt;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-right {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 80px;
+            height: 80px;
+            background-color: #2196F3;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8pt;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .header-text {
+            margin: 0 100px;
+            padding-top: 20px;
+        }
+        
+        .republic-text {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .barangay-text {
+            font-size: 13pt;
+            font-weight: bold;
+            margin: 3px 0;
+        }
+        
+        .office-text {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .case-info-section {
+            margin: 30px 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .case-info {
+            text-align: left;
+            width: 300px;
+        }
+        
+        .case-number {
+            border: 1px solid #000;
+            padding: 8px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .case-number-value {
+            color: red;
+            font-weight: bold;
+            font-size: 12pt;
+        }
+        
+        .for-field {
+            border: 1px solid #000;
+            padding: 8px;
+            height: 60px;
+            background-color: #f9f9f9;
+        }
+        
+        .recipient-section {
+            margin: 30px 0;
+        }
+        
+        .to-label {
+            font-size: 11pt;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+        
+        .recipient-info {
+            background-color: #333;
+            color: white;
+            padding: 8px;
+            font-weight: bold;
+            font-size: 13pt;
+            margin-bottom: 5px;
+        }
+        
+        .address-line {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .summons-title {
+            text-align: center;
+            font-size: 18pt;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 40px 0 30px 0;
+        }
+        
+        .summons-content {
+            text-align: center;
+            margin: 30px 0;
+            line-height: 1.8;
+        }
+        
+        .summons-text {
+            font-size: 12pt;
+            margin-bottom: 20px;
+        }
+        
+        .date-time {
+            color: red;
+            font-weight: bold;
+            text-decoration: underline;
+            font-size: 13pt;
+        }
+        
+        .hearing-purpose {
+            font-size: 12pt;
+            margin-top: 20px;
+        }
+        
+        .issuance-info {
+            margin: 30px 0 20px 0;
+            text-align: left;
+            font-size: 10pt;
+        }
+        
+        .issued-date {
+            margin-bottom: 20px;
+        }
+        
+        .signature-section {
+            text-align: right;
+            margin-top: 30px;
+        }
+        
+        .signature-name {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .signature-title {
+            font-size: 11pt;
+            font-style: italic;
+        }
+        
+        /* Print controls */
+        .print-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .print-controls button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .print-controls button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Print Controls (hidden when printing) -->
+    <div class="print-controls no-print">
+        <button onclick="window.print()">🖨️ Print Document</button>
+        <button onclick="window.close()">✖️ Close</button>
+    </div>
+
+    <div class="document-container">
+        <!-- Document Header with Logos -->
+        <div class="document-header">
+            <div class="logo-left">BARANGAY<br>LOGO</div>
+            <div class="logo-right">QUEZON<br>CITY<br>LOGO</div>
+            
+            <div class="header-text">
+                <div class="republic-text">REPUBLIC OF THE</div>
+                <div class="republic-text">PHILIPPINES</div>
+                <div class="barangay-text">Barangay West Triangle</div>
+                <div class="barangay-text">District I, Quezon City</div>
+                <div class="office-text">OFFICE OF THE PUNONG BARANGAY</div>
+            </div>
+        </div>
+
+        <!-- Case Information -->
+        <div class="case-info-section">
+            <div class="case-info">
+                <div class="case-number">
+                    Barangay Case: <span class="case-number-value">25-17</span>
+                </div>
+                <div class="for-field">
+                    For:
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipient Information -->
+        <div class="recipient-section">
+            <div class="to-label">To:</div>
+            <div class="recipient-info">ELIZABETH CHUA & MARILOU UY</div>
+            <div class="address-line">59 TIMES ST.</div>
+            <div class="address-line">WEST TRIANGLE, QC</div>
+        </div>
+
+        <!-- Summons Title -->
+        <div class="summons-title">SUMMON</div>
+
+        <!-- Summons Content -->
+        <div class="summons-content">
+            <div class="summons-text">
+                You are hereby required to appear before me on
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <span class="date-time">Thursday, 26 June 2025</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="date-time">10:00 am</span>
+            </div>
+            
+            <div class="hearing-purpose">
+                for the hearing of your complaint.
+            </div>
+        </div>
+
+        <!-- Issuance Information -->
+        <div class="issuance-info">
+            <div class="issued-date">
+                Issued this &nbsp;&nbsp;&nbsp;<strong>24-Jun-25</strong>&nbsp;&nbsp;&nbsp; at Quezon City, Metro Manila.
+            </div>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-name">ELMER TIMOTHY J. LIGON</div>
+            <div class="signature-title">Punong Barangay</div>
+        </div>
+    </div>
+</body>
+</html>
