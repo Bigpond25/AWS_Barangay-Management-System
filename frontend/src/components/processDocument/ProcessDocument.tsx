@@ -22,6 +22,7 @@ import {
   FiChevronUp,
   FiChevronDown
 } from 'react-icons/fi';
+import { useEffect } from 'react';
 
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { useDocumentQueue, SORTABLE_FIELDS } from './_hooks/useDocumentQueue';
@@ -30,6 +31,7 @@ import { useBarangayOfficials } from '@/services/officials/useBarangayOfficials'
 import Breadcrumb from '../_global/Breadcrumb';
 import { formatDate } from '@/utils/dateUtils';
 import type { Document, DocumentStatus } from '@/services/documents/documents.types';
+import DocumentStatistics from './_components/DocumentStatistics';
 
 interface ProcessDocumentProps {
   onNavigate?: (page: string) => void;
@@ -83,6 +85,7 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({
 const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
   const navigate = useNavigate();
   const { showNotification } = useNotifications();
+  const [isLoaded, setIsLoaded] = useState(false);
   
   const {
     documents,
@@ -102,6 +105,14 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
 
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [showProcessModal, setShowProcessModal] = useState(false);
+
+  // Animation trigger on component mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const documentTypes = [
     { value: 'BARANGAY_CLEARANCE_INSTALLATION', label: 'Barangay Clearance (Installation)' },
@@ -279,10 +290,12 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Breadcrumb */}
-      <Breadcrumb isLoaded={true} />
+      <Breadcrumb isLoaded={isLoaded} />
 
       {/* Header */}
-      <div className="mb-6">
+      <div className={`mb-6 transition-all duration-700 ease-out ${
+        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}>
         <div className="flex items-center justify-between">
           <div>
         <h1 className="text-2xl font-bold text-darktext">Document Processing Center</h1>
@@ -301,83 +314,17 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-2xl font-bold text-yellow-600">{statusCounts.PENDING || 0}</p>
-            </div>
-            <div className="p-3 bg-yellow-100 rounded-full">
-              <FiClock className="w-6 h-6 text-yellow-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Processing</p>
-              <p className="text-2xl font-bold text-blue-600">{statusCounts.PROCESSING || 0}</p>
-            </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <FiEye className="w-6 h-6 text-blue-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Approved</p>
-              <p className="text-2xl font-bold text-green-600">{statusCounts.APPROVED || 0}</p>
-            </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <FiCheck className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Released</p>
-              <p className="text-2xl font-bold text-gray-600">{statusCounts.RELEASED || 0}</p>
-            </div>
-            <div className="p-3 bg-gray-100 rounded-full">
-              <FiFileText className="w-6 h-6 text-gray-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Rejected</p>
-              <p className="text-2xl font-bold text-red-600">{statusCounts.REJECTED || 0}</p>
-            </div>
-            <div className="p-3 bg-red-100 rounded-full">
-              <FiX className="w-6 h-6 text-red-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Cancelled</p>
-              <p className="text-2xl font-bold text-gray-600">{statusCounts.CANCELLED || 0}</p>
-            </div>
-            <div className="p-3 bg-gray-100 rounded-full">
-              <FiX className="w-6 h-6 text-gray-600" />
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Document Statistics */}
+      <DocumentStatistics 
+        statusCounts={statusCounts}
+        isLoading={isLoading}
+        isLoaded={isLoaded}
+      />
 
       {/* Enhanced Search and Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6 transition-all duration-700 ease-out ${
+        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`} style={{ transitionDelay: '400ms' }}>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex flex-col sm:flex-row gap-4 flex-1">
             {/* Search */}
@@ -450,7 +397,9 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
       </div>
 
       {/* Documents Table with Sortable Headers */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className={`bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all duration-700 ease-out ${
+        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`} style={{ transitionDelay: '500ms' }}>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -598,7 +547,9 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
 
       {/* Backend Pagination */}
       {pagination && pagination.last_page > 1 && (
-        <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+        <div className={`bg-white px-4 py-3 border-t border-gray-200 sm:px-6 transition-all duration-700 ease-out ${
+          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`} style={{ transitionDelay: '600ms' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <p className="text-sm text-gray-700">
@@ -654,7 +605,9 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
 
       {/* Empty State */}
       {documents.length === 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+        <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center transition-all duration-700 ease-out ${
+          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`} style={{ transitionDelay: '500ms' }}>
           <FiFileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
           <p className="text-gray-600">
