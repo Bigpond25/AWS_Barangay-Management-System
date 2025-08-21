@@ -502,9 +502,9 @@ class ResidentController extends Controller
             // Age group calculations
             $currentDate = now()->format('Y-m-d');
             $ageGroups = [
-                'children' => (clone $activeResidents)->where('age', '<', 18)->count(),
-                'adults' => (clone $activeResidents)->whereBetween('age', [18, 59])->count(),
-                'seniors' => (clone $activeResidents)->where('age', '>=', 60)->count(),
+                'children' => (clone $activeResidents)->minors()->count(),
+                'adults' => (clone $activeResidents)->adults()->count(),
+                'seniors' => (clone $activeResidents)->seniors()->count(),
             ];
 
             // Get employed residents count
@@ -601,7 +601,7 @@ class ResidentController extends Controller
                     '45-49' => Resident::active()->byAgeRange(45, 49)->count(),
                     '50-54' => Resident::active()->byAgeRange(50, 54)->count(),
                     '55-59' => Resident::active()->byAgeRange(55, 59)->count(),
-                    '60+' => Resident::active()->where('age', '>=', 60)->count(),
+                    '60+' => Resident::active()->seniors()->count(),
                 ]
             ];
 

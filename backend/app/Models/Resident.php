@@ -95,14 +95,12 @@ class Resident extends Model implements Auditable
                 $model->created_by = Auth::id();
             }
             
-            // Auto-calculate age when creating
+            // Auto-set senior citizen status based on computed age
             if ($model->birth_date) {
-                $model->age = Carbon::parse($model->birth_date)->age;
-            }
-            
-            // Auto-set senior citizen status if age >= 60
-            if ($model->age >= 60) {
-                $model->senior_citizen = true;
+                $age = Carbon::parse($model->birth_date)->age;
+                if ($age >= 60) {
+                    $model->senior_citizen = true;
+                }
             }
         });
 
@@ -111,12 +109,10 @@ class Resident extends Model implements Auditable
                 $model->updated_by = Auth::id();
             }
             
-            // Recalculate age if birth_date changed
+            // Update senior citizen status if birth_date changed
             if ($model->isDirty('birth_date') && $model->birth_date) {
-                $model->age = Carbon::parse($model->birth_date)->age;
-                
-                // Update senior citizen status
-                $model->senior_citizen = $model->age >= 60;
+                $age = Carbon::parse($model->birth_date)->age;
+                $model->senior_citizen = $age >= 60;
             }
         });
     }
@@ -147,6 +143,11 @@ class Resident extends Model implements Auditable
         $lastInitial = $this->last_name ? strtoupper(substr($this->last_name, 0, 1)) : '';
         
         return $firstInitial . $lastInitial;
+    }
+
+    public function getAgeAttribute(): int
+    {
+        return $this->birth_date ? $this->birth_date->age : 0;
     }
 
     public function getCalculatedAgeAttribute(): int
@@ -364,14 +365,14 @@ class Resident extends Model implements Auditable
     public function scopeHouseholdHeads($query)
     {
         return $query->whereHas('households', function ($q) {
-            $q->wherePivot('relationship', 'HEAD');
+            $q->where('household_members.relationship', 'HEAD');
         });
     }
 
     public function scopeHouseholdMembers($query)
     {
         return $query->whereHas('households', function ($q) {
-            $q->wherePivot('relationship', '!=', 'HEAD');
+            $q->where('household_members.relationship', '!=', 'HEAD');
         });
     }
 
@@ -388,7 +389,7 @@ class Resident extends Model implements Auditable
     public function scopeByHouseholdRelationship($query, $relationship)
     {
         return $query->whereHas('households', function ($q) use ($relationship) {
-            $q->wherePivot('relationship', $relationship);
+            $q->where('household_members.relationship', $relationship);
         });
     }
 
@@ -417,22 +418,30 @@ class Resident extends Model implements Auditable
 
     public function scopeByAgeRange($query, $minAge, $maxAge)
     {
-        return $query->whereBetween('age', [$minAge, $maxAge]);
+        $today = Carbon::today();
+        $maxBirthDate = $today->copy()->subYears($minAge);
+        $minBirthDate = $today->copy()->subYears($maxAge + 1);
+        
+        return $query->whereBetween('birth_date', [$minBirthDate, $maxBirthDate]);
     }
 
     public function scopeMinors($query)
     {
-        return $query->where('age', '<', 18);
+        $eighteenYearsAgo = Carbon::today()->subYears(18);
+        return $query->where('birth_date', '>', $eighteenYearsAgo);
     }
 
     public function scopeAdults($query)
     {
-        return $query->whereBetween('age', [18, 59]);
+        $eighteenYearsAgo = Carbon::today()->subYears(18);
+        $sixtyYearsAgo = Carbon::today()->subYears(60);
+        return $query->whereBetween('birth_date', [$sixtyYearsAgo, $eighteenYearsAgo]);
     }
 
     public function scopeSeniors($query)
     {
-        return $query->where('age', '>=', 60);
+        $sixtyYearsAgo = Carbon::today()->subYears(60);
+        return $query->where('birth_date', '<=', $sixtyYearsAgo);
     }
 
     public function scopeVoters($query)

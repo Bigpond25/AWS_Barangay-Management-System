@@ -58,9 +58,9 @@ class DashboardController extends Controller
         try {
             try {
                 // Get age groups from residents table if it exists - use the existing age field
-                $children = Resident::where('age', '<', 18)->count();
-                $adults = Resident::whereBetween('age', [18, 59])->count();
-                $seniors = Resident::where('age', '>=', 60)->count();
+                $children = Resident::minors()->count();
+                $adults = Resident::adults()->count();
+                $seniors = Resident::seniors()->count();
             } catch (\Exception $e) {
                 // If table doesn't exist or queries fail, provide sample data based on total count
                 try {
