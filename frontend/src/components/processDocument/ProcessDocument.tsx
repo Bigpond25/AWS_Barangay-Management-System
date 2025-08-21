@@ -527,7 +527,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {formatDocumentType(document.document_type)}
+                      {formatDocumentType(document.type)}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -549,7 +549,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex items-center">
                       <FiCalendar className="w-4 h-4 mr-1" />
-                      {formatDate(document.created_at || document.request_date)}
+                      {formatDate(document.created_at)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -724,7 +724,7 @@ const ProcessDocumentModal: React.FC<{
   };
 
   const formatDocumentType = (type: string) => {
-    return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return type?.replace(/_/g, ' ')?.replace(/\b\w/g, l => l.toUpperCase());
   };
 
   return (
@@ -739,7 +739,7 @@ const ProcessDocumentModal: React.FC<{
             <strong>Resident:</strong> {document.applicant_name}
           </p>
           <p className="text-sm text-gray-600 mb-1">
-            <strong>Document:</strong> {formatDocumentType(document.document_type)}
+            <strong>Document:</strong> {formatDocumentType(document.type)}
           </p>
           <p className="text-sm text-gray-600 mb-1">
             <strong>Purpose:</strong> {document.purpose}
