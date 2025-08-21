@@ -96,12 +96,12 @@ const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: "help-desk",
-      label: "Help desk",
+      label: "Help Desk",
       icon: FiHelpCircle,
       hasSubmenu: true,
       submenu: [
-        { id: "help-desk", label: "Help Desk Overview" },
-        { id: "management", label: "Help Desk Management" },
+        // { id: "help-desk", label: "Help Desk Overview" },
+        // { id: "management", label: "Help Desk Management" },
         { id: "schedule-appointment", label: "Schedule an appointment" },
         { id: "file-blotter", label: "File blotter report" },
         { id: "file-complaint", label: "File a complaint" },

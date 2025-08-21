@@ -322,13 +322,48 @@ class AppointmentController extends Controller
                 $query->where('date', $request->input('date'));
             }
 
+            // Support calendar filtering by month/year
+            if ($request->has('month') && $request->has('year')) {
+                $month = $request->input('month');
+                $year = $request->input('year');
+                $query->whereRaw('EXTRACT(MONTH FROM date) = ?', [$month])
+                      ->whereRaw('EXTRACT(YEAR FROM date) = ?', [$year]);
+            } elseif ($request->has('year')) {
+                $year = $request->input('year');
+                $query->whereRaw('EXTRACT(YEAR FROM date) = ?', [$year]);
+            } elseif ($request->has('month')) {
+                $month = $request->input('month');
+                $currentYear = date('Y');
+                $query->whereRaw('EXTRACT(MONTH FROM date) = ?', [$month])
+                      ->whereRaw('EXTRACT(YEAR FROM date) = ?', [$currentYear]);
+            }
+
             if ($request->has('status')) {
                 $query->whereHas('ticket', function ($q) use ($request) {
                     $q->byStatus($request->input('status'));
                 });
             }
 
-            // Pagination
+            // For calendar view, return all results without pagination
+            if ($request->has('month') || $request->has('year')) {
+                $appointments = $query->get();
+                
+                // Transform the data to match the frontend ViewAppointment schema
+                $transformedAppointments = $appointments->map(function ($appointment) {
+                    return [
+                        'ticket' => $appointment->ticket,
+                        'appointment' => $appointment
+                    ];
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Appointments retrieved successfully',
+                    'data' => $transformedAppointments
+                ]);
+            }
+
+            // Pagination for regular listing
             $perPage = $request->input('per_page', 15);
             $appointments = $query->paginate($perPage);
 

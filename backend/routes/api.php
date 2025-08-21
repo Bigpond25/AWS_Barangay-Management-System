@@ -245,6 +245,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [TicketController::class, 'index']);
         Route::get('/statistics', [TicketController::class, 'statistics'])->middleware('permission:view-reports');
         Route::delete('/{id}', [TicketController::class, 'destroy'])->middleware('permission:delete-complaints');
+        
+        // Administrative appointments - allow dashboard access with basic auth
+        Route::get('/appointments', [AppointmentController::class, 'index'])->withoutMiddleware('permission:view-complaints');
     });
 
     // Settings Management

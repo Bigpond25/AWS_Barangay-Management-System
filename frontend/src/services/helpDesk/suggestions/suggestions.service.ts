@@ -11,7 +11,7 @@ export class SuggestionService extends BaseApiService {
     try {
       const responseSchema = ApiResponseSchema(ViewSuggestionSchema);
       const response = await this.request(
-        `/suggestion/view/${id}`,
+        `/help-desk/suggestion/view/${id}`,
         responseSchema,
         {
           method: 'GET'
@@ -36,7 +36,7 @@ export class SuggestionService extends BaseApiService {
 
     const responseSchema = ApiResponseSchema(ViewSuggestionSchema);
     const response = await this.request(
-      '/suggestion',
+      '/help-desk/suggestion',
       responseSchema,
       {
         method: 'POST',
@@ -62,7 +62,7 @@ export class SuggestionService extends BaseApiService {
     const responseSchema = ApiResponseSchema(ViewSuggestionSchema);
     
     const response = await this.request(
-      `/suggestion/${id}`,
+      `/help-desk/suggestion/${id}`,
       responseSchema,
       {
         method: 'PUT',

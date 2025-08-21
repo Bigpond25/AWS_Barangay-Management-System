@@ -125,6 +125,19 @@ export function useCheckScheduleAvailabilityMutation() {
     });
 }
 
+/**
+ * Hook to fetch appointments by date for calendar view
+ */
+export function useAppointmentsByDate(month?: number, year?: number, enabled = true) {
+    return useQuery({
+        queryKey: appointmentsKeys.list({ month, year }),
+        queryFn: () => appointmentsService.getAppointmentsByDate(month, year),
+        enabled,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        retry: 2,
+    });
+}
+
 // /**
 //  * Hook to prefetch an appointment (useful for preloading)
 //  */

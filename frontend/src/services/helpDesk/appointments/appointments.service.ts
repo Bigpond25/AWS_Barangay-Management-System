@@ -13,7 +13,7 @@ export class AppointmentsService extends BaseApiService {
     try {
       const responseSchema = ApiResponseSchema(ViewAppointmentSchema);
       const response = await this.request(
-        `/appointments/view/${id}`,
+        `/help-desk/appointments/view/${id}`,
         responseSchema,
         {
           method: 'GET'
@@ -40,7 +40,7 @@ export class AppointmentsService extends BaseApiService {
     const responseSchema = ApiResponseSchema(ViewAppointmentSchema);
     
     const response = await this.request(
-      '/appointments',
+      '/help-desk/appointments',
       responseSchema,
       {
         method: 'POST',
@@ -66,7 +66,7 @@ export class AppointmentsService extends BaseApiService {
     const responseSchema = ApiResponseSchema(ViewAppointmentSchema);
     
     const response = await this.request(
-      `/appointments/${id}`,
+      `/help-desk/appointments/${id}`,
       responseSchema,
       {
         method: 'PUT',
@@ -86,7 +86,7 @@ export class AppointmentsService extends BaseApiService {
       const responseSchema = ApiResponseSchema(z.boolean());
 
       const response = await this.request(
-        `/appointments/check-vacancy/${schedule}`,
+        `/help-desk/appointments/check-vacancy/${schedule}`,
         responseSchema,
         {
           method: 'GET'
@@ -101,8 +101,39 @@ export class AppointmentsService extends BaseApiService {
         if (error instanceof Error) {
           throw new Error(`Failed to check official status: ${error.message}`);
         }
-        throw new Error('An unexpected error occurred while checking official status');
-    } 
+        throw new Error('An unexpected error occurred while checking schedule vacancy');
+    }
+  }
+
+  // Add method to get appointments for calendar view
+  async getAppointmentsByDate(month?: number, year?: number): Promise<ViewAppointment[]> {
+    try {
+      const params: Record<string, number> = {};
+      if (month) params.month = month;
+      if (year) params.year = year;
+
+      const responseSchema = ApiResponseSchema(z.array(ViewAppointmentSchema));
+      
+      const response = await this.request(
+        '/help-desk/appointments',
+        responseSchema,
+        {
+          method: 'GET',
+          params
+        }
+      );
+
+      if (!response.data) {
+        throw new Error('Failed to fetch appointments');
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to get appointments: ${error.message}`);
+      }
+      throw new Error('An unexpected error occurred while fetching appointments');
+    }
   }
 }
 

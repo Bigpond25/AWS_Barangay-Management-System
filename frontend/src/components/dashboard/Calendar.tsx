@@ -6,12 +6,15 @@ import {
   useCalendarEvents,
   useCreateAgenda
 } from '@/services/agenda/useAgenda';
+import { useAppointmentsByDate } from '@/services/helpDesk/appointments/useAppointments';
 import { type CalendarEvent, type AgendaFormData } from '@/services/agenda/agenda.types';
+import { type ViewAppointment } from '@/services/helpDesk/appointments/appointments.types';
 
 interface SelectedDate {
   day: number;
   dateKey: string;
   agendas: CalendarEvent[];
+  appointments: ViewAppointment[];
 }
 
 const Calendar = () => {
@@ -26,8 +29,11 @@ const Calendar = () => {
     currentDate.getFullYear()
   );
 
-  // TODO: Add appointments integration
-  // const { data: appointments = [] } = useAppointmentsByDate(currentDate.getMonth() + 1, currentDate.getFullYear());
+  // Fetch appointments for calendar view
+  const { data: appointments = [] } = useAppointmentsByDate(
+    currentDate.getMonth() + 1,
+    currentDate.getFullYear()
+  );
   // const combinedEvents = [...calendarEvents, ...appointments.map(apt => ({...apt, type: 'appointment'}))];
 
   const createAgendaMutation = useCreateAgenda();
@@ -52,7 +58,23 @@ const Calendar = () => {
     return acc;
   }, {} as { [key: string]: CalendarEvent[] });
 
+  // Transform appointments to appointments data format for rendering
+  const appointmentsData = appointments.reduce((acc: { [key: string]: ViewAppointment[] }, appointment: ViewAppointment) => {
+    // Access the date from the nested appointment object
+    const appointmentDate: string = appointment.appointment.date;
+    if (appointmentDate) {
+      // Date is already a string in YYYY-MM-DD format according to the schema
+      const dateKey: string = appointmentDate.substring(0, 10);
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(appointment);
+    }
+    return acc;
+  }, {} as { [key: string]: ViewAppointment[] });
+
   console.log('Agenda Data:', agendaData);
+  console.log('Appointments Data:', appointmentsData);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -73,7 +95,12 @@ const Calendar = () => {
 
   const handleDateClick = (day: number): void => {
     const dateKey = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
-    setSelectedDate({ day, dateKey, agendas: agendaData[dateKey] || [] });
+    setSelectedDate({ 
+      day, 
+      dateKey, 
+      agendas: agendaData[dateKey] || [], 
+      appointments: appointmentsData[dateKey] || [] 
+    });
     setShowModal(true);
   };
 
@@ -217,7 +244,9 @@ const Calendar = () => {
             const day = i + 1;
             const dateKey = formatDateKey(currentDate.getFullYear(), currentDate.getMonth(), day);
             const hasAgenda = (agendaData[dateKey] && agendaData[dateKey]?.length > 0) ?? false;
-            console.log("Date Key" + dateKey + " hasAgenda: " + hasAgenda);
+            const hasAppointments = (appointmentsData[dateKey] && appointmentsData[dateKey]?.length > 0) ?? false;
+            const hasEvents = hasAgenda || hasAppointments;
+            console.log("Date Key" + dateKey + " hasAgenda: " + hasAgenda + " hasAppointments: " + hasAppointments);
 
 
             return (
@@ -231,16 +260,30 @@ const Calendar = () => {
                 style={{ animationDelay: `${day * 15}ms` }}
               >
                 <span className="block relative z-10">{day}</span>
-                {(
+                {hasEvents && (
                   <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex gap-0.5">
-                    {hasAgenda && agendaData[dateKey]?.slice(0, 3)?.map((agenda: CalendarEvent, idx: number) => (
+                    {/* Show agenda dots */}
+                    {hasAgenda && agendaData[dateKey]?.slice(0, 2)?.map((agenda: CalendarEvent, idx: number) => (
                       <div
-                        key={idx}
+                        key={`agenda-${idx}`}
                         className={`w-1.5 h-1.5 rounded-full animate-subtle-pulse`}
                         style={{
                           backgroundColor: agenda.color,
                           animationDelay: `${idx * 300}ms`
                         }}
+                        title={`Agenda: ${agenda.title}`}
+                      />
+                    ))}
+                    {/* Show appointment dots */}
+                    {hasAppointments && appointmentsData[dateKey]?.slice(0, 2)?.map((appointment: ViewAppointment, idx: number) => (
+                      <div
+                        key={`appointment-${idx}`}
+                        className={`w-1.5 h-1.5 rounded-full animate-subtle-pulse`}
+                        style={{
+                          backgroundColor: '#10B981', // Green color for appointments
+                          animationDelay: `${(idx + (hasAgenda ? agendaData[dateKey]?.length || 0 : 0)) * 300}ms`
+                        }}
+                        title={`Appointment: ${appointment.appointment.additional_notes || 'Appointment'}`}
                       />
                     ))}
                   </div>
@@ -279,43 +322,88 @@ const Calendar = () => {
             </div>
 
             <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 140px)' }}>
-              {selectedDate && selectedDate.agendas.length > 0 ? (
-                <div className="space-y-3">
-                  {selectedDate.agendas.map((agenda: CalendarEvent, index: number) => (
-                    <div
-                      key={agenda.id}
-                      className="border-l-4 pl-4 py-3 transform hover:scale-[1.005] transition-all duration-150 hover:shadow-sm rounded-r animate-slide-up bg-gray-50/30"
-                      style={{
-                        borderColor: agenda.color,
-                        animationDelay: `${index * 80}ms`
-                      }}
-                    >
-                      <h4 className="font-medium text-gray-900 animate-fade-in">{agenda.title}</h4>
-                      <p className="text-sm text-gray-600 mt-1 animate-fade-in" style={{ animationDelay: `${index * 80 + 40}ms` }}>
-                        {agenda.time}
-                        {agenda.end_time && ` - ${agenda.end_time}`}
-                      </p>
-                      {agenda.location && (
-                        <p className="text-xs text-gray-500 mt-1">{agenda.location}</p>
-                      )}
-                      <div className="flex gap-2 mt-2">
-                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                          {agenda.category}
-                        </span>
-                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                          {agenda.priority}
-                        </span>
+              {selectedDate && (selectedDate.agendas.length > 0 || selectedDate.appointments.length > 0) ? (
+                <div className="space-y-4">
+                  {/* Agendas Section */}
+                  {selectedDate.agendas.length > 0 && (
+                    <div>
+                      <h5 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                        Agendas ({selectedDate.agendas.length})
+                      </h5>
+                      <div className="space-y-3">
+                        {selectedDate.agendas.map((agenda: CalendarEvent, index: number) => (
+                          <div
+                            key={agenda.id}
+                            className="border-l-4 pl-4 py-3 transform hover:scale-[1.005] transition-all duration-150 hover:shadow-sm rounded-r animate-slide-up bg-gray-50/30"
+                            style={{
+                              borderColor: agenda.color,
+                              animationDelay: `${index * 80}ms`
+                            }}
+                          >
+                            <h4 className="font-medium text-gray-900 animate-fade-in">{agenda.title}</h4>
+                            <p className="text-sm text-gray-600 mt-1 animate-fade-in" style={{ animationDelay: `${index * 80 + 40}ms` }}>
+                              {agenda.time}
+                              {agenda.end_time && ` - ${agenda.end_time}`}
+                            </p>
+                            {agenda.location && (
+                              <p className="text-xs text-gray-500 mt-1">{agenda.location}</p>
+                            )}
+                            <div className="flex gap-2 mt-2">
+                              <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+                                {agenda.category}
+                              </span>
+                              <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+                                {agenda.priority}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
+                  )}
+
+                  {/* Appointments Section */}
+                  {selectedDate.appointments.length > 0 && (
+                    <div>
+                      <h5 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                        <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                        Appointments ({selectedDate.appointments.length})
+                      </h5>
+                      <div className="space-y-3">
+                        {selectedDate.appointments.map((appointment: ViewAppointment, index: number) => (
+                          <div
+                            key={appointment.ticket.id}
+                            className="border-l-4 border-green-500 pl-4 py-3 transform hover:scale-[1.005] transition-all duration-150 hover:shadow-sm rounded-r animate-slide-up bg-green-50/30"
+                            style={{ animationDelay: `${(selectedDate.agendas.length + index) * 80}ms` }}
+                          >
+                            <h4 className="font-medium text-gray-900 animate-fade-in">
+                              {appointment.appointment.additional_notes || appointment.ticket.subject || 'Appointment'}
+                            </h4>
+                            <p className="text-sm text-gray-600 mt-1 animate-fade-in">
+                              {appointment.appointment.time || 'Time not specified'}
+                            </p>
+                            {appointment.appointment.department && (
+                              <p className="text-xs text-gray-500 mt-1">Department: {appointment.appointment.department}</p>
+                            )}
+                            <div className="flex gap-2 mt-2">
+                              <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                                Appointment
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                     <CalendarIcon className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="text-gray-500 text-sm font-medium">No agenda items for this day</p>
-                  <p className="text-gray-400 text-xs mt-1">Click dates with indicators to view events</p>
+                  <p className="text-gray-500 text-sm font-medium">No events for this day</p>
+                  <p className="text-gray-400 text-xs mt-1">No agendas or appointments scheduled</p>
                 </div>
               )}
             </div>

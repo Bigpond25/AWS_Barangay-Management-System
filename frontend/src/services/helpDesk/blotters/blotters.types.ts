@@ -27,7 +27,7 @@ export const BlotterInvolvementSchema = z.enum([
 export const OtherPeopleInvolvedSchema = z.object({
   full_name: z.string().min(1).max(255),
   address: z.string().max(255).nullable(),
-  contact_number: z.string().length(16, 'helpDesk.validation.contactLengthValidation'),
+  contact_number: z.string().optional().nullable(),
   involvement: BlotterInvolvementSchema,
 })
 

@@ -12,7 +12,7 @@ export class BlotterService extends BaseApiService {
     try {
       const responseSchema = ApiResponseSchema(ViewBlotterSchema);
       const response = await this.request(
-        `/blotter/view/${id}`,
+        `/help-desk/blotter/view/${id}`,
         responseSchema,
         {
           method: 'GET'
@@ -37,7 +37,7 @@ export class BlotterService extends BaseApiService {
 
     const responseSchema = ApiResponseSchema(ViewBlotterSchema);
     const response = await this.request(
-      '/blotter',
+      '/help-desk/blotter',
       responseSchema,
       {
         method: 'POST',
@@ -63,7 +63,7 @@ export class BlotterService extends BaseApiService {
     const responseSchema = ApiResponseSchema(ViewBlotterSchema);
     
     const response = await this.request(
-      `/blotter/${id}`,
+      `/help-desk/blotter/${id}`,
       responseSchema,
       {
         method: 'PUT',
@@ -101,7 +101,7 @@ export class BlotterService extends BaseApiService {
     const formData = new FormData();
     formData.append('photo', document.file);
 
-    const response = await apiClient.post(`/blotter/${document.blotter_id}/photo`, formData, {
+    const response = await apiClient.post(`/help-desk/blotter/${document.blotter_id}/photo`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

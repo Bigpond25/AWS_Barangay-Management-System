@@ -11,7 +11,7 @@ export class ComplaintService extends BaseApiService {
     try {
       const responseSchema = ApiResponseSchema(ViewComplaintSchema);
       const response = await this.request(
-        `/complaint/view/${id}`,
+        `/help-desk/complaint/view/${id}`,
         responseSchema,
         {
           method: 'GET'
@@ -36,7 +36,7 @@ export class ComplaintService extends BaseApiService {
 
     const responseSchema = ApiResponseSchema(ViewComplaintSchema);
     const response = await this.request(
-      '/complaint',
+      '/help-desk/complaint',
       responseSchema,
       {
         method: 'POST',
@@ -62,7 +62,7 @@ export class ComplaintService extends BaseApiService {
     const responseSchema = ApiResponseSchema(ViewComplaintSchema);
     
     const response = await this.request(
-      `/complaint/${id}`,
+      `/help-desk/complaint/${id}`,
       responseSchema,
       {
         method: 'PUT',

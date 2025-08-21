@@ -38,18 +38,12 @@ export const BaseTicketSchema = z.object({
     priority: z.enum(PrioritySchema.options, {
         errorMap: (__, _) => ({ message: 'helpDesk.validation.invalidPriority' })
     }),
-    requester_name: z.string().min(1, 'helpDesk.validation.fullNameRequired').max(255,'helpDesk.appointmentsForm.validation.fullNameExceeded'),
+    requester_name: z.string().optional().nullable(),
     resident_id: z.string().uuid().nullable(),
-    contact_number: z.string().length(16, 'helpDesk.validation.contactLengthValidation'),
+    contact_number: z.string().optional().nullable(),
     // email_address: z.string().email('helpDesk.validation.invalidEmailFormat').max(255).optional(),
-    email_address: z.string()
-        .max(255)
-        .refine(val => val === '' || z.string().email().safeParse(val).success, {
-            message: 'helpDesk.validation.invalidEmailFormat',
-        })
-        .optional()
-        .nullable(),
-    complete_address: z.string().min(1,'helpDesk.validation.completeAddressRequired').max(255, 'helpDesk.validation.maxCharExcceeded'),
+    email_address: z.string().optional().nullable(),
+    complete_address: z.string().optional().nullable(),
     category: TicketCategorySchema,
     status: StatusSchema,
     created_at: z.date(),
