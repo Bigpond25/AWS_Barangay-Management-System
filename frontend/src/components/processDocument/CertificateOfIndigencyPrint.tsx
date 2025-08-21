@@ -1,5 +1,5 @@
 // ============================================================================
-// processDocument/CertificateOfIndigencyPrint.tsx - Modern Certificate of Indigency Print
+// processDocument/CertificateOfIndigencyPrint.tsx - Certificate of Indigency Print
 // ============================================================================
 
 import React from 'react';
@@ -10,57 +10,62 @@ import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { useDocument } from '@/services/documents/useDocuments';
 import type { Document } from '@/services/documents/documents.types';
 
-const CertificateHeader: React.FC = () => (
-  <div className="text-center mb-8">
-    <div className="mb-4">
-      <h1 className="text-lg font-bold text-gray-800">REPUBLIC OF THE PHILIPPINES</h1>
-      <h2 className="text-base font-semibold text-gray-700">PROVINCE OF BATAAN</h2>
-      <h3 className="text-base font-semibold text-gray-700">MUNICIPALITY OF SAMAL</h3>
-      <h4 className="text-lg font-bold text-gray-800">Brgy. Sikatuna Village</h4>
-    </div>
-    <div className="border-t-2 border-b-2 border-black py-2 mb-6">
-      <h2 className="text-xl font-bold text-gray-800">OFFICE OF THE PUNONG BARANGAY</h2>
-    </div>
-  </div>
-);
+// Helper function to get ordinal suffix for dates
+const getOrdinalSuffix = (day: number): string => {
+  if (day > 3 && day < 21) return 'th';
+  switch (day % 10) {
+    case 1: return 'st';
+    case 2: return 'nd';
+    case 3: return 'rd';
+    default: return 'th';
+  }
+};
 
-interface CertificateFooterProps {
-  certifyingOfficial?: string; 
-  dateIssued?: string;
+// Helper function to format date like "21 July 2025"
+const formatDate = (date: Date): string => {
+  const day = date.getDate();
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+};
+
+interface CertificateBottomSectionProps {
+  certifyingOfficial?: string;
   orNumber?: string;
-  amountPaid?: number;
+  remarks?: string[];
 }
 
-const CertificateFooter: React.FC<CertificateFooterProps> = ({ 
+const CertificateBottomSection: React.FC<CertificateBottomSectionProps> = ({ 
   certifyingOfficial, 
-  dateIssued, 
-  orNumber, 
-  amountPaid 
+  orNumber,
+  remarks = []
 }) => (
-  <div className="mt-12">
-    <div className="flex justify-between items-start">
-      <div className="w-1/2">
-        <p className="text-sm mb-4">Date Issued: {dateIssued || new Date().toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        })}</p>
-        {orNumber && (
-          <p className="text-sm mb-2">O.R. Number: {orNumber}</p>
-        )}
-        {amountPaid !== undefined && Number(amountPaid) === 0 && (
-          <p className="text-sm">Amount Paid: FREE</p>
-        )}
-        {amountPaid !== undefined && Number(amountPaid) > 0 && (
-          <p className="text-sm">Amount Paid: ₱{Number(amountPaid).toFixed(2)}</p>
-        )}
-      </div>
-      <div className="w-1/2 text-center">
-        <div className="mt-8">
-          <div className="border-b-2 border-black inline-block w-64 mb-2"></div>
-          <p className="text-sm font-semibold">{certifyingOfficial || 'PUNONG BARANGAY'}</p>
-          <p className="text-xs text-gray-600">Punong Barangay</p>
+  <div className="bottom-section">
+    <div className="left-column">
+      <div className="remarks-section">
+        <div className="remarks-title">REMARKS</div>
+        <div className="remarks-content">
+          {remarks.length > 0 ? (
+            remarks.map((remark, index) => (
+              <div key={index} className="remark-line">{remark}</div>
+            ))
+          ) : (
+            <>
+              <div className="remark-line">No previous records</div>
+            </>
+          )}
         </div>
+      </div>
+    </div>
+    
+    <div className="right-column">
+      <div className="signature-section">
+        <div className="signature-name">{certifyingOfficial || 'ELMER TIMOTHY J. LIGON'}</div>
+        <div className="signature-title">Punong Barangay</div>
+      </div>
+      
+      <div className="qr-code">
+        <div className="qr-placeholder">[QR CODE]</div>
       </div>
     </div>
   </div>
@@ -119,14 +124,14 @@ const CertificateOfIndigencyPrint: React.FC = () => {
   }
 
   // Validate document type
-  if (document.document_type !== 'CERTIFICATE_OF_INDIGENCY') {
+  if (document.type !== 'CERTIFICATE_OF_INDIGENCY') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center bg-white p-8 rounded-lg shadow-lg max-w-md">
           <FiAlertCircle className="w-16 h-16 text-orange-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Invalid Document Type</h3>
           <p className="text-orange-600 mb-6">
-            This document is not a Certificate of Indigency. Expected: Certificate of Indigency, Got: {document.document_type.replace(/_/g, ' ')}
+            This document is not a Certificate of Indigency. Expected: Certificate of Indigency, Got: {document.type.replace(/_/g, ' ')}
           </p>
           <button
             onClick={handleClose}
@@ -147,7 +152,7 @@ const CertificateOfIndigencyPrint: React.FC = () => {
   // Format address
   const applicantAddress = document.applicant_address || 
     document.resident?.complete_address || 
-    'Brgy. Sikatuna Village, Samal, Bataan';
+    'Brgy. West Triangle, Quezon City';
 
   // Generate OR number
   const orNumber = document.document_number || `OR-${(document.id || 0).toString().padStart(6, '0')}`;
@@ -173,11 +178,40 @@ const CertificateOfIndigencyPrint: React.FC = () => {
   return (
     <>
       <style>{`
+        /* Print specifications for Letter size (8.5 x 11 inches) */
         @media print {
           @page {
-            margin: 0.5in;
-            size: A4;
+            size: 8.5in 11in; /* Explicit Letter size dimensions */
+            margin-top: 3.3cm;    /* Top margin - blank space for letterhead */
+            margin-left: 5.2cm;   /* Left margin - blank space for binding */
+            margin-right: 2.54cm; /* Right margin - 1 inch default */
+            margin-bottom: 2.54cm; /* Bottom margin - 1 inch default */
           }
+          
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-size: 11pt !important;
+            line-height: 1.3 !important;
+            color: black !important;
+            background: white !important;
+          }
+          
+          .no-print {
+            display: none !important;
+          }
+          
+          .document-container {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            page-break-inside: avoid !important;
+            height: auto !important;
+            max-height: calc(27.94cm - 3.3cm - 2.54cm) !important;
+          }
+          
           * {
             visibility: visible !important;
             color: black !important;
@@ -185,33 +219,209 @@ const CertificateOfIndigencyPrint: React.FC = () => {
             box-shadow: none !important;
             text-shadow: none !important;
           }
+        }
+        
+        /* Screen styles with visual margin indicators */
+        @media screen {
           body {
-            background: white !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f5f5f5;
           }
-          .print\\:hidden {
-            display: none !important;
-          }
-          .certificate-content {
-            page-break-inside: avoid;
-            height: auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-          .no-print {
-            display: none !important;
+          
+          .document-container {
+            max-width: 21.59cm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin-left: calc(5.2cm + 20px);
+            margin-top: calc(3.3cm + 20px);
+            padding-right: 2.54cm;
+            padding-bottom: 2.54cm;
+            border-left: 3px dashed #ccc;
+            border-top: 3px dashed #ccc;
+            min-height: calc(27.94cm - 3.3cm - 2.54cm);
           }
         }
         
-        @media screen {
-          .certificate-content {
-            min-height: calc(100vh - 6rem);
-          }
+        /* Document specific styles */
+        .document-title {
+          text-align: center;
+          font-size: 18pt;
+          font-weight: bold;
+          text-decoration: underline;
+          margin-bottom: 40px;
+          letter-spacing: 2px;
+        }
+        
+        .document-content {
+          line-height: 1.8;
+          margin-bottom: 30px;
+        }
+        
+        .greeting {
+          font-size: 12pt;
+          margin-bottom: 25px;
+        }
+        
+        .certification-text {
+          font-size: 12pt;
+          margin-bottom: 15px;
+          text-align: justify;
+        }
+        
+        .main-statement {
+          margin-top: 25px;
+          margin-bottom: 25px;
+        }
+        
+        .highlight-name {
+          background-color: #333;
+          color: white;
+          padding: 2px 6px;
+          font-weight: bold;
+        }
+        
+        .highlight-address {
+          text-decoration: underline;
+          font-weight: bold;
+        }
+        
+        .highlight-requester {
+          text-decoration: underline;
+          font-weight: bold;
+        }
+        
+        .highlight-purpose {
+          text-decoration: underline;
+          font-weight: bold;
+        }
+        
+        .highlight-date {
+          text-decoration: underline;
+          font-weight: bold;
+        }
+        
+        .purpose-section {
+          margin: 25px 0;
+        }
+        
+        .purpose-text {
+          font-size: 12pt;
+          margin-bottom: 8px;
+        }
+        
+        .issued-section {
+          margin: 30px 0;
+        }
+        
+        .issued-text {
+          font-size: 12pt;
+        }
+        
+        .bottom-section {
+          display: flex;
+          margin-top: 50px;
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+        
+        .left-column {
+          width: 45%;
+        }
+        
+        .right-column {
+          width: 45%;
+          text-align: right;
+        }
+        
+        .remarks-section {
+          border-left: 2px solid #000;
+          padding-left: 15px;
+        }
+        
+        .remarks-title {
+          font-size: 11pt;
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+        
+        .remarks-content {
+          font-size: 10pt;
+        }
+        
+        .remark-line {
+          margin-bottom: 5px;
+        }
+        
+        .signature-section {
+          margin-bottom: 20px;
+        }
+        
+        .signature-name {
+          font-size: 12pt;
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
+        
+        .signature-title {
+          font-size: 11pt;
+          font-style: italic;
+        }
+        
+        .qr-code {
+          margin-top: 15px;
+        }
+        
+        .qr-placeholder {
+          width: 80px;
+          height: 80px;
+          border: 2px solid #000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 8pt;
+          margin-left: auto;
+          background-color: #f9f9f9;
+        }
+        
+        .footer {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          margin-top: 40px;
+        }
+        
+        .barcode-section {
+          display: flex;
+          align-items: flex-end;
+          justify-content: flex-start;
+        }
+        
+        .barcode-placeholder {
+          width: 150px;
+          height: 30px;
+          border: 1px solid #000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 8pt;
+          margin-right: 15px;
+          background-color: #f9f9f9;
+        }
+        
+        .record-info {
+          text-align: left;
+        }
+        
+        .record-label {
+          font-size: 10pt;
+          margin-bottom: 2px;
+        }
+        
+        .record-number {
+          font-size: 14pt;
+          font-weight: bold;
         }
       `}</style>
       
@@ -235,60 +445,65 @@ const CertificateOfIndigencyPrint: React.FC = () => {
         </div>
 
         {/* Certificate Content */}
-        <div className="max-w-4xl mx-auto p-8 certificate-content print:p-0">
-          <div className="bg-white p-8 shadow-lg print:shadow-none print:p-6">
-            <CertificateHeader />
+        <div className="document-container">
+          {/* Document Title */}
+          <div className="document-title">
+            CERTIFICATE OF INDIGENCY
+          </div>
+
+          {/* Document Content */}
+          <div className="document-content">
+            <div className="greeting">To whom it may concern:</div>
             
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-gray-800 underline mb-6">CERTIFICATE OF INDIGENCY</h1>
+            <div className="certification-text">
+              This is to certify that <span className="highlight-name">{applicantName.toUpperCase()}</span>
             </div>
-
-            <div className="mb-8">
-              <p className="text-base leading-relaxed text-justify mb-4">
-                <span className="font-semibold">TO WHOM IT MAY CONCERN:</span>
-              </p>
-              
-              <p className="text-base leading-relaxed text-justify mb-6">
-                This is to certify that <span className="font-semibold underline">{applicantName.toUpperCase()}</span>, 
-                of legal age, Filipino citizen, and a resident of 
-                <span className="font-semibold"> {applicantAddress}</span>, 
-                is among the indigent families in our barangay.
-              </p>
-
-              <p className="text-base leading-relaxed text-justify mb-6">
-                That the aforementioned person belongs to an <span className="font-semibold">INDIGENT FAMILY</span> whose 
-                income falls below the poverty threshold as determined by the local government.
-              </p>
-
-              {/* Additional indigency information if available */}
-              {(indigencyReason || monthlyIncome !== undefined || familySize !== undefined) && (
-                <p className="text-base leading-relaxed text-justify mb-6">
-                  <span className="font-semibold">Additional Information:</span>
-                  {indigencyReason && <span> Reason: {indigencyReason}.</span>}
-                  {monthlyIncome !== undefined && monthlyIncome !== null && <span> Monthly Income: ₱{monthlyIncome.toLocaleString()}.</span>}
-                  {familySize !== undefined && <span> Family Size: {familySize} members.</span>}
-                </p>
-              )}
-
-              <p className="text-base leading-relaxed text-justify mb-6">
-                This certification is issued upon the request of the above-named person for 
-                <span className="font-semibold"> {document.purpose?.toLowerCase() || 'general purposes'}</span> and for whatever legal purpose 
-                it may serve him/her best.
-              </p>
-
-              <p className="text-base leading-relaxed text-justify">
-                Given this <span className="font-semibold">{new Date().getDate()}</span> day of{' '}
-                <span className="font-semibold">{new Date().toLocaleDateString('en-US', { month: 'long' })}</span>,{' '}
-                <span className="font-semibold">{new Date().getFullYear()}</span> at Brgy. Sikatuna Village, Samal, Bataan, Philippines.
-              </p>
+            
+            <div className="certification-text">
+              presently residing at <span className="highlight-address">{applicantAddress}</span>
             </div>
+            
+            
+            
+            <div className="certification-text main-statement">
+              It is further certified that the above-named person claims that their family has no 
+              regular income to support their daily subsistence.
+            </div>
+            
+            <div className="purpose-section">
+              <div className="purpose-text">
+                This certification is being issued upon the request of 
+                <span className="highlight-requester"> {applicantName.toUpperCase()}</span>
+              </div>
+              <div className="purpose-text">
+                for <span className="highlight-purpose">{document.purpose?.toUpperCase() || 'GENERAL PURPOSE'}.</span>
+              </div>
+            </div>
+            
+            <div className="issued-section">
+              <div className="issued-text">
+                Issued this <span className="highlight-date">{formatDate(new Date())}</span> 
+                at Barangay West Triangle, Quezon City, Metro Manila.
+              </div>
+            </div>
+          </div>
 
-            <CertificateFooter 
-              certifyingOfficial={document.certifying_official || undefined}
-              dateIssued={dateIssued}
-              orNumber={orNumber}
-              amountPaid={document.processing_fee}
-            />
+          {/* Bottom Section with Remarks and Signature */}
+          <CertificateBottomSection
+            certifyingOfficial={document.certifying_official}
+            orNumber={orNumber}
+            remarks={document.remarks ? [document.remarks] : []}
+          />
+
+          {/* Footer with barcode and record number */}
+          <div className="footer">
+            <div className="barcode-section">
+              <div className="barcode-placeholder">[BARCODE]</div>
+              <div className="record-info">
+                <div className="record-label">Record No.</div>
+                <div className="record-number">{document.serial_number?.replace(/\D/g, '') || '001'}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

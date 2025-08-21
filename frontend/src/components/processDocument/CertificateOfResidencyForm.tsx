@@ -33,7 +33,7 @@ const CertificateOfResidencyForm: React.FC<CertificateOfResidencyFormProps> = ({
   const form = useForm<DocumentFormData>({
     resolver: zodResolver(DocumentFormDataSchema),
     defaultValues: {
-      document_type: 'CERTIFICATE_OF_RESIDENCY',
+      type: 'CERTIFICATE_OF_RESIDENCY',
       resident_id: '',
       applicant_name: '',
       purpose: '',
@@ -614,7 +614,7 @@ const CertificateOfResidencyForm: React.FC<CertificateOfResidencyFormProps> = ({
             setSelectedResident(null);
             setSearchTerm('');
             reset({
-              document_type: 'CERTIFICATE_OF_RESIDENCY',
+              type: 'CERTIFICATE_OF_RESIDENCY',
               resident_id: '',
               applicant_name: '',
               purpose: '',

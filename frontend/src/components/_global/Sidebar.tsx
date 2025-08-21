@@ -86,8 +86,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       hasSubmenu: true,
       permission: "view-documents",
       submenu: [
-        { id: "barangay-clearance", label: "Barangay Clearance" },
+        { id: "barangay-clearance", label: "Barangay Clearance (Liquor)" },
         { id: "business-permit", label: "Business Permit" },
+        { id: "business-sign-clearance", label: "Business Sign Clearance" },
         { id: "certificate-indigency", label: "Certificate of Indigency" },
         { id: "certificate-residency", label: "Certificate of Residency" },
       ],

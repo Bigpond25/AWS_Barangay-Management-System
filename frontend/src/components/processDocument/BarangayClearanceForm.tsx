@@ -36,15 +36,18 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
       type: 'BARANGAY_CLEARANCE',
       resident_id: '',
       applicant_name: '',
-      purpose: '',
+      purpose: 'LIQUOR_LICENSE',
       applicant_address: '',
       applicant_contact: '',
       applicant_email: '',
       priority: 'NORMAL',
       needed_date: '',
-      processing_fee: 50,
-      clearance_purpose: '',
-      clearance_type: 'GENERAL',
+      processing_fee: 0, // Free for liquor clearance
+      clearance_purpose: 'LIQUOR_LICENSE',
+      clearance_type: 'LIQUOR',
+      business_name: '',
+      business_address: '',
+      business_owner: '',
       requirements_submitted: [],
       notes: '',
       remarks: '',
@@ -352,19 +355,38 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
         {/* Clearance Details Form - NOW USING ABSTRACTED COMPONENTS! */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-darktext mb-4 border-l-4 border-smblue-400 pl-4">
-            Clearance Details
+            Liquor License Clearance Details
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Purpose Field - ABSTRACTED! */}
+            {/* Business Name Field */}
             <DocumentFormField
-              name="purpose"
-              label="Purpose of Request"
-              type="select"
-              options={commonPurposes.map(p => ({ value: p, label: p }))}
-              placeholder="Select purpose"
+              name="business_name"
+              label="Business/Establishment Name"
+              type="text"
+              placeholder="Enter business name"
               required
             />
+
+            {/* Business Owner Field */}
+            <DocumentFormField
+              name="business_owner"
+              label="Business Owner/Applicant"
+              type="text"
+              placeholder="Enter owner name"
+              required
+            />
+
+            {/* Business Address Field - Full Width */}
+            <div className="md:col-span-2">
+              <DocumentFormField
+                name="business_address"
+                label="Business Address"
+                type="text"
+                placeholder="Enter complete business address"
+                required
+              />
+            </div>
 
             {/* Valid ID Field - Custom field with manual handling */}
             <div>
@@ -380,20 +402,6 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
                   <option key={id} value={id}>{id}</option>
                 ))}
               </select>
-            </div>
-
-            {/* Years of Residency - Custom field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Years of Residency <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                placeholder="Enter number of years"
-                min="0"
-                onChange={(e) => handleYearsOfResidencyChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smblue-200 focus:border-smblue-200"
-              />
             </div>
 
             {/* Certifying Official - Custom field */}
@@ -571,15 +579,18 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
               type: 'BARANGAY_CLEARANCE',
               resident_id: '',
               applicant_name: '',
-              purpose: '',
+              purpose: 'LIQUOR_LICENSE',
               applicant_address: '',
               applicant_contact: '',
               applicant_email: '',
               priority: 'NORMAL',
               needed_date: '',
-              processing_fee: 50,
-              clearance_purpose: '',
-              clearance_type: 'GENERAL',
+              processing_fee: 0,
+              clearance_purpose: 'LIQUOR_LICENSE',
+              clearance_type: 'LIQUOR',
+              business_name: '',
+              business_address: '',
+              business_owner: '',
               requirements_submitted: [],
               notes: '',
               remarks: '',
@@ -600,8 +611,8 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
       {/* Header */}
       <div className={`mb-6 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
-        <h1 className="text-2xl font-bold text-darktext">Barangay Clearance Request</h1>
-        <p className="text-gray-600 mt-1">Request a barangay clearance certificate</p>
+        <h1 className="text-2xl font-bold text-darktext">Barangay Clearance (Liquor) Request</h1>
+        <p className="text-gray-600 mt-1">Request a barangay clearance for liquor license application</p>
       </div>
 
       {/* Step Indicator */}

@@ -194,7 +194,7 @@ class Resident extends Model
             $this->region
         ]);
         
-        return implode(', ', $addressParts) ?: $this->complete_address;
+        return implode(', ', $addressParts) ?: ($this->complete_address ?? 'Address not available');
     }
 
     public function getIsActiveAttribute(): bool

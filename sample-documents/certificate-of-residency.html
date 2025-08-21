@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Residency - Sample</title>
+    <style>
+        /* Print specifications for Letter size */
+        @media print {
+            @page {
+                size: letter; /* 8.5 x 11 inches */
+                margin-top: 3.3cm;    /* Top margin - blank space */
+                margin-left: 5.2cm;   /* Left margin - blank space */
+                margin-right: 2.54cm; /* Right margin - 1 inch */
+                margin-bottom: 2.54cm; /* Bottom margin - 1 inch */
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 12pt;
+                line-height: 1.4;
+                color: black;
+                background: white;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .document-container {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                padding: 0;
+            }
+        }
+        
+        /* Screen styles */
+        @media screen {
+            body {
+                margin: 0;
+                padding: 20px;
+                font-family: 'Times New Roman', Times, serif;
+                background-color: #f5f5f5;
+            }
+            
+            .document-container {
+                max-width: 21.59cm;
+                margin: 0 auto;
+                background: white;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                /* Visual representation of margins */
+                margin-left: calc(5.2cm + 20px);
+                margin-top: calc(3.3cm + 20px);
+                padding-right: 2.54cm;
+                padding-bottom: 2.54cm;
+                border-left: 3px dashed #ccc;
+                border-top: 3px dashed #ccc;
+            }
+            
+            /* Visual margin indicators */
+            body::before {
+                content: 'Left Margin: 5.2cm';
+                position: fixed;
+                top: 50%;
+                left: 10px;
+                transform: rotate(-90deg);
+                background: rgba(255, 0, 0, 0.1);
+                padding: 5px 10px;
+                font-size: 12px;
+                color: #666;
+                z-index: 1000;
+            }
+            
+            body::after {
+                content: 'Top Margin: 3.3cm';
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 255, 0.1);
+                padding: 5px 10px;
+                font-size: 12px;
+                color: #666;
+                z-index: 1000;
+            }
+        }
+        
+        /* Document styles */
+        .certificate-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .republic-header h1 {
+            font-size: 16pt;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .republic-header h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 3px 0;
+        }
+        
+        .office-header {
+            border-top: 2px solid black;
+            border-bottom: 2px solid black;
+            padding: 8px 0;
+            margin: 20px 0;
+        }
+        
+        .office-header h2 {
+            font-size: 18pt;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .document-title {
+            font-size: 20pt;
+            font-weight: bold;
+            text-decoration: underline;
+            margin: 30px 0;
+        }
+        
+        .certificate-body {
+            text-align: justify;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        
+        .certificate-body p {
+            margin-bottom: 20px;
+            text-indent: 0;
+        }
+        
+        .to-whom {
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .applicant-name {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        
+        .important-text {
+            font-weight: bold;
+        }
+        
+        .date-text {
+            font-weight: bold;
+        }
+        
+        .bonafide-resident {
+            font-weight: bold;
+        }
+        
+        .certificate-footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        
+        .left-footer {
+            width: 50%;
+        }
+        
+        .right-footer {
+            width: 50%;
+            text-align: center;
+        }
+        
+        .date-issued {
+            font-size: 12pt;
+            margin-bottom: 15px;
+        }
+        
+        .or-number {
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+        
+        .amount-paid {
+            font-size: 12pt;
+        }
+        
+        .signature-line {
+            border-bottom: 2px solid black;
+            width: 250px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        
+        .signature-name {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-top: 40px;
+        }
+        
+        .signature-title {
+            font-size: 10pt;
+            color: #666;
+        }
+        
+        /* Print controls */
+        .print-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .print-controls button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .print-controls button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Print Controls (hidden when printing) -->
+    <div class="print-controls no-print">
+        <button onclick="window.print()">🖨️ Print Document</button>
+        <button onclick="window.close()">✖️ Close</button>
+    </div>
+
+    <div class="document-container">
+        <!-- Certificate Header -->
+        <div class="certificate-header">
+            <div class="republic-header">
+                <h1>REPUBLIC OF THE PHILIPPINES</h1>
+                <h2>PROVINCE OF BATAAN</h2>
+                <h2>MUNICIPALITY OF SAMAL</h2>
+                <h1>Brgy. Sikatuna Village</h1>
+            </div>
+            
+            <div class="office-header">
+                <h2>OFFICE OF THE PUNONG BARANGAY</h2>
+            </div>
+            
+            <div class="document-title">CERTIFICATE OF RESIDENCY</div>
+        </div>
+
+        <!-- Certificate Body -->
+        <div class="certificate-body">
+            <p class="to-whom">TO WHOM IT MAY CONCERN:</p>
+            
+            <p>
+                This is to certify that <span class="applicant-name">ANTONIO DELA ROSA</span>, 
+                of legal age, Filipino citizen, 
+                is a <span class="bonafide-resident">BONAFIDE RESIDENT</span> of 
+                <span class="important-text">Unit 3B, Sikatuna Heights, Brgy. Sikatuna Village, Samal, Bataan</span>
+                for <span class="important-text">fifteen (15) years</span>.
+            </p>
+
+            <p>
+                This certification is issued upon the request of the above-named person for 
+                <span class="important-text">school enrollment requirement</span> and for whatever legal purpose 
+                it may serve him/her best.
+            </p>
+
+            <p>
+                Given this <span class="date-text">26th</span> day of 
+                <span class="date-text">November</span>, 
+                <span class="date-text">2024</span> at Brgy. Sikatuna Village, Samal, Bataan, Philippines.
+            </p>
+        </div>
+
+        <!-- Certificate Footer -->
+        <div class="certificate-footer">
+            <div class="left-footer">
+                <div class="date-issued">Date Issued: November 26, 2024</div>
+                <div class="or-number">O.R. Number: CR-2024-01-0001</div>
+                <div class="amount-paid">Amount Paid: ₱30.00</div>
+            </div>
+            
+            <div class="right-footer">
+                <div class="signature-name">
+                    <div class="signature-line"></div><br>
+                    ELENA CRUZ RODRIGUEZ<br>
+                    <span class="signature-title">Punong Barangay</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
