@@ -154,13 +154,6 @@ class ResidentSchema
                 'fillable' => true,
                 'cast' => 'date'
             ],
-            'age' => [
-                'type' => 'integer',
-                'nullable' => true,
-                'fillable' => true,
-                'min' => 0,
-                'max' => 150
-            ],
             'birth_place' => [
                 'type' => 'string',
                 'max' => 255,
