@@ -53,7 +53,6 @@ return new class extends Migration
             $table->string('house_number')->nullable();
             $table->string('street')->nullable();
             $table->text('complete_address');
-            $table->text('current_address')->nullable();
             
             // Family Information
             $table->string('mother_name')->nullable();
@@ -73,7 +72,6 @@ return new class extends Migration
             ]);
             $table->string('occupation')->nullable();
             $table->string('employer')->nullable();
-            $table->decimal('monthly_income', 10, 2)->nullable();
             
             // Government IDs & Voting
             $table->string('primary_id_type')->nullable();
@@ -84,21 +82,19 @@ return new class extends Migration
             $table->string('voters_id_number')->nullable();
             $table->enum('voter_status', ['NOT_REGISTERED', 'REGISTERED', 'DECEASED', 'TRANSFERRED'])->default('NOT_REGISTERED');
             $table->string('precinct_number')->nullable();
-            $table->boolean('is_registered_voter')->default(false);
             
             // Health Information
             $table->text('medical_conditions')->nullable();
             $table->text('allergies')->nullable();
             
             // Special Classifications
-            $table->boolean('is_senior_citizen')->default(false);
-            $table->boolean('is_pwd')->default(false);
+            $table->boolean('senior_citizen')->default(false);
+            $table->boolean('person_with_disability')->default(false);
             $table->string('disability_type')->nullable();
-            $table->boolean('is_indigenous')->default(false);
+            $table->boolean('indigenous_people')->default(false);
             $table->string('indigenous_group')->nullable();
-            $table->boolean('is_4ps_beneficiary')->default(false);
+            $table->boolean('four_ps_beneficiary')->default(false);
             $table->string('four_ps_household_id')->nullable();
-            $table->boolean('is_solo_parent')->default(false);
             
             // Profile & Status
             $table->string('profile_photo_url')->nullable();
@@ -118,12 +114,12 @@ return new class extends Migration
             $table->index(['first_name', 'last_name']);
             $table->index(['gender', 'civil_status']);
             $table->index(['employment_status', 'educational_attainment']);
-            $table->index(['is_senior_citizen', 'is_pwd', 'is_indigenous', 'is_4ps_beneficiary']);
+            $table->index(['senior_citizen', 'person_with_disability', 'indigenous_people', 'four_ps_beneficiary']);
             $table->index(['voter_status', 'precinct_number']);
             $table->index(['birth_date']);
             $table->index('created_at');
-            $table->index(['status', 'is_senior_citizen']);
-            $table->index(['status', 'is_pwd']);
+            $table->index(['status', 'senior_citizen']);
+            $table->index(['status', 'person_with_disability']);
             $table->index(['barangay', 'status']);
             $table->index(['photo_migrated_to_supabase']);
             $table->index(['photo_storage_provider']);

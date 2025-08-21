@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('household_id');
             $table->uuid('resident_id');
-            $table->enum('relationship_to_head', [
+            $table->enum('relationship', [
                 'HEAD', 'SPOUSE', 'SON', 'DAUGHTER', 'FATHER', 'MOTHER',
                 'BROTHER', 'SISTER', 'GRANDFATHER', 'GRANDMOTHER',
                 'GRANDSON', 'GRANDDAUGHTER', 'UNCLE', 'AUNT',
@@ -34,7 +34,7 @@ return new class extends Migration
             // Indexes
             $table->index('household_id');
             $table->index('resident_id');
-            $table->index('relationship_to_head');
+            $table->index('relationship');
         });
     }
 

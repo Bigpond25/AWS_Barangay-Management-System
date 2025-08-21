@@ -120,10 +120,10 @@ class Resident extends Model implements Auditable
                 $model->created_by = Auth::id();
             }
             
-            // Auto-set senior citizen status based on calculated age
+            // Auto-set senior citizen status based on computed age
             if ($model->birth_date) {
-                $calculatedAge = Carbon::parse($model->birth_date)->age;
-                if ($calculatedAge >= 60) {
+                $age = Carbon::parse($model->birth_date)->age;
+                if ($age >= 60) {
                     $model->senior_citizen = true;
                 }
             }
@@ -136,8 +136,8 @@ class Resident extends Model implements Auditable
             
             // Update senior citizen status if birth_date changed
             if ($model->isDirty('birth_date') && $model->birth_date) {
-                $calculatedAge = Carbon::parse($model->birth_date)->age;
-                $model->senior_citizen = $calculatedAge >= 60;
+                $age = Carbon::parse($model->birth_date)->age;
+                $model->senior_citizen = $age >= 60;
             }
         });
     }
@@ -390,14 +390,14 @@ class Resident extends Model implements Auditable
     public function scopeHouseholdHeads($query)
     {
         return $query->whereHas('households', function ($q) {
-            $q->wherePivot('relationship', 'HEAD');
+            $q->where('household_members.relationship', 'HEAD');
         });
     }
 
     public function scopeHouseholdMembers($query)
     {
         return $query->whereHas('households', function ($q) {
-            $q->wherePivot('relationship', '!=', 'HEAD');
+            $q->where('household_members.relationship', '!=', 'HEAD');
         });
     }
 
@@ -414,7 +414,7 @@ class Resident extends Model implements Auditable
     public function scopeByHouseholdRelationship($query, $relationship)
     {
         return $query->whereHas('households', function ($q) use ($relationship) {
-            $q->wherePivot('relationship', $relationship);
+            $q->where('household_members.relationship', $relationship);
         });
     }
 
@@ -443,26 +443,30 @@ class Resident extends Model implements Auditable
 
     public function scopeByAgeRange($query, $minAge, $maxAge)
     {
-        // Calculate age using birth_date for age range queries
-        return $query->whereRaw('EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN ? AND ?', [$minAge, $maxAge]);
+        $today = Carbon::today();
+        $maxBirthDate = $today->copy()->subYears($minAge);
+        $minBirthDate = $today->copy()->subYears($maxAge + 1);
+        
+        return $query->whereBetween('birth_date', [$minBirthDate, $maxBirthDate]);
     }
 
     public function scopeMinors($query)
     {
-        // Calculate age using birth_date for minors (< 18 years old)
-        return $query->whereRaw('EXTRACT(YEAR FROM AGE(birth_date)) < 18');
+        $eighteenYearsAgo = Carbon::today()->subYears(18);
+        return $query->where('birth_date', '>', $eighteenYearsAgo);
     }
 
     public function scopeAdults($query)
     {
-        // Calculate age using birth_date for adults (18-59 years old)
-        return $query->whereRaw('EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN 18 AND 59');
+        $eighteenYearsAgo = Carbon::today()->subYears(18);
+        $sixtyYearsAgo = Carbon::today()->subYears(60);
+        return $query->whereBetween('birth_date', [$sixtyYearsAgo, $eighteenYearsAgo]);
     }
 
     public function scopeSeniors($query)
     {
-        // Use the senior_citizen boolean field or calculate from birth_date
-        return $query->where('senior_citizen', true);
+        $sixtyYearsAgo = Carbon::today()->subYears(60);
+        return $query->where('birth_date', '<=', $sixtyYearsAgo);
     }
 
     public function scopeVoters($query)

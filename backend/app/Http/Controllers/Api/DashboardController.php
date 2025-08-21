@@ -57,7 +57,7 @@ class DashboardController extends Controller
     {
         try {
             try {
-                                // Get age groups from residents table using scopes that calculate from birth_date
+                // Get age groups from residents table if it exists - use the existing age field
                 $children = Resident::minors()->count();
                 $adults = Resident::adults()->count();
                 $seniors = Resident::seniors()->count();
