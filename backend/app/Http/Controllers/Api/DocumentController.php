@@ -277,12 +277,12 @@ class DocumentController extends Controller
                     ->mapWithKeys(function ($item) {
                         return [$item->status => $item->count];
                     }),
-                'by_document_type' => Document::selectRaw('document_type, COUNT(*) as count')
-                    ->groupBy('document_type')
+                'by_document_type' => Document::selectRaw('type, COUNT(*) as count')
+                    ->groupBy('type')
                     ->orderByDesc('count')
                     ->get()
                     ->mapWithKeys(function ($item) {
-                        return [$item->document_type => $item->count];
+                        return [$item->type => $item->count];
                     }),
                 'by_priority' => Document::selectRaw('priority, COUNT(*) as count')
                     ->groupBy('priority')

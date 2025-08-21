@@ -14,13 +14,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use OwenIt\Auditing\Contracts\Auditable;
 
-class Resident extends Model implements Auditable
+class Resident extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes, HasEncryptedFields, LogsActivity, \OwenIt\Auditing\Auditable;
+    use HasFactory, HasUuids, SoftDeletes, HasEncryptedFields, LogsActivity;
 
-    protected $auditModel = ActivityLog::class;
     protected $keyType = 'string';
     public $incrementing = false;
 
@@ -89,12 +87,12 @@ class Resident extends Model implements Auditable
      * Define encrypted fields for HasEncryptedFields trait
      */
     protected $encrypted = [
-        'first_name',
-        'last_name',
-        'mobile_number',
-        'email_address',
-        'complete_address',
-        'current_address'
+        // 'first_name',
+        // 'last_name',
+        // 'mobile_number',
+        // 'email_address',
+        // 'complete_address',
+        // 'current_address'
     ];
 
     /**
@@ -450,6 +448,57 @@ class Resident extends Model implements Auditable
         return $query->whereBetween('birth_date', [$minBirthDate, $maxBirthDate]);
     }
 
+    /**
+     * Search scope for residents
+     * Searches across name fields, contact info, and other searchable fields
+     */
+    public function scopeSearch($query, $search)
+    {
+        if (empty($search)) {
+            return $query;
+        }
+
+        $search = trim($search);
+        
+        return $query->where(function ($q) use ($search) {
+            // Search in encrypted fields using hash fields for exact matches
+            $searchHash = hash('sha256', strtolower($search));
+            
+            $q->where('first_name_hash', $searchHash)
+              ->orWhere('last_name_hash', $searchHash)
+              ->orWhere('mobile_number_hash', $searchHash)
+              ->orWhere('email_address_hash', $searchHash)
+              
+              // Search in non-encrypted text fields
+              ->orWhere('middle_name', 'ILIKE', "%{$search}%")
+              ->orWhere('suffix', 'ILIKE', "%{$search}%")
+              ->orWhere('birth_place', 'ILIKE', "%{$search}%")
+              ->orWhere('barangay', 'ILIKE', "%{$search}%")
+              ->orWhere('street', 'ILIKE', "%{$search}%")
+              ->orWhere('house_number', 'ILIKE', "%{$search}%")
+              ->orWhere('mother_name', 'ILIKE', "%{$search}%")
+              ->orWhere('father_name', 'ILIKE', "%{$search}%")
+              ->orWhere('occupation', 'ILIKE', "%{$search}%")
+              ->orWhere('employer', 'ILIKE', "%{$search}%")
+              ->orWhere('id_number', 'ILIKE', "%{$search}%")
+              ->orWhere('philhealth_number', 'ILIKE', "%{$search}%")
+              ->orWhere('sss_number', 'ILIKE', "%{$search}%")
+              ->orWhere('tin_number', 'ILIKE', "%{$search}%")
+              ->orWhere('voters_id_number', 'ILIKE', "%{$search}%")
+              ->orWhere('precinct_number', 'ILIKE', "%{$search}%")
+              
+              // Search by enum values if they match
+              ->orWhere('gender', 'ILIKE', "%{$search}%")
+              ->orWhere('civil_status', 'ILIKE', "%{$search}%")
+              ->orWhere('nationality', 'ILIKE', "%{$search}%")
+              ->orWhere('religion', 'ILIKE', "%{$search}%")
+              ->orWhere('educational_attainment', 'ILIKE', "%{$search}%")
+              ->orWhere('employment_status', 'ILIKE', "%{$search}%")
+              ->orWhere('voter_status', 'ILIKE', "%{$search}%")
+              ->orWhere('status', 'ILIKE', "%{$search}%");
+        });
+    }
+
     public function scopeMinors($query)
     {
         $eighteenYearsAgo = Carbon::today()->subYears(18);
@@ -472,23 +521,6 @@ class Resident extends Model implements Auditable
     public function scopeVoters($query)
     {
         return $query->where('voter_status', 'REGISTERED');
-    }
-
-    public function scopeSearch($query, $search)
-    {
-        if (empty($search)) {
-            return $query;
-        }
-
-        return $query->where(function ($q) use ($search) {
-            $q->where('first_name', 'like', "%{$search}%")
-              ->orWhere('last_name', 'like', "%{$search}%")
-              ->orWhere('middle_name', 'like', "%{$search}%")
-              ->orWhereRaw("(first_name || ' ' || last_name) LIKE ?", ["%{$search}%"])
-              ->orWhereRaw("(first_name || ' ' || COALESCE(middle_name, '') || ' ' || last_name) LIKE ?", ["%{$search}%"])
-              ->orWhere('email_address', 'like', "%{$search}%")
-              ->orWhere('mobile_number', 'like', "%{$search}%");
-        });
     }
 
     /**

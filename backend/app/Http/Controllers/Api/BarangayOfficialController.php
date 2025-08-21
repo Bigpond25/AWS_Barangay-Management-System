@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\BarangayOfficial;
+use App\Models\Resident;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -98,6 +99,23 @@ class BarangayOfficialController extends Controller
             $validated['status'] = 'ACTIVE';
         }
 
+        // Populate personal details from the resident
+        if (isset($validated['resident_id'])) {
+            $resident = Resident::find($validated['resident_id']);
+            if ($resident) {
+                $validated['first_name'] = $resident->first_name;
+                $validated['middle_name'] = $resident->middle_name;
+                $validated['last_name'] = $resident->last_name;
+                $validated['suffix'] = $resident->suffix;
+                $validated['full_name'] = $resident->full_name;
+                $validated['birth_date'] = $resident->birth_date;
+                $validated['gender'] = $resident->gender;
+                $validated['contact_number'] = $resident->mobile_number;
+                $validated['email_address'] = $resident->email_address;
+                $validated['address'] = $resident->complete_address;
+            }
+        }
+
         $official = BarangayOfficial::create($validated);
 
         return response()->json([
@@ -153,6 +171,23 @@ class BarangayOfficialController extends Controller
         }
 
         $validated = $validator->validated();
+
+        // If resident_id is being updated, populate personal details from the new resident
+        if (isset($validated['resident_id'])) {
+            $resident = Resident::find($validated['resident_id']);
+            if ($resident) {
+                $validated['first_name'] = $resident->first_name;
+                $validated['middle_name'] = $resident->middle_name;
+                $validated['last_name'] = $resident->last_name;
+                $validated['suffix'] = $resident->suffix;
+                $validated['full_name'] = $resident->full_name;
+                $validated['birth_date'] = $resident->birth_date;
+                $validated['gender'] = $resident->gender;
+                $validated['contact_number'] = $resident->mobile_number;
+                $validated['email_address'] = $resident->email_address;
+                $validated['address'] = $resident->complete_address;
+            }
+        }
 
         $barangayOfficial->update($validated);
 

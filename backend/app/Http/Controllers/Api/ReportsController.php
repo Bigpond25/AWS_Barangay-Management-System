@@ -250,14 +250,14 @@ class ReportsController extends Controller
                 }
             }
 
-            $documentsData = $query->select('document_type', DB::raw('count(*) as total'))
-                ->groupBy('document_type')
+            $documentsData = $query->select('type', DB::raw('count(*) as total'))
+                ->groupBy('type')
                 ->orderBy('total', 'desc')
                 ->get();
 
             $data = $documentsData->map(function ($item) {
                 return [
-                    'label' => $item->document_type,
+                    'label' => $item->type,
                     'value' => $item->total,
                 ];
             })->toArray();

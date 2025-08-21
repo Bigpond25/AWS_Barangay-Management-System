@@ -1,7 +1,7 @@
 import Breadcrumb from "../_global/Breadcrumb";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { STORAGE_BASE_URL } from "@/services/__shared/_storage/storage.types";
+import { buildImageUrl, getPlaceholderImageUrl } from "@/utils/imageUtils";
 import { getStatusBadgeColor } from "./utils/getStatusBadgeColor";
 import { FiEdit } from "react-icons/fi";
 import { barangayOfficialsService } from '@/services/officials/barangayOfficials.service';
@@ -105,7 +105,7 @@ export default function ViewBarangayOfficial() {
                 <div className="flex flex-col items-center">
                   <div className="w-48 h-48 bg-gray-300 rounded-full flex items-center justify-center mb-4">
                     <img
-                      src={official?.profile_photo ? `${STORAGE_BASE_URL}/${official?.photo}` : 'https://via.placeholder.com/150'}
+                      src={official?.profile_photo ? buildImageUrl(official.profile_photo) : getPlaceholderImageUrl(192, official?.name || 'Official')}
                       alt={official?.name}
                       className="w-48 h-48 rounded-full object-cover"
                     />

@@ -142,13 +142,13 @@ class HouseholdController extends Controller
             // Household number is now required to be provided by frontend
             // Following the principle that frontend is the source of truth
 
-            // Ensure head_resident_id is properly handled
-            if (isset($validated['head_resident_id'])) {
-                $headResident = Resident::find($validated['head_resident_id']);
+            // Ensure head_id is properly handled
+            if (isset($validated['head_id'])) {
+                $headResident = Resident::find($validated['head_id']);
                 if (!$headResident) {
                     return response()->json([
                         'message' => 'Validation failed',
-                        'errors' => ['head_resident_id' => ['The selected head resident is invalid.']]
+                        'errors' => ['head_id' => ['The selected head resident is invalid.']]
                     ], 422);
                 }
                 
@@ -156,20 +156,20 @@ class HouseholdController extends Controller
                 if ($headResident->households()->count() > 0) {
                     return response()->json([
                         'message' => 'Validation failed',
-                        'errors' => ['head_resident_id' => ['This resident is already assigned to another household.']]
+                        'errors' => ['head_id' => ['This resident is already assigned to another household.']]
                     ], 422);
                 }
             }
 
             // Additional validation: ensure head resident is not in member list
-            if (isset($validated['head_resident_id']) && $request->has('member_ids')) {
+            if (isset($validated['head_id']) && $request->has('member_ids')) {
                 $memberIds = collect($request->member_ids)->pluck('resident_id');
-                if ($memberIds->contains($validated['head_resident_id'])) {
+                if ($memberIds->contains($validated['head_id'])) {
                     return response()->json([
                         'message' => 'Validation failed',
                         'errors' => [
                             'member_ids' => ['The household head cannot also be listed as a member.'],
-                            'head_resident_id' => ['The household head cannot also be listed as a member.']
+                            'head_id' => ['The household head cannot also be listed as a member.']
                         ]
                     ], 422);
                 }
@@ -185,8 +185,8 @@ class HouseholdController extends Controller
                 $household = Household::create($validated);
                 
                 // If a head resident is specified, add them to the household members with HEAD relationship
-                if (isset($validated['head_resident_id']) && $validated['head_resident_id']) {
-                    $headResident = Resident::find($validated['head_resident_id']);
+                if (isset($validated['head_id']) && $validated['head_id']) {
+                    $headResident = Resident::find($validated['head_id']);
                     if ($headResident) {
                         // Check if resident is already in another household
                         if ($headResident->households()->count() > 0) {

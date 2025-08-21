@@ -58,13 +58,20 @@ class BarangayOfficial extends Model implements Auditable
 
     public function __construct(array $attributes = [])
     {
-        parent::__construct($attributes);
+        // Load fillable fields and casts from schema before calling parent constructor
+        try {
+            $this->fillable = BarangayOfficialSchema::getFillableFields() ?? [];
+            $schemaCasts = BarangayOfficialSchema::getCasts() ?? [];
+            $this->casts = array_merge($schemaCasts, [
+                'id' => 'string',
+            ]);
+        } catch (\Exception $e) {
+            // Fallback in case schema is not available
+            $this->fillable = [];
+            $this->casts = ['id' => 'string'];
+        }
         
-        // Load fillable fields and casts from schema
-        $this->fillable = BarangayOfficialSchema::getFillableFields();
-        $this->casts = array_merge(BarangayOfficialSchema::getCasts(), [
-            'id' => 'string',
-        ]);
+        parent::__construct($attributes);
     }
 
     // Relationships

@@ -36,7 +36,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
       document_type: 'BARANGAY_CLEARANCE',
       resident_id: '',
       applicant_name: '',
-    purpose: '',
+      purpose: '',
       applicant_address: '',
       applicant_contact: '',
       applicant_email: '',
@@ -52,10 +52,10 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
     mode: 'onChange',
   });
 
-  const { 
-    setValue, 
-    watch, 
-    handleSubmit, 
+  const {
+    setValue,
+    watch,
+    handleSubmit,
     formState: { errors, isValid },
     getValues,
     reset
@@ -82,12 +82,12 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
   });
 
   // Residents query for search  
-  const { 
-    data: residentsData, 
-    isLoading: searchLoading 
-  } = useResidents({ 
-    search: searchTerm, 
-    per_page: 10 
+  const {
+    data: residentsData,
+    isLoading: searchLoading
+  } = useResidents({
+    search: searchTerm,
+    per_page: 10
   });
 
   const residents = residentsData?.data || [];
@@ -141,7 +141,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
   useEffect(() => {
     if (selectedResident) {
       const fullName = `${selectedResident.first_name} ${selectedResident.middle_name || ''} ${selectedResident.last_name}`.trim();
-      
+
       setValue('resident_id', selectedResident.id);
       setValue('applicant_name', fullName);
       setValue('applicant_address', selectedResident.complete_address);
@@ -204,13 +204,12 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
 
 
   const renderStep1 = () => (
-    <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-700 ease-out ${
-      isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-    }`} style={{ transitionDelay: '200ms' }}>
+    <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`} style={{ transitionDelay: '200ms' }}>
       <h2 className="text-lg font-semibold text-darktext mb-4 border-l-4 border-smblue-400 pl-4">
         Select Resident
       </h2>
-      
+
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Search for resident *
@@ -225,15 +224,15 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
             className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-smblue-200 focus:border-smblue-200"
           />
         </div>
-        
+
         {searchLoading && (
           <div className="mt-2 flex items-center space-x-2 text-sm text-gray-500">
             <LoadingSpinner size="sm" />
             <span>Searching...</span>
           </div>
         )}
-        
-                {residents.length > 0 && searchTerm && (
+
+        {residents.length > 0 && searchTerm && (
           <div className="mt-2 border border-gray-200 rounded-lg max-h-64 overflow-y-auto">
             {residents.map((resident) => (
               <div
@@ -290,62 +289,61 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
 
   const renderStep2 = () => (
     <FormProvider {...form}>
-      <form onSubmit={onSubmit} className={`space-y-6 transition-all duration-700 ease-out ${
-      isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`} style={{ transitionDelay: '300ms' }}>
-        
+      <form onSubmit={onSubmit} className={`space-y-6 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`} style={{ transitionDelay: '300ms' }}>
+
         {/* Resident Information Display */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-darktext mb-4 border-l-4 border-smblue-400 pl-4">
-          Resident Information
-        </h2>
-        
-        {selectedResident && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-              <div className="text-sm text-gray-900">
-                {selectedResident.first_name} {selectedResident.middle_name} {selectedResident.last_name}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-semibold text-darktext mb-4 border-l-4 border-smblue-400 pl-4">
+            Resident Information
+          </h2>
+
+          {selectedResident && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <div className="text-sm text-gray-900">
+                  {selectedResident.first_name} {selectedResident.middle_name} {selectedResident.last_name}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                <div className="text-sm text-gray-900">{getResidentAge(selectedResident)}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Civil Status</label>
+                <div className="text-sm text-gray-900">{selectedResident.civil_status}</div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+                <div className="text-sm text-gray-900">{selectedResident.nationality}</div>
+              </div>
+              <div className="md:col-span-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <div className="text-sm text-gray-900">{selectedResident.complete_address}</div>
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
-              <div className="text-sm text-gray-900">{getResidentAge(selectedResident)}</div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Civil Status</label>
-              <div className="text-sm text-gray-900">{selectedResident.civil_status}</div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
-              <div className="text-sm text-gray-900">{selectedResident.nationality}</div>
-            </div>
-            <div className="md:col-span-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-              <div className="text-sm text-gray-900">{selectedResident.complete_address}</div>
-            </div>
-          </div>
-        )}
-        
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <button
+          )}
+
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <button
               type="button"
-            onClick={() => setStep(1)}
-            className="inline-flex items-center text-sm text-smblue-400 hover:text-smblue-300"
-          >
-            <FiArrowLeft className="w-4 h-4 mr-1" />
-            Change Resident
-          </button>
+              onClick={() => setStep(1)}
+              className="inline-flex items-center text-sm text-smblue-400 hover:text-smblue-300"
+            >
+              <FiArrowLeft className="w-4 h-4 mr-1" />
+              Change Resident
+            </button>
+          </div>
         </div>
-      </div>
 
         {/* Clearance Details Form - NOW USING ABSTRACTED COMPONENTS! */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-darktext mb-4 border-l-4 border-smblue-400 pl-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-semibold text-darktext mb-4 border-l-4 border-smblue-400 pl-4">
             Clearance Details
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Purpose Field - ABSTRACTED! */}
             <DocumentFormField
               name="purpose"
@@ -444,19 +442,19 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
           </div>
 
           {/* Processing Fee Display */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-gray-700">Processing Fee:</span>
-            <span className="text-lg font-bold text-smblue-400">
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-700">Processing Fee:</span>
+              <span className="text-lg font-bold text-smblue-400">
                 ₱{watch('processing_fee')}
-            </span>
-          </div>
+              </span>
+            </div>
             {watch('priority') === 'HIGH' && (
-            <p className="text-xs text-gray-600 mt-1">
-              Includes ₱50 standard fee + ₱50 urgent processing fee
-            </p>
-          )}
-        </div>
+              <p className="text-xs text-gray-600 mt-1">
+                Includes ₱50 standard fee + ₱50 urgent processing fee
+              </p>
+            )}
+          </div>
 
           {/* Form-level Error Display */}
           {errors.root && (
@@ -470,13 +468,13 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
 
           {/* Document Form Error Display */}
           {documentForm.error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <FiAlertCircle className="w-5 h-5 text-red-400 mr-2" />
                   <p className="text-red-800 text-sm">{documentForm.error}</p>
                 </div>
-                <button 
+                <button
                   type="button"
                   onClick={documentForm.clearError}
                   className="text-red-600 underline text-sm hover:text-red-700"
@@ -484,51 +482,50 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
                   Dismiss
                 </button>
               </div>
-          </div>
-        )}
+            </div>
+          )}
 
           {/* Form Actions */}
-        <div className="flex justify-end space-x-4 mt-6">
-          <button
+          <div className="flex justify-end space-x-4 mt-6">
+            <button
               type="button"
-            onClick={() => setStep(1)} 
+              onClick={() => setStep(1)}
               className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
               disabled={documentForm.isSubmitting}
-          >
-            Back
-          </button>
-          <button
+            >
+              Back
+            </button>
+            <button
               type="submit"
               disabled={documentForm.isSubmitting || !isValid}
               className="px-6 py-2 bg-smblue-400 text-white rounded-lg hover:bg-smblue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               {documentForm.isSubmitting && (
                 <LoadingSpinner size="sm" />
-            )}
+              )}
               <span>{documentForm.isSubmitting ? 'Submitting...' : 'Submit Request'}</span>
-          </button>
+            </button>
+          </div>
         </div>
-      </div>
       </form>
     </FormProvider>
   );
 
   const renderStep3 = () => (
-    <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center transition-all duration-700 ease-out ${
-      isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-    }`} style={{ transitionDelay: '200ms' }}>
+    <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`} style={{ transitionDelay: '200ms' }}>
       <div className="flex justify-center mb-4">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-        <FiCheck className="w-8 h-8 text-green-600" />
+          <FiCheck className="w-8 h-8 text-green-600" />
         </div>
       </div>
-      
+
       <h2 className="text-xl font-semibold text-darktext mb-2">Request Submitted Successfully!</h2>
       <p className="text-gray-600 mb-6">
-        Your Barangay Clearance request has been submitted and is now being processed. 
+        Your Barangay Clearance request has been submitted and is now being processed.
         You will be notified once it's ready for pickup.
       </p>
-      
+
       <div className="flex justify-center space-x-4">
         <button
           onClick={() => onNavigate('process-document')}
@@ -540,9 +537,9 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
           onClick={() => {
             setStep(1);
             setSelectedResident(null);
-            setSearchTerm('');          reset({
-            document_type: 'BARANGAY_CLEARANCE',
-            resident_id: '',
+            setSearchTerm(''); reset({
+              document_type: 'BARANGAY_CLEARANCE',
+              resident_id: '',
               applicant_name: '',
               purpose: '',
               applicant_address: '',
@@ -571,33 +568,29 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
       <Breadcrumb isLoaded={isLoaded} />
 
       {/* Header */}
-      <div className={`mb-6 transition-all duration-700 ease-out ${
-        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`}>
-          <h1 className="text-2xl font-bold text-darktext">Barangay Clearance Request</h1>
+      <div className={`mb-6 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
+        <h1 className="text-2xl font-bold text-darktext">Barangay Clearance Request</h1>
         <p className="text-gray-600 mt-1">Request a barangay clearance certificate</p>
       </div>
 
       {/* Step Indicator */}
-      <div className={`mb-8 transition-all duration-700 ease-out ${
-        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`} style={{ transitionDelay: '100ms' }}>
+      <div className={`mb-8 transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`} style={{ transitionDelay: '100ms' }}>
         <div className="flex items-center justify-center space-x-4">
           {[1, 2, 3].map((stepNumber) => (
             <div key={stepNumber} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                step === stepNumber
-                  ? 'bg-smblue-400 text-white' 
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step === stepNumber
+                  ? 'bg-smblue-400 text-white'
                   : step > stepNumber
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-200 text-gray-600'
-              }`}>
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-200 text-gray-600'
+                }`}>
                 {step > stepNumber ? <FiCheck /> : stepNumber}
               </div>
               {stepNumber < 3 && (
-                <div className={`w-16 h-0.5 ${
-                  step > stepNumber ? 'bg-green-500' : 'bg-gray-200'
-                }`} />
+                <div className={`w-16 h-0.5 ${step > stepNumber ? 'bg-green-500' : 'bg-gray-200'
+                  }`} />
               )}
             </div>
           ))}

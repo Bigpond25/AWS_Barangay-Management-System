@@ -727,7 +727,7 @@ class ResidentController extends Controller
                 $result = $storageService->uploadFile(
                     $photo,
                     'residents-photos',
-                    "{$resident->id}/profile",
+                    "", // Let service generate UUID filename
                     true // public bucket
                 );
                 

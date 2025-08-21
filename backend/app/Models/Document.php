@@ -30,9 +30,15 @@ class Document extends Model implements Auditable
     
     public function __construct(array $attributes = [])
     {
-        // Set fillable and casts from schema
-        $this->fillable = DocumentSchema::getFillableFields();
-        $this->casts = DocumentSchema::getCasts();
+        // Set fillable and casts from schema before calling parent constructor
+        try {
+            $this->fillable = DocumentSchema::getFillableFields() ?? [];
+            $this->casts = DocumentSchema::getCasts() ?? [];
+        } catch (\Exception $e) {
+            // Fallback in case schema is not available
+            $this->fillable = [];
+            $this->casts = [];
+        }
         
         parent::__construct($attributes);
     }
@@ -43,7 +49,7 @@ class Document extends Model implements Auditable
     public function getDocumentTypeDisplayAttribute(): string
     {
         $types = DocumentSchema::getDocumentTypes();
-        return $types[$this->document_type] ?? $this->document_type;
+        return $types[$this->type] ?? $this->type;
     }
 
     public function getPriorityDisplayAttribute(): string
@@ -175,7 +181,7 @@ class Document extends Model implements Auditable
 
     public function scopeByDocumentType($query, $type)
     {
-        return $query->where('document_type', $type);
+        return $query->where('type', $type);
     }
 
     public function scopeByPriority($query, $priority)
@@ -236,22 +242,22 @@ class Document extends Model implements Auditable
      */
     public function isBarangayClearance(): bool
     {
-        return $this->document_type === 'BARANGAY_CLEARANCE';
+        return $this->type === 'BARANGAY_CLEARANCE';
     }
 
     public function isBusinessPermit(): bool
     {
-        return $this->document_type === 'BUSINESS_PERMIT';
+        return $this->type === 'BUSINESS_PERMIT';
     }
 
     public function isCertificateOfIndigency(): bool
     {
-        return $this->document_type === 'CERTIFICATE_OF_INDIGENCY';
+        return $this->type === 'CERTIFICATE_OF_INDIGENCY';
     }
 
     public function isCertificateOfResidency(): bool
     {
-        return $this->document_type === 'CERTIFICATE_OF_RESIDENCY';
+        return $this->type === 'CERTIFICATE_OF_RESIDENCY';
     }
 
     public function hasRequiredDocuments(): bool
@@ -289,7 +295,7 @@ class Document extends Model implements Auditable
         // Auto-generate document number and serial number when creating
         static::creating(function ($document) {
             if (!$document->document_number) {
-                $document->document_number = static::generateDocumentNumber($document->document_type);
+                $document->document_number = static::generateDocumentNumber($document->type);
             }
             
             if (!$document->serial_number) {
@@ -353,7 +359,7 @@ class Document extends Model implements Auditable
         $month = now()->format('m');
         
         // Get next sequence number for this document type and month
-        $lastDocument = static::where('document_type', $documentType)
+        $lastDocument = static::where('type', $documentType)
             ->whereYear('request_date', $year)
             ->whereMonth('request_date', $month)
             ->orderBy('id', 'desc')

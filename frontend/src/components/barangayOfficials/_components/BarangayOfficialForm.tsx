@@ -13,7 +13,7 @@ import {
 import { civilStatuses, educationalAttainments, genders } from "@/services/__shared/types";
 import { SearchResidents } from "./SearchResidents";
 import { FiCheck, FiX } from "react-icons/fi";
-import { STORAGE_BASE_URL } from "@/services/__shared/_storage/storage.types";
+import { buildImageUrl, getPlaceholderImageUrl } from "@/utils/imageUtils";
 
 interface BarangayOfficialFormProps {
   mode: "create" | "edit";
@@ -223,7 +223,7 @@ export const BarangayOfficialForm: React.FC<BarangayOfficialFormProps> = ({
                 >
                   {official?.profile_photo_url && (
                     <img
-                      src={`${STORAGE_BASE_URL}/${official?.profile_photo_url}`}
+                      src={buildImageUrl(official.profile_photo_url)}
                       alt="barangay official profile picture"
                       className="w-72 h-72 rounded-full"
                     />

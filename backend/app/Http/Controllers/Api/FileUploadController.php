@@ -41,7 +41,7 @@ class FileUploadController extends Controller
             $result = $this->storageService->uploadFile(
                 $file,
                 'residents-photos', // Use residents-photos bucket
-                'profile-photos/' . $filename, // Generate unique path with filename
+                '/' . $filename, // Generate unique path with filename
                 true // Public access
             );
 

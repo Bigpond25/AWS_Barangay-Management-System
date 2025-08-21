@@ -17,7 +17,7 @@ return new class extends Migration
             
             // Household Classification
             $table->enum('household_type', ['NUCLEAR', 'EXTENDED', 'SINGLE', 'SINGLE_PARENT', 'OTHER'])->default('NUCLEAR');
-            $table->uuid('head_id')->nullable(); // This will be the head resident
+            $table->uuid('head_resident_id')->nullable(); // This will be the head resident
             
             // Address Information
             $table->string('house_number');

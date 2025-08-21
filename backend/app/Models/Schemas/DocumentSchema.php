@@ -15,7 +15,7 @@ class DocumentSchema
     {
         return [
             // Basic Document Information
-            'document_type' => ['type' => 'string', 'max' => 255, 'required' => true],
+            'type' => ['type' => 'string', 'max' => 255, 'required' => true],
             'resident_id' => ['type' => 'foreignId', 'references' => 'residents.id', 'required' => true],
             'applicant_name' => ['type' => 'string', 'max' => 255, 'required' => true],
             'purpose' => ['type' => 'text', 'required' => true],

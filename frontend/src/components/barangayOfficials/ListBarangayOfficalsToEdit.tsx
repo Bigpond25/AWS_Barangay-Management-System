@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { FiSearch, FiEdit, FiUsers } from "react-icons/fi";
 
 // 3. Internal/shared services
-import { STORAGE_BASE_URL } from "@/services/__shared/_storage/storage.types";
+import { buildImageUrl, getPlaceholderImageUrl } from "@/utils/imageUtils";
 
 // 4. Internal components
 import Breadcrumb from "../_global/Breadcrumb";
@@ -80,7 +80,7 @@ export default function ListBarangayOfficalsToEdit() {
                 >
                   <div className="flex items-center space-x-4">
                     <img
-                      src={official?.photo ? `${STORAGE_BASE_URL}/${official?.photo}` : 'https://via.placeholder.com/150'}
+                      src={official?.photo ? buildImageUrl(official.photo) : getPlaceholderImageUrl(48, official?.name || 'Official')}
                       alt={official?.name}
                       className="w-12 h-12 rounded-full object-cover"
                     />

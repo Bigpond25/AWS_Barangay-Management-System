@@ -217,7 +217,7 @@ class RelationshipTestSeeder extends Seeder
             for ($i = 0; $i < rand(2, 3); $i++) {
                 Document::create([
                     'id' => Str::uuid(),
-                    'document_type' => $documentTypes[array_rand($documentTypes)],
+                    'type' => $documentTypes[array_rand($documentTypes)],
                     'resident_id' => $resident->id,
                     'applicant_name' => $resident->first_name . ' ' . $resident->last_name,
                     'purpose' => 'Test purpose for ' . $documentTypes[array_rand($documentTypes)],
