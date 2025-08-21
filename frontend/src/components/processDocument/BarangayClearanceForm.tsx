@@ -155,11 +155,10 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
     }
   }, [selectedResident, setValue]);
 
-  // Watch for priority changes to update processing fee
-  const priority = watch('priority');
+  // Processing fee is always free for liquor clearance
   useEffect(() => {
-    setValue('processing_fee', priority === 'HIGH' ? 100 : 50);
-  }, [priority, setValue]);
+    setValue('processing_fee', 0);
+  }, [setValue]);
 
   const handleResidentSelect = (resident: Resident) => {
     setSelectedResident(resident);
@@ -441,39 +440,17 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
             </div>
           </div>
 
-          {/* Urgent Request Option - Manual implementation (since checkbox was removed) */}
-          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={watch('priority') === 'HIGH'}
-                onChange={(e) => {
-                  setValue('priority', e.target.checked ? 'HIGH' : 'NORMAL');
-                }}
-                className="h-4 w-4 text-smblue-400 focus:ring-smblue-200 border-gray-300 rounded"
-              />
-              <span className="ml-2 text-sm font-medium text-gray-700">
-                Urgent Processing Request (+₱50 fee)
-              </span>
-            </label>
-            <p className="mt-1 text-xs text-gray-600">
-              Urgent requests are processed within 24 hours instead of the standard 48-72 hours.
-            </p>
-          </div>
-
           {/* Processing Fee Display */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-gray-700">Processing Fee:</span>
-              <span className="text-lg font-bold text-smblue-400">
-                ₱{watch('processing_fee')}
+              <span className="text-lg font-bold text-green-600">
+                FREE
               </span>
             </div>
-            {watch('priority') === 'HIGH' && (
-              <p className="text-xs text-gray-600 mt-1">
-                Includes ₱50 standard fee + ₱50 urgent processing fee
-              </p>
-            )}
+            <p className="text-xs text-gray-600 mt-1">
+              Barangay Clearance for Liquor License is processed free of charge
+            </p>
           </div>
 
           {/* Form-level Error Display */}
