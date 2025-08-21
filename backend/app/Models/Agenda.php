@@ -55,8 +55,8 @@ class Agenda extends Model
         'attachments' => 'array',
         'reminder_enabled' => 'boolean',
         'reminder_minutes_before' => 'integer',
-        'created_by' => 'integer',
-        'updated_by' => 'integer',
+        'created_by' => 'string',
+        'updated_by' => 'string',
     ];
 
     /**

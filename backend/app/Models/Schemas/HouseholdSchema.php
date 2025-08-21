@@ -17,6 +17,9 @@ class HouseholdSchema
             'head_resident_id' => ['type' => 'string', 'references' => 'residents.id', 'nullable' => true],
             
             // Address Information
+            'house_number' => ['type' => 'string', 'max' => 50, 'required' => true],
+            'street_sitio' => ['type' => 'string', 'max' => 100, 'required' => true],
+            'barangay' => ['type' => 'string', 'max' => 100, 'required' => true],
             'complete_address' => ['type' => 'text', 'required' => true],
             
             // Socioeconomic Information
