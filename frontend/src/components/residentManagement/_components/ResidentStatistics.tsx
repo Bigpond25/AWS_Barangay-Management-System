@@ -6,7 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaUsers, FaWheelchair, FaUserFriends, FaChild } from 'react-icons/fa';
 import { useResidentStatistics } from '@/services/residents/useResidents';
-import { StatCard } from '@/components/__shared/StatCard';
+import StatCard from '@/components/_global/StatCard';
 
 interface ResidentStatisticsProps {
   isLoaded: boolean;

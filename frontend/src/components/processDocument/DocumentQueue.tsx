@@ -2,7 +2,7 @@
 // processDocument/DocumentQueue.tsx - Modern document queue management
 // ============================================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FiClock, 
   FiEye, 
@@ -22,6 +22,7 @@ import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { useDocumentQueue } from './_hooks/useDocumentQueue';
 import { formatDate } from '@/utils/dateUtils';
 import type { DocumentStatus, DocumentPriority, Document } from '@/services/documents/documents.types';
+import Breadcrumb from '../_global/Breadcrumb';
 
 interface DocumentQueueProps {
   onNavigate?: (page: string) => void;
@@ -43,6 +44,15 @@ const DocumentQueue: React.FC<DocumentQueueProps> = ({ onNavigate }) => {
 
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [actionModalOpen, setActionModalOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Animation trigger on component mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const statusConfig = {
     PENDING: {
@@ -146,8 +156,13 @@ const DocumentQueue: React.FC<DocumentQueueProps> = ({ onNavigate }) => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
+      {/* Breadcrumb */}
+      <Breadcrumb isLoaded={isLoaded} />
+
       {/* Header */}
-      <div className="mb-6">
+      <div className={`mb-6 transition-all duration-700 ease-out ${
+        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}>
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-darktext">Document Processing Queue</h1>
@@ -167,7 +182,9 @@ const DocumentQueue: React.FC<DocumentQueueProps> = ({ onNavigate }) => {
       </div>
 
       {/* Status Tabs */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+      <div className={`bg-white rounded-lg shadow-sm border border-gray-200 mb-6 transition-all duration-700 ease-out ${
+        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`} style={{ transitionDelay: '100ms' }}>
         <div className="grid grid-cols-6 divide-x divide-gray-200">
           {/* All Tab */}
           <button
@@ -228,7 +245,9 @@ const DocumentQueue: React.FC<DocumentQueueProps> = ({ onNavigate }) => {
       </div>
 
       {/* Enhanced Search and Controls */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6 transition-all duration-700 ease-out ${
+        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`} style={{ transitionDelay: '200ms' }}>
         <div className="flex items-center justify-between">
           <div className="flex-1 max-w-md">
             <input
@@ -256,7 +275,9 @@ const DocumentQueue: React.FC<DocumentQueueProps> = ({ onNavigate }) => {
       </div>
 
       {/* Queue Items */}
-      <div className="space-y-4">
+      <div className={`space-y-4 transition-all duration-700 ease-out ${
+        isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`} style={{ transitionDelay: '300ms' }}>
         {documents.map((document) => {
           const statusKey = getStatusConfigKey(document.status);
           const StatusIcon = statusConfig[statusKey as keyof typeof statusConfig].icon;
@@ -378,7 +399,9 @@ const DocumentQueue: React.FC<DocumentQueueProps> = ({ onNavigate }) => {
 
       {/* Empty State */}
       {documents.length === 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+        <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center transition-all duration-700 ease-out ${
+          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`} style={{ transitionDelay: '400ms' }}>
           <FiFileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
           <p className="text-gray-600">
