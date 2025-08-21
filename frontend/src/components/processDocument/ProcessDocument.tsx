@@ -107,6 +107,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
     { value: 'BARANGAY_CLEARANCE_INSTALLATION', label: 'Barangay Clearance (Installation)' },
     { value: 'BARANGAY_CLEARANCE', label: 'Barangay Clearance (Liquor)' },
     { value: 'BUSINESS_PERMIT', label: 'Business Permit' },
+    { value: 'BUSINESS_SIGN_CLEARANCE', label: 'Business Sign Clearance' },
     { value: 'CERTIFICATE_OF_INDIGENCY', label: 'Certificate of Indigency' },
     { value: 'CERTIFICATE_OF_RESIDENCY', label: 'Certificate of Residency' }
   ];
@@ -186,7 +187,8 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
       'BARANGAY_CLEARANCE': 'barangay-clearance',
       'CERTIFICATE_OF_RESIDENCY': 'certificate-residency', 
       'CERTIFICATE_OF_INDIGENCY': 'certificate-indigency',
-      'BUSINESS_PERMIT': 'business-permit'
+      'BUSINESS_PERMIT': 'business-permit',
+      'BUSINESS_SIGN_CLEARANCE': 'business-sign-clearance'
     };
 
     const printRoute = printRouteMap[document.type];
@@ -679,7 +681,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
 
       {/* Loading Overlay */}
       {isProcessing && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0  bg-[rgba(0,0,0,0.2)] flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 flex items-center space-x-3">
             <LoadingSpinner size="md" />
             <span className="text-gray-700">Processing document...</span>

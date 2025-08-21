@@ -89,6 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         { id: "barangay-clearance-installation", label: "Barangay Clearance (Installation)" },
         { id: "barangay-clearance", label: "Barangay Clearance (Liquor)" },
         { id: "business-permit", label: "Business Permit" },
+        { id: "business-sign-clearance", label: "Business Sign Clearance" },
         { id: "certificate-indigency", label: "Certificate of Indigency" },
         { id: "certificate-residency", label: "Certificate of Residency" },
       ],

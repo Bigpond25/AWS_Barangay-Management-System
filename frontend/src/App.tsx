@@ -11,6 +11,7 @@ import ViewResident from "./components/residentManagement/ViewResident";
 import ProcessDocument from "./components/processDocument/ProcessDocument";
 import BarangayClearanceForm from "./components/processDocument/BarangayClearanceForm";
 import BusinessPermitForm from "./components/processDocument/BusinessPermitForm";
+import BusinessSignClearanceForm from "./components/processDocument/BusinessSignClearanceForm";
 import CertificateOfIndigencyForm from "./components/processDocument/CertificateOfIndigencyForm";
 import CertificateOfResidencyForm from "./components/processDocument/CertificateOfResidencyForm";
 import DocumentQueue from "./components/processDocument/DocumentQueue";
@@ -18,6 +19,7 @@ import BarangayClearancePrint from "./components/processDocument/BarangayClearan
 import CertificateOfResidencyPrint from "./components/processDocument/CertificateOfResidencyPrint";
 import CertificateOfIndigencyPrint from "./components/processDocument/CertificateOfIndigencyPrint";
 import BusinessPermitPrint from "./components/processDocument/BusinessPermitPrint";
+import BusinessSignClearancePrint from "./components/processDocument/BusinessSignClearancePrint";
 import HouseholdManagement from "./components/householdManagement/HouseholdManagement";
 import AddNewHousehold from "./components/householdManagement/AddNewHousehold";
 import EditHousehold from "./components/householdManagement/EditHousehold";
@@ -77,6 +79,11 @@ const BarangayClearanceInstallationFormWrapper = () => {
 const BusinessPermitFormWrapper = () => {
   const navigate = useNavigate();
   return <BusinessPermitForm onNavigate={(item) => navigate(`/${item}`)} />;
+};
+
+const BusinessSignClearanceFormWrapper = () => {
+  const navigate = useNavigate();
+  return <BusinessSignClearanceForm onNavigate={(item) => navigate(`/${item}`)} />;
 };
 
 const CertificateOfIndigencyFormWrapper = () => {
@@ -258,6 +265,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard permission="create-documents">
                 <BusinessPermitFormWrapper />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "business-sign-clearance",
+            element: (
+              <PermissionGuard permission="create-documents">
+                <BusinessSignClearanceFormWrapper />
               </PermissionGuard>
             ),
           },
@@ -492,6 +507,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requireAuth={true}>
         <BusinessPermitPrint />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/print/business-sign-clearance/:documentId",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <BusinessSignClearancePrint />
       </ProtectedRoute>
     ),
   },

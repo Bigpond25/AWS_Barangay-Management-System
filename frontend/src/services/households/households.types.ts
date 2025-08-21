@@ -86,6 +86,9 @@ export const HouseholdFormDataSchema = z.object({
   head_resident_id: z.string().nullable().optional(),
   
   // Address Information
+  house_number: z.string().min(1, 'House number is required'),
+  street_sitio: z.string().min(1, 'Street/Sitio is required'),
+  barangay: z.string().min(1, 'Barangay is required'),
   complete_address: z.string().min(1, 'households.form.error.completeAddressRequired'),
   
   // Income Information

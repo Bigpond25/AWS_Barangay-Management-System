@@ -26,6 +26,10 @@ const Calendar = () => {
     currentDate.getFullYear()
   );
 
+  // TODO: Add appointments integration
+  // const { data: appointments = [] } = useAppointmentsByDate(currentDate.getMonth() + 1, currentDate.getFullYear());
+  // const combinedEvents = [...calendarEvents, ...appointments.map(apt => ({...apt, type: 'appointment'}))];
+
   const createAgendaMutation = useCreateAgenda();
 
   // Debug logging
@@ -93,6 +97,9 @@ const Calendar = () => {
       console.log('Agenda saved successfully:', newAgendaData);
     } catch (error) {
       console.error('Error saving agenda:', error);
+      // Show error notification to user
+      alert('Failed to create agenda. Please try again.');
+      throw error; // Re-throw so AddAgenda component can handle it
     }
   };
 

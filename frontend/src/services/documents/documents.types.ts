@@ -8,7 +8,8 @@ import { z } from 'zod';
 export const DocumentTypeSchema = z.enum([
   'BARANGAY_CLEARANCE_INSTALLATION',
   'BARANGAY_CLEARANCE',
-  'BUSINESS_PERMIT', 
+  'BUSINESS_PERMIT',
+  'BUSINESS_SIGN_CLEARANCE',
   'CERTIFICATE_OF_INDIGENCY',
   'CERTIFICATE_OF_RESIDENCY'
 ]);
@@ -72,6 +73,11 @@ export const DocumentFormDataSchema = z.object({
   // Certificate of Residency specific
   residency_period: z.string().nullable().optional(),
   previous_address: z.string().nullable().optional(),
+  
+  // Business Sign Clearance specific
+  sign_wordings: z.string().nullable().optional(),
+  sign_material: z.string().nullable().optional(),
+  sign_size: z.string().nullable().optional(),
   
   // Processing Information
   requirements_submitted: z.array(z.string()).nullable().optional(),

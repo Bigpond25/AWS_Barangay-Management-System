@@ -61,6 +61,11 @@ class DocumentSchema
             'residency_period' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'previous_address' => ['type' => 'text', 'nullable' => true],
             
+            // Document Specific Fields (Business Sign Clearance)
+            'sign_wordings' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'sign_material' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'sign_size' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            
             // Processing Information
             'requirements_submitted' => ['type' => 'json', 'nullable' => true],
             'notes' => ['type' => 'text', 'nullable' => true],
@@ -198,6 +203,7 @@ class DocumentSchema
             'CERTIFICATE_OF_RESIDENCY' => 'Certificate of Residency',
             'CERTIFICATE_OF_INDIGENCY' => 'Certificate of Indigency',
             'BUSINESS_PERMIT' => 'Business Permit',
+            'BUSINESS_SIGN_CLEARANCE' => 'Business Sign Clearance',
             'BUILDING_PERMIT' => 'Building Permit',
             'FIRST_TIME_JOB_SEEKER' => 'First Time Job Seeker',
             'SENIOR_CITIZEN_ID' => 'Senior Citizen ID',

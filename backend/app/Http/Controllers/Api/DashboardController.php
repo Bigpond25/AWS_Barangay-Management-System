@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Resident;
 use App\Models\Household;
 use App\Models\BarangayOfficial;
-use App\Models\BlotterCase;
+use App\Models\Blotter;
 use App\Models\Project;
 use App\Models\Document;
 use App\Models\ActivityLog;
@@ -27,7 +27,7 @@ class DashboardController extends Controller
             $totalResidents = Resident::where('status', 'ACTIVE')->count();
             $totalHouseholds = Household::count();
             $activeBarangayOfficials = BarangayOfficial::where('status', 'ACTIVE')->count() ?: 6; // Default fallback
-            $totalBlotterCases = BlotterCase::count();
+            $totalBlotterCases = Blotter::count();
             $totalIssuedClearance = 25; // Static value since Document model may not have clearance type
             $ongoingProjects = Project::where('status', 'Active')->count();
 

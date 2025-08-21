@@ -7,7 +7,7 @@ use App\Models\Resident;
 use App\Models\Household;
 use App\Models\Project;
 use App\Models\BarangayOfficial;
-use App\Models\BlotterCase;
+use App\Models\Blotter;
 use Carbon\Carbon;
 
 class DashboardTestDataSeeder extends Seeder
@@ -172,23 +172,12 @@ class DashboardTestDataSeeder extends Seeder
         // Add sample blotter cases
         $blotterTypes = ['Noise Complaint', 'Property Damage', 'Disturbance', 'Harassment', 'Domestic Dispute'];
         for ($i = 0; $i < 8; $i++) {
-            BlotterCase::create([
-                'case_number' => 'BLT-2025-' . str_pad($i + 1, 4, '0', STR_PAD_LEFT),
-                'case_title' => 'Case ' . ($i + 1) . ' - ' . $blotterTypes[array_rand($blotterTypes)],
-                'case_description' => 'Sample case description for case ' . ($i + 1),
-                'case_type' => ['CIVIL', 'COMPLAINT', 'DISPUTE'][array_rand(['CIVIL', 'COMPLAINT', 'DISPUTE'])],
-                'complainant_name' => 'Complainant ' . ($i + 1),
-                'complainant_address' => 'Purok ' . rand(1, 7) . ' Sample Address',
-                'incident_type' => $blotterTypes[array_rand($blotterTypes)],
-                'incident_description' => 'Sample incident description for case ' . ($i + 1),
-                'incident_date' => Carbon::now()->subDays(rand(1, 30)),
-                'incident_location' => 'Purok ' . rand(1, 7),
-                'respondent_name' => 'Respondent ' . ($i + 1),
-                'respondent_address' => 'Purok ' . rand(1, 7) . ' Sample Address',
-                'status' => ['FILED', 'UNDER_INVESTIGATION', 'SETTLED'][array_rand(['FILED', 'UNDER_INVESTIGATION', 'SETTLED'])],
-                'date_filed' => Carbon::now()->subDays(rand(1, 30)),
-                'settlement_agreement' => $i % 3 === 0 ? 'Mediation successful, parties agreed to settlement' : null,
-                'priority' => ['LOW', 'NORMAL', 'HIGH'][array_rand(['LOW', 'NORMAL', 'HIGH'])],
+            Blotter::create([
+                'base_ticket_id' => null, // Can be null since it's related to help desk tickets
+                'type_of_incident' => $blotterTypes[array_rand($blotterTypes)],
+                'date_of_incident' => Carbon::now()->subDays(rand(1, 30)),
+                'time_of_incident' => sprintf('%02d:%02d:00', rand(8, 18), rand(0, 59)),
+                'location_of_incident' => 'Purok ' . rand(1, 7) . ', Sample Barangay',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
