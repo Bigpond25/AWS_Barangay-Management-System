@@ -6,6 +6,7 @@ import { z } from 'zod';
 
 // Enum schemas following the guidelines
 export const DocumentTypeSchema = z.enum([
+  'BARANGAY_CLEARANCE_INSTALLATION',
   'BARANGAY_CLEARANCE',
   'BUSINESS_PERMIT', 
   'CERTIFICATE_OF_INDIGENCY',

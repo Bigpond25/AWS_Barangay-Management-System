@@ -104,6 +104,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
   const [showProcessModal, setShowProcessModal] = useState(false);
 
   const documentTypes = [
+    { value: 'BARANGAY_CLEARANCE_INSTALLATION', label: 'Barangay Clearance (Installation)' },
     { value: 'BARANGAY_CLEARANCE', label: 'Barangay Clearance (Liquor)' },
     { value: 'BUSINESS_PERMIT', label: 'Business Permit' },
     { value: 'CERTIFICATE_OF_INDIGENCY', label: 'Certificate of Indigency' },
@@ -181,6 +182,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
   const handlePrintDocument = (document: Document) => {
     // Map document types to correct print routes
     const printRouteMap: Record<string, string> = {
+      'BARANGAY_CLEARANCE_INSTALLATION': 'barangay-clearance-installation',
       'BARANGAY_CLEARANCE': 'barangay-clearance',
       'CERTIFICATE_OF_RESIDENCY': 'certificate-residency', 
       'CERTIFICATE_OF_INDIGENCY': 'certificate-indigency',

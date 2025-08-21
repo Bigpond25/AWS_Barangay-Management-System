@@ -49,6 +49,8 @@ import EditUserPage from "./components/userManagement/EditUserPage";
 import ViewUserPage from "./components/userManagement/ViewUserPage";
 import PermissionManagementPage from "./components/permissions/PermissionManagementPage";
 import PermissionGuard from "./components/permissions/PermissionGuard";
+import BarangayClearanceInstallationPrint from "./components/processDocument/BarangayClearanceInstallationPrint";
+import BarangayClearanceInstallationForm from "./components/processDocument/BarangayClearanceInstallationForm";
 
 
 // Wrapper components to handle navigation prop
@@ -65,6 +67,11 @@ const DocumentQueueWrapper = () => {
 const BarangayClearanceFormWrapper = () => {
   const navigate = useNavigate();
   return <BarangayClearanceForm onNavigate={(item) => navigate(`/${item}`)} />;
+};
+
+const BarangayClearanceInstallationFormWrapper = () => {
+  const navigate = useNavigate();
+  return <BarangayClearanceInstallationForm onNavigate={(item) => navigate(`/${item}`)} />;
 };
 
 const BusinessPermitFormWrapper = () => {
@@ -227,6 +234,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard permission="view-documents">
                 <DocumentQueueWrapper />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "barangay-clearance-installation",
+            element: (
+              <PermissionGuard permission="create-documents">
+                <BarangayClearanceInstallationFormWrapper />
               </PermissionGuard>
             ),
           },
@@ -445,6 +460,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requireAuth={true}>
         <BarangayClearancePrint />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/print/barangay-clearance-installation/:documentId",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <BarangayClearanceInstallationPrint />
       </ProtectedRoute>
     ),
   },

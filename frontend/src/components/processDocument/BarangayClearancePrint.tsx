@@ -88,8 +88,8 @@ const BarangayClearancePrint: React.FC = () => {
   const certifyingOfficial = document.certifying_official || 'ELMER TIMOTHY J. LIGON';
   const referenceNumber = document.document_number ? document.document_number.split('-').pop() : '2882';
   const orNumber = document.serial_number || '7318991';
-  const dateIssued = document.approved_at ? 
-    new Date(document.approved_at).toLocaleDateString('en-US', { 
+  const dateIssued = document.approved_date ? 
+    new Date(document.approved_date).toLocaleDateString('en-US', { 
       day: '2-digit',
       month: 'long', 
       year: 'numeric' 
