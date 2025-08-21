@@ -152,7 +152,7 @@ const CertificateOfIndigencyPrint: React.FC = () => {
   // Format address
   const applicantAddress = document.applicant_address || 
     document.resident?.complete_address || 
-    'Brgy. Sikatuna Village, Samal, Bataan';
+    'Brgy. West Triangle, Quezon City';
 
   // Generate OR number
   const orNumber = document.document_number || `OR-${(document.id || 0).toString().padStart(6, '0')}`;
@@ -463,9 +463,7 @@ const CertificateOfIndigencyPrint: React.FC = () => {
               presently residing at <span className="highlight-address">{applicantAddress}</span>
             </div>
             
-            <div className="certification-text">
-              <strong>BARANGAY SIKATUNA VILLAGE, SAMAL, BATAAN.</strong>
-            </div>
+            
             
             <div className="certification-text main-statement">
               It is further certified that the above-named person claims that their family has no 
@@ -485,7 +483,7 @@ const CertificateOfIndigencyPrint: React.FC = () => {
             <div className="issued-section">
               <div className="issued-text">
                 Issued this <span className="highlight-date">{formatDate(new Date())}</span> 
-                at Barangay Sikatuna Village, Samal, Bataan.
+                at Barangay West Triangle, Quezon City, Metro Manila.
               </div>
             </div>
           </div>
