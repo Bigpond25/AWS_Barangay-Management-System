@@ -226,7 +226,7 @@ class Resident extends Model
             'PREFER_NOT_TO_SAY' => 'Prefer not to say',
         ];
 
-        return $genderMap[$this->gender] ?? $this->gender;
+        return $genderMap[$this->gender] ?? ($this->gender ?: 'Not specified');
     }
 
     public function getCivilStatusDisplayAttribute(): string
@@ -242,7 +242,7 @@ class Resident extends Model
             'PREFER_NOT_TO_SAY' => 'Prefer not to say',
         ];
 
-        return $statusMap[$this->civil_status] ?? $this->civil_status;
+        return $statusMap[$this->civil_status] ?? ($this->civil_status ?: 'Not specified');
     }
 
     /**

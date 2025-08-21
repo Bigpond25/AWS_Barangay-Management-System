@@ -37,8 +37,8 @@ export const PaymentStatusSchema = z.enum([
 // Document form data schema - all fields nullable except required ones
 export const DocumentFormDataSchema = z.object({
   // Basic Document Information
-  document_type: DocumentTypeSchema,
-  resident_id: z.string().uuid('Resident is required'),
+  type: DocumentTypeSchema,
+  resident_id: z.string().min(1, 'Resident is required'),
   applicant_name: z.string().min(1, 'Applicant name is required'),
   purpose: z.string().min(1, 'Purpose is required'),
   
@@ -87,7 +87,7 @@ export const DocumentSchema = DocumentFormDataSchema.extend({
   // System tracking fields
   document_number: z.string().nullable().optional(),
   serial_number: z.string().nullable().optional(), // Auto-generated serial number for each document
-  request_date: z.string(),
+  submitted_at: z.string(),
   processed_date: z.string().nullable().optional(),
   approved_date: z.string().nullable().optional(), 
   released_date: z.string().nullable().optional(),
@@ -144,7 +144,7 @@ export const DocumentParamsSchema = z.object({
   page: z.number().min(1).nullable().optional(),
   per_page: z.number().min(1).max(100).nullable().optional(),
   search: z.string().nullable().optional(),
-  document_type: DocumentTypeSchema.nullable().optional(),
+  type: DocumentTypeSchema.nullable().optional(),
   status: DocumentStatusSchema.nullable().optional(),
   priority: DocumentPrioritySchema.nullable().optional(),
   payment_status: PaymentStatusSchema.nullable().optional(),
@@ -253,7 +253,7 @@ export type ProcessingHistoryItem = z.infer<typeof ProcessingHistoryItemSchema>;
 export const transformDocumentToFormData = (document: Document | null): DocumentFormData => {
   if (!document) {
     return {
-      document_type: 'BARANGAY_CLEARANCE',
+      type: 'BARANGAY_CLEARANCE',
       resident_id: '',
       applicant_name: '',
       purpose: '',
@@ -281,7 +281,7 @@ export const transformDocumentToFormData = (document: Document | null): Document
   }
 
   return {
-    document_type: document.document_type,
+    type: document.type,
     resident_id: document.resident_id,
     applicant_name: document.applicant_name,
     purpose: document.purpose,

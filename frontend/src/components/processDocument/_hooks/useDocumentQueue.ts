@@ -41,11 +41,11 @@ export interface QueueActions {
 // Available sortable fields
 export const SORTABLE_FIELDS = {
   applicant_name: 'Applicant Name',
-  document_type: 'Document Type', 
+  type: 'Document Type', 
   status: 'Status',
   priority: 'Priority',
   processing_fee: 'Processing Fee',
-  request_date: 'Request Date',
+  submitted_at: 'Request Date',
   created_at: 'Date Added',
   needed_date: 'Needed Date',
   purpose: 'Purpose'
@@ -73,7 +73,7 @@ export function useDocumentQueue() {
   } = useDocuments({
     status: filters.status !== 'ALL' ? filters.status : undefined,
     priority: filters.priority,
-    document_type: filters.documentType,
+    type: filters.documentType,
     search: filters.searchTerm || undefined,
     date_from: filters.dateFrom,
     date_to: filters.dateTo,

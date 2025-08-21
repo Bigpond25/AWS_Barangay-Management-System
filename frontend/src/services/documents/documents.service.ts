@@ -297,7 +297,7 @@ export class DocumentsService extends BaseApiService {
     const paginatedSchema = PaginatedResponseSchema(DocumentSchema);
     
     const response = await this.request(
-      `/documents?document_type=${encodeURIComponent(documentType)}`,
+      `/documents?type=${encodeURIComponent(documentType)}`,
       paginatedSchema,
       { method: 'GET' }
     );

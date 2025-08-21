@@ -187,17 +187,17 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
       'BUSINESS_PERMIT': 'business-permit'
     };
 
-    const printRoute = printRouteMap[document.document_type];
+    const printRoute = printRouteMap[document.type];
     if (printRoute) {
       navigate(`/print/${printRoute}/${String(document.id)}`);
     } else {
-      console.error('No print route found for document type:', document.document_type);
+      console.error('No print route found for document type:', document.type);
     }
   };
 
   const formatDocumentType = (type: string) => {
     const docType = documentTypes.find(dt => dt.value === type);
-    return docType ? docType?.label : type.replace(/_/g, ' ');
+    return docType ? docType?.label : type?.replace(/_/g, ' ');
   };
 
   // Map backend status values to frontend config keys
