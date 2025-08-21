@@ -33,7 +33,7 @@ const BusinessPermitForm: React.FC<BusinessPermitFormProps> = ({ onNavigate }) =
   const form = useForm<DocumentFormData>({
     resolver: zodResolver(DocumentFormDataSchema),
     defaultValues: {
-      document_type: 'BUSINESS_PERMIT',
+      type: 'BUSINESS_PERMIT',
       resident_id: '',
       applicant_name: '',
       purpose: '',
@@ -156,11 +156,10 @@ const BusinessPermitForm: React.FC<BusinessPermitFormProps> = ({ onNavigate }) =
     }
   }, [selectedResident, setValue]);
 
-  // Watch for priority changes to update processing fee
-  const priority = watch('priority');
+  // Set fixed processing fee for business permit
   useEffect(() => {
-    setValue('processing_fee', priority === 'HIGH' ? 150 : 100);
-  }, [priority, setValue]);
+    setValue('processing_fee', 100);
+  }, [setValue]);
 
   const handleResidentSelect = (resident: Resident) => {
     setSelectedResident(resident);
@@ -496,26 +495,6 @@ const BusinessPermitForm: React.FC<BusinessPermitFormProps> = ({ onNavigate }) =
             </div>
           </div>
 
-          {/* Urgent Request Option */}
-          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={watch('priority') === 'HIGH'}
-                onChange={(e) => {
-                  setValue('priority', e.target.checked ? 'HIGH' : 'NORMAL');
-                }}
-                className="h-4 w-4 text-smblue-400 focus:ring-smblue-200 border-gray-300 rounded"
-              />
-              <span className="ml-2 text-sm font-medium text-gray-700">
-                Urgent Processing Request (+₱50 fee)
-              </span>
-            </label>
-            <p className="mt-1 text-xs text-gray-600">
-              Urgent requests are processed within 3-5 business days instead of the standard 7-10 business days.
-            </p>
-          </div>
-
           {/* Processing Fee Display */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <div className="flex justify-between items-center">
@@ -524,11 +503,9 @@ const BusinessPermitForm: React.FC<BusinessPermitFormProps> = ({ onNavigate }) =
                 ₱{watch('processing_fee')}
               </span>
             </div>
-            {watch('priority') === 'HIGH' && (
-              <p className="text-xs text-gray-600 mt-1">
-                Includes ₱100 standard fee + ₱50 urgent processing fee
-              </p>
-            )}
+            <p className="text-xs text-gray-600 mt-1">
+              Standard processing fee for Business Permit application
+            </p>
           </div>
 
           {/* Requirements Notice */}
@@ -631,7 +608,7 @@ const BusinessPermitForm: React.FC<BusinessPermitFormProps> = ({ onNavigate }) =
             <p><strong>Business Name:</strong> {watch('business_name')}</p>
             <p><strong>Business Type:</strong> {watch('business_type')}</p>
             <p><strong>Processing Fee:</strong> ₱{watch('processing_fee')}</p>
-            <p><strong>Expected Processing Time:</strong> {watch('priority') === 'HIGH' ? '3-5 business days' : '7-10 business days'}</p>
+            <p><strong>Expected Processing Time:</strong> 7-10 business days</p>
           </div>
         </div>
       )}
@@ -666,9 +643,9 @@ const BusinessPermitForm: React.FC<BusinessPermitFormProps> = ({ onNavigate }) =
           onClick={() => {
             setStep(1);
             setSelectedResident(null);
-            setSearchTerm('');          reset({
-            document_type: 'BUSINESS_PERMIT',
-            resident_id: '',
+            setSearchTerm('');                      reset({
+              type: 'BUSINESS_PERMIT',
+              resident_id: '',
               applicant_name: '',
               purpose: '',
               applicant_address: '',
