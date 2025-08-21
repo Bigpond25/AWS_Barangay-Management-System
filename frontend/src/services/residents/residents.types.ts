@@ -195,9 +195,9 @@ export const HouseholdRelationshipSchema = z.object({
 
 export const DocumentSummarySchema = z.object({
   id: z.string().uuid(),
-  document_type: z.string(),
+  type: z.string(),
   status: z.string(),
-  request_date: z.string(),
+  submitted_at: z.string(),
   document_number: z.string().nullable(),
   priority: z.string(),
   payment_status: z.string(),

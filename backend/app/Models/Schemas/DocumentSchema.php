@@ -37,10 +37,10 @@ class DocumentSchema
             // System tracking fields
             'document_number' => ['type' => 'string', 'max' => 255, 'nullable' => true, 'unique' => true],
             'serial_number' => ['type' => 'string', 'max' => 255, 'nullable' => true, 'unique' => true],
-            'request_date' => ['type' => 'timestamp', 'default' => 'current'],
-            'processed_date' => ['type' => 'timestamp', 'nullable' => true],
-            'approved_date' => ['type' => 'timestamp', 'nullable' => true],
-            'released_date' => ['type' => 'timestamp', 'nullable' => true],
+            'submitted_at' => ['type' => 'timestamp', 'default' => 'current'],
+            'processed_at' => ['type' => 'timestamp', 'nullable' => true],
+            'approved_at' => ['type' => 'timestamp', 'nullable' => true],
+            'released_at' => ['type' => 'timestamp', 'nullable' => true],
             
             // Document Specific Fields (Barangay Clearance)
             'clearance_purpose' => ['type' => 'string', 'max' => 255, 'nullable' => true],

@@ -33,7 +33,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
   const form = useForm<DocumentFormData>({
     resolver: zodResolver(DocumentFormDataSchema),
     defaultValues: {
-      document_type: 'BARANGAY_CLEARANCE',
+      type: 'BARANGAY_CLEARANCE',
       resident_id: '',
       applicant_name: '',
       purpose: '',
@@ -49,14 +49,15 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
       notes: '',
       remarks: '',
     },
-    mode: 'onChange',
+    mode: 'onSubmit', // Changed from 'onChange' to 'onSubmit' to prevent premature validation
+    reValidateMode: 'onChange', // Re-validate on change after first submit attempt
   });
 
   const {
     setValue,
     watch,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     getValues,
     reset
   } = form;
@@ -142,6 +143,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
     if (selectedResident) {
       const fullName = `${selectedResident.first_name} ${selectedResident.middle_name || ''} ${selectedResident.last_name}`.trim();
 
+      setValue('type', 'BARANGAY_CLEARANCE');
       setValue('resident_id', selectedResident.id);
       setValue('applicant_name', fullName);
       setValue('applicant_address', selectedResident.complete_address);
@@ -158,6 +160,8 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
 
   const handleResidentSelect = (resident: Resident) => {
     setSelectedResident(resident);
+    setValue('resident_id', resident.id); // Set the resident_id in the form
+    setValue('applicant_name', `${resident.first_name} ${resident.middle_name || ''} ${resident.last_name}`.trim());
     setSearchTerm(`${resident.first_name} ${resident.middle_name || ''} ${resident.last_name}`.trim());
     setStep(2);
   };
@@ -172,6 +176,14 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
       });
       return;
     }
+
+    // Ensure resident_id is set (defensive programming)
+    if (!formData.resident_id) {
+      formData.resident_id = selectedResident.id;
+    }
+
+    // Debug: Log the form data being submitted
+    console.log('Submitting form data:', formData);
 
     try {
       await documentForm.handleSubmit(formData);
@@ -398,7 +410,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
                   {isLoadingOfficials ? 'Loading officials...' : 'Select official'}
                 </option>
                 {officials.map((official) => {
-                  const fullName = `${official.prefix} ${official.first_name} ${official.middle_name ? official.middle_name + ' ' : ''}${official.last_name}${official.suffix ? ' ' + official.suffix : ''}`.trim();
+                  const fullName = `${official.prefix ?? ""} ${official.first_name} ${official.middle_name ? official.middle_name + ' ' : ''}${official.last_name}${official.suffix ? ' ' + official.suffix : ''}`.trim();
                   const positionText = official.position.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
                   return (
                     <option key={official.id} value={fullName}>
@@ -466,6 +478,23 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
             </div>
           )}
 
+          {/* Debug: Show all form errors */}
+          {Object.keys(errors).length > 0 && (
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-center mb-2">
+                <FiAlertCircle className="w-5 h-5 text-yellow-400 mr-2" />
+                <p className="text-yellow-800 text-sm font-medium">Form Validation Errors:</p>
+              </div>
+              <ul className="text-yellow-800 text-xs space-y-1">
+                {Object.entries(errors).map(([field, error]) => (
+                  <li key={field}>
+                    <strong>{field}:</strong> {error?.message || 'Invalid value'}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {/* Document Form Error Display */}
           {documentForm.error && (
             <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -497,7 +526,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
             </button>
             <button
               type="submit"
-              disabled={documentForm.isSubmitting || !isValid}
+              disabled={documentForm.isSubmitting || !selectedResident || !watch('purpose')}
               className="px-6 py-2 bg-smblue-400 text-white rounded-lg hover:bg-smblue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               {documentForm.isSubmitting && (
@@ -537,8 +566,9 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
           onClick={() => {
             setStep(1);
             setSelectedResident(null);
-            setSearchTerm(''); reset({
-              document_type: 'BARANGAY_CLEARANCE',
+            setSearchTerm('');
+            reset({
+              type: 'BARANGAY_CLEARANCE',
               resident_id: '',
               applicant_name: '',
               purpose: '',
@@ -581,10 +611,10 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
           {[1, 2, 3].map((stepNumber) => (
             <div key={stepNumber} className="flex items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step === stepNumber
-                  ? 'bg-smblue-400 text-white'
-                  : step > stepNumber
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
+                ? 'bg-smblue-400 text-white'
+                : step > stepNumber
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-200 text-gray-600'
                 }`}>
                 {step > stepNumber ? <FiCheck /> : stepNumber}
               </div>

@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Str;
-use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\Auth;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class Document extends Model implements Auditable
 {
@@ -217,13 +217,13 @@ class Document extends Model implements Auditable
 
     public function scopeRequestedThisMonth($query)
     {
-        return $query->whereMonth('request_date', now()->month)
-                    ->whereYear('request_date', now()->year);
+        return $query->whereMonth('submitted_at', now()->month)
+                    ->whereYear('submitted_at', now()->year);
     }
 
     public function scopeRequestedThisYear($query)
     {
-        return $query->whereYear('request_date', now()->year);
+        return $query->whereYear('submitted_at', now()->year);
     }
 
     public function scopeReleasedThisMonth($query)
@@ -302,14 +302,14 @@ class Document extends Model implements Auditable
                 $document->serial_number = static::generateSerialNumber();
             }
             
-            // Set request_date if not provided
-            if (!$document->request_date) {
-                $document->request_date = now();
+            // Set submitted_at if not provided
+            if (!$document->submitted_at) {
+                $document->submitted_at = now();
             }
             
-            // Set payment_status to 'paid' by default (assume all requests are paid upon submission)
+            // Set payment_status to 'PAID' by default (assume all requests are paid upon submission)
             if (!$document->payment_status) {
-                $document->payment_status = 'paid';
+                $document->payment_status = 'PAID';
             }
         });
 
@@ -360,8 +360,8 @@ class Document extends Model implements Auditable
         
         // Get next sequence number for this document type and month
         $lastDocument = static::where('type', $documentType)
-            ->whereYear('request_date', $year)
-            ->whereMonth('request_date', $month)
+            ->whereYear('submitted_at', $year)
+            ->whereMonth('submitted_at', $month)
             ->orderBy('id', 'desc')
             ->first();
 

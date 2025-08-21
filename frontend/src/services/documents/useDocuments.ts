@@ -135,7 +135,7 @@ export function useCreateDocument() {
       queryClient.invalidateQueries({ queryKey: documentsKeys.statistics() });
       queryClient.invalidateQueries({ queryKey: documentsKeys.pending() });
       queryClient.invalidateQueries({ queryKey: documentsKeys.byResident(newDocument.resident_id) });
-      queryClient.invalidateQueries({ queryKey: documentsKeys.byType(newDocument.document_type) });
+      queryClient.invalidateQueries({ queryKey: documentsKeys.byType(newDocument.type) });
       queryClient.invalidateQueries({ queryKey: documentsKeys.byStatus(newDocument.status) });
       queryClient.setQueryData(
         documentsKeys.detail(newDocument.id),
@@ -158,7 +158,7 @@ export function useUpdateDocument() {
       queryClient.invalidateQueries({ queryKey: documentsKeys.lists() });
       queryClient.invalidateQueries({ queryKey: documentsKeys.statistics() });
       queryClient.invalidateQueries({ queryKey: documentsKeys.byResident(updatedDocument.resident_id) });
-      queryClient.invalidateQueries({ queryKey: documentsKeys.byType(updatedDocument.document_type) });
+      queryClient.invalidateQueries({ queryKey: documentsKeys.byType(updatedDocument.type) });
       queryClient.invalidateQueries({ queryKey: documentsKeys.byStatus(updatedDocument.status) });
       queryClient.setQueryData(
         documentsKeys.detail(updatedDocument.id),

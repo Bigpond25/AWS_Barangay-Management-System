@@ -30,8 +30,8 @@ class DocumentController extends Controller
             ]);
 
             // Apply filters
-            if ($request->filled('document_type')) {
-                $query->where('document_type', $request->document_type);
+            if ($request->filled('type')) {
+                $query->where('type', $request->type);
             }
 
             if ($request->filled('status')) {
@@ -53,11 +53,11 @@ class DocumentController extends Controller
             }
 
             if ($request->filled('date_from')) {
-                $query->whereDate('request_date', '>=', $request->date_from);
+                $query->whereDate('submitted_at', '>=', $request->date_from);
             }
 
             if ($request->filled('date_to')) {
-                $query->whereDate('request_date', '<=', $request->date_to);
+                $query->whereDate('submitted_at', '<=', $request->date_to);
             }
 
             // Search functionality
@@ -75,7 +75,7 @@ class DocumentController extends Controller
             }
 
             // Apply sorting
-            $sortBy = $request->get('sort_by', 'request_date');
+            $sortBy = $request->get('sort_by', 'submitted_at');
             $sortOrder = $request->get('sort_order', 'desc');
             $query->orderBy($sortBy, $sortOrder);
 
@@ -302,11 +302,11 @@ class DocumentController extends Controller
                     'paid_fees' => Document::where('payment_status', 'paid')->sum('processing_fee'),
                 ],
                 'monthly_stats' => Document::selectRaw('
-                        strftime("%Y", request_date) as year,
-                        strftime("%m", request_date) as month,
+                        strftime("%Y", submitted_at) as year,
+                        strftime("%m", submitted_at) as month,
                         COUNT(*) as total_requests
                     ')
-                    ->whereYear('request_date', now()->year)
+                    ->whereYear('submitted_at', now()->year)
                     ->groupBy('year', 'month')
                     ->orderBy('month')
                     ->get()
@@ -347,9 +347,9 @@ class DocumentController extends Controller
             }
 
             $document->update([
-                'status' => 'processing',
+                'status' => 'PROCESSING',
                 'processed_by' => Auth::id(),
-                'processed_date' => now(),
+                'processed_at' => now(),
                 'notes' => $request->notes,
                 'certifying_official' => $request->certifying_official
             ]);
@@ -399,11 +399,11 @@ class DocumentController extends Controller
             }
 
             $document->update([
-                'status' => 'rejected',
+                'status' => 'REJECTED',
                 'remarks' => $request->reason,
                 'notes' => $request->notes,
                 'processed_by' => Auth::id(),
-                'processed_date' => now()
+                'processed_at' => now()
             ]);
 
             $document->load(['resident:id,first_name,last_name,middle_name,suffix']);
@@ -454,9 +454,9 @@ class DocumentController extends Controller
             }
 
             $document->update([
-                'status' => 'approved',
+                'status' => 'APPROVED',
                 'approved_by' => Auth::id(),
-                'approved_date' => now(),
+                'approved_at' => now(),
                 'notes' => $request->notes,
                 'certifying_official' => $request->certifying_official
             ]);
@@ -506,9 +506,9 @@ class DocumentController extends Controller
             }
 
             $document->update([
-                'status' => 'released',
+                'status' => 'RELEASED',
                 'released_by' => Auth::id(),
-                'released_date' => now(),
+                'released_at' => now(),
                 'notes' => $request->notes
             ]);
 
@@ -556,10 +556,10 @@ class DocumentController extends Controller
             }
 
             $document->update([
-                'status' => 'cancelled',
+                'status' => 'CANCELLED',
                 'remarks' => $request->reason,
                 'processed_by' => Auth::id(),
-                'processed_date' => now()
+                'processed_at' => now()
             ]);
 
             $document->load(['resident:id,first_name,last_name,middle_name,suffix']);
@@ -602,18 +602,18 @@ class DocumentController extends Controller
                     'status' => 'submitted',
                     'title' => 'Request Submitted',
                     'description' => 'Document request has been submitted',
-                    'date' => $document->request_date,
+                    'date' => $document->submitted_at,
                     'completed' => true,
                     'user' => null
                 ]
             ];
 
-            if ($document->processed_date) {
+            if ($document->processed_at) {
                 $timeline[] = [
                     'status' => 'processing',
                     'title' => 'Under Processing',
                     'description' => 'Document is being processed',
-                    'date' => $document->processed_date,
+                    'date' => $document->processed_at,
                     'completed' => true,
                     'user' => $document->processedByUser ? [
                         'name' => $document->processedByUser->name,
@@ -622,12 +622,12 @@ class DocumentController extends Controller
                 ];
             }
 
-            if ($document->approved_date) {
+            if ($document->approved_at) {
                 $timeline[] = [
                     'status' => 'approved',
                     'title' => 'Approved',
                     'description' => 'Document has been approved',
-                    'date' => $document->approved_date,
+                    'date' => $document->approved_at,
                     'completed' => true,
                     'user' => $document->approvedByUser ? [
                         'name' => $document->approvedByUser->name,
@@ -636,12 +636,12 @@ class DocumentController extends Controller
                 ];
             }
 
-            if ($document->released_date) {
+            if ($document->released_at) {
                 $timeline[] = [
                     'status' => 'released',
                     'title' => 'Released',
                     'description' => 'Document has been released',
-                    'date' => $document->released_date,
+                    'date' => $document->released_at,
                     'completed' => true,
                     'user' => $document->releasedByUser ? [
                         'name' => $document->releasedByUser->name,
@@ -743,12 +743,12 @@ class DocumentController extends Controller
             ];
 
             // Add processing entry
-            if ($document->processed_date) {
+            if ($document->processed_at) {
                 $history[] = [
                     'action' => 'processed',
                     'status' => 'processing',
                     'description' => 'Document processing started',
-                    'date' => $document->processed_date,
+                    'date' => $document->processed_at,
                     'user' => $document->processedByUser ? [
                         'id' => $document->processedByUser->id,
                         'name' => $document->processedByUser->name,
@@ -759,12 +759,12 @@ class DocumentController extends Controller
             }
 
             // Add approval entry
-            if ($document->approved_date) {
+            if ($document->approved_at) {
                 $history[] = [
                     'action' => 'approved',
                     'status' => 'approved',
                     'description' => 'Document approved for release',
-                    'date' => $document->approved_date,
+                    'date' => $document->approved_at,
                     'user' => $document->approvedByUser ? [
                         'id' => $document->approvedByUser->id,
                         'name' => $document->approvedByUser->name,
@@ -775,12 +775,12 @@ class DocumentController extends Controller
             }
 
             // Add release entry
-            if ($document->released_date) {
+            if ($document->released_at) {
                 $history[] = [
                     'action' => 'released',
                     'status' => 'released',
                     'description' => 'Document released to applicant',
-                    'date' => $document->released_date,
+                    'date' => $document->released_at,
                     'user' => $document->releasedByUser ? [
                         'id' => $document->releasedByUser->id,
                         'name' => $document->releasedByUser->name,
@@ -856,7 +856,7 @@ class DocumentController extends Controller
                     'resident:id,first_name,last_name,middle_name,suffix',
                     'processedByUser:id,name,role'
                 ])
-                ->orderBy('request_date', 'asc')
+                ->orderBy('submitted_at', 'asc')
                 ->paginate(15);
 
             return response()->json([
@@ -928,7 +928,7 @@ class DocumentController extends Controller
         
         $content = "BARANGAY CERTIFICATE\n\n";
         $content .= "Document Number: " . $document->document_number . "\n";
-        $content .= "Document Type: " . $document->document_type . "\n";
+        $content .= "Document Type: " . $document->type . "\n";
         $content .= "Applicant: " . $document->applicant_name . "\n";
         $content .= "Date Issued: " . now()->format('F d, Y') . "\n\n";
         $content .= "This is to certify that the above information is true and correct.\n\n";
