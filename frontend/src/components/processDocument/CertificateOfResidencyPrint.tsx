@@ -14,9 +14,9 @@ const CertificateHeader: React.FC = () => (
   <div className="text-center mb-8">
     <div className="mb-4">
       <h1 className="text-lg font-bold">REPUBLIC OF THE PHILIPPINES</h1>
-      <h2 className="text-base font-bold">PROVINCE OF BATAAN</h2>
-      <h2 className="text-base font-bold">MUNICIPALITY OF SAMAL</h2>
-      <h1 className="text-lg font-bold">Brgy. Sikatuna Village</h1>
+      <h2 className="text-base font-bold">QUEZON CITY</h2>
+      <h2 className="text-base font-bold">DISTRICT I</h2>
+      <h1 className="text-lg font-bold">Barangay West Triangle</h1>
     </div>
     
     <div className="border-t-2 border-b-2 border-black py-2 my-5">
@@ -162,7 +162,7 @@ const CertificateOfResidencyPrint: React.FC = () => {
   // Format address
   const applicantAddress = document.applicant_address || 
     document.resident?.complete_address || 
-    'Brgy. Sikatuna Village, Samal, Bataan';
+    'Brgy. West Triangle, Quezon City';
 
   // Generate OR number
   const orNumber = document.document_number || `OR-${(document.id || 0).toString().padStart(6, '0')}`;
@@ -305,7 +305,7 @@ const CertificateOfResidencyPrint: React.FC = () => {
             <p>
               Given this <span className="font-bold">{new Date().getDate()}{getOrdinalSuffix(new Date().getDate())}</span> day of{' '}
               <span className="font-bold">{new Date().toLocaleDateString('en-US', { month: 'long' })}</span>,{' '}
-              <span className="font-bold">{new Date().getFullYear()}</span> at Brgy. Sikatuna Village, Samal, Bataan, Philippines.
+              <span className="font-bold">{new Date().getFullYear()}</span> at Barangay West Triangle, Quezon City, Metro Manila.
             </p>
           </div>
 

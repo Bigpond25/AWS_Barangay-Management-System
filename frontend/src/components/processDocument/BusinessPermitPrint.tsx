@@ -10,61 +10,7 @@ import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { useDocument } from '@/services/documents/useDocuments';
 import type { Document } from '@/services/documents/documents.types';
 
-const CertificateHeader: React.FC = () => (
-  <div className="text-center mb-8">
-    <div className="mb-4">
-      <h1 className="text-lg font-bold text-gray-800">REPUBLIC OF THE PHILIPPINES</h1>
-      <h2 className="text-base font-semibold text-gray-700">PROVINCE OF BATAAN</h2>
-      <h3 className="text-base font-semibold text-gray-700">MUNICIPALITY OF SAMAL</h3>
-      <h4 className="text-lg font-bold text-gray-800">Brgy. Sikatuna Village</h4>
-    </div>
-    <div className="border-t-2 border-b-2 border-black py-2 mb-6">
-      <h2 className="text-xl font-bold text-gray-800">OFFICE OF THE PUNONG BARANGAY</h2>
-    </div>
-  </div>
-);
 
-interface CertificateFooterProps {
-  certifyingOfficial?: string; 
-  dateIssued?: string;
-  orNumber?: string;
-  amountPaid?: number;
-}
-
-const CertificateFooter: React.FC<CertificateFooterProps> = ({ 
-  certifyingOfficial, 
-  dateIssued, 
-  orNumber, 
-  amountPaid 
-}) => (
-  <div className="mt-12">
-    <div className="flex justify-between items-start">
-      <div className="w-1/2">
-        <p className="text-sm mb-4">Date Issued: {dateIssued || new Date().toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        })}</p>
-        {orNumber && (
-          <p className="text-sm mb-2">O.R. Number: {orNumber}</p>
-        )}
-        {amountPaid !== undefined && Number(amountPaid) > 0 && (
-          <p className="text-sm">Amount Paid: ₱{Number(amountPaid).toFixed(2)}</p>
-        )}
-        {amountPaid !== undefined && Number(amountPaid) === 0 && (
-          <p className="text-sm">Amount Paid: FREE</p>
-        )}
-      </div>
-      <div className="w-1/2 text-center">
-        <div className="mt-8">
-          <div className="border-b-2 border-black inline-block w-64 mb-2"></div>
-          <p className="text-sm font-semibold">{certifyingOfficial || 'PUNONG BARANGAY'}</p>
-          <p className="text-xs text-gray-600">Punong Barangay</p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 const BusinessPermitPrint: React.FC = () => {
   const { documentId } = useParams<{ documentId: string }>();
@@ -119,14 +65,14 @@ const BusinessPermitPrint: React.FC = () => {
   }
 
   // Validate document type
-  if (document.document_type !== 'BUSINESS_PERMIT') {
+  if (document.type !== 'BUSINESS_PERMIT') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center bg-white p-8 rounded-lg shadow-lg max-w-md">
           <FiAlertCircle className="w-16 h-16 text-orange-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Invalid Document Type</h3>
           <p className="text-orange-600 mb-6">
-            This document is not a Business Permit. Expected: Business Permit, Got: {document.document_type.replace(/_/g, ' ')}
+            This document is not a Business Permit. Expected: Business Permit, Got: {document.type.replace(/_/g, ' ')}
           </p>
           <button
             onClick={handleClose}
@@ -147,14 +93,14 @@ const BusinessPermitPrint: React.FC = () => {
   // Format address
   const applicantAddress = document.applicant_address || 
     document.resident?.complete_address || 
-    'Brgy. Sikatuna Village, Samal, Bataan';
+    'Brgy. West Triangle, Quezon City';
 
   // Generate OR number
   const orNumber = document.document_number || `OR-${(document.id || 0).toString().padStart(6, '0')}`;
 
   // Format date issued
-  const dateIssued = document.approved_date ? 
-    new Date(document.approved_date).toLocaleDateString('en-US', { 
+  const dateIssued = document.approved_at ? 
+    new Date(document.approved_at).toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
@@ -174,11 +120,40 @@ const BusinessPermitPrint: React.FC = () => {
   return (
     <>
       <style>{`
+        /* Print specifications for Letter size (8.5 x 11 inches) */
         @media print {
           @page {
-            margin: 0.5in;
-            size: A4;
+            size: 8.5in 11in;
+            margin-top: 3.3cm;
+            margin-left: 5.2cm;
+            margin-right: 2.54cm;
+            margin-bottom: 2.54cm;
           }
+          
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-size: 10pt !important;
+            line-height: 1.2 !important;
+            color: black !important;
+            background: white !important;
+          }
+          
+          .no-print {
+            display: none !important;
+          }
+          
+          .document-container {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            page-break-inside: avoid !important;
+            height: auto !important;
+            max-height: calc(27.94cm - 3.3cm - 2.54cm) !important;
+          }
+          
           * {
             visibility: visible !important;
             color: black !important;
@@ -186,36 +161,84 @@ const BusinessPermitPrint: React.FC = () => {
             box-shadow: none !important;
             text-shadow: none !important;
           }
-          body {
-            background: white !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          .print\\:hidden {
-            display: none !important;
-          }
-          .certificate-content {
-            page-break-inside: avoid;
-            height: auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-          .no-print {
-            display: none !important;
-          }
+          
           .business-details-box {
             border: 1px solid black !important;
+            background: transparent !important;
           }
         }
         
+        /* Screen styles with visual margin indicators */
         @media screen {
-          .certificate-content {
-            min-height: calc(100vh - 6rem);
+          body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f5f5f5;
           }
+          
+          .document-container {
+            max-width: 21.59cm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin-left: calc(5.2cm + 20px);
+            margin-top: calc(3.3cm + 20px);
+            padding-right: 2.54cm;
+            padding-bottom: 2.54cm;
+            border-left: 3px dashed #ccc;
+            border-top: 3px dashed #ccc;
+            min-height: calc(27.94cm - 3.3cm - 2.54cm);
+          }
+        }
+        
+        /* Document specific styles */
+        .document-header {
+          text-align: center;
+          margin-bottom: 15px;
+        }
+        
+        .document-title {
+          font-size: 16pt;
+          font-weight: bold;
+          text-decoration: underline;
+          margin-bottom: 8px;
+          letter-spacing: 1px;
+        }
+        
+        .business-details-box {
+          border: 1px solid black;
+          padding: 10px;
+          margin: 15px 0;
+          background: transparent;
+        }
+        
+        .content-text {
+          text-align: justify;
+          margin-bottom: 10px;
+          line-height: 1.3;
+          font-size: 11pt;
+        }
+        
+        .footer-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin-top: 15px;
+        }
+        
+        .signature-section {
+          text-align: center;
+          font-size: 10pt;
+        }
+        
+        .signature-name {
+          font-weight: bold;
+          margin-bottom: 5px;
+          text-decoration: underline;
+        }
+        
+        .signature-title {
+          font-style: italic;
+          font-size: 10pt;
         }
       `}</style>
       
@@ -238,64 +261,84 @@ const BusinessPermitPrint: React.FC = () => {
           </button>
         </div>
 
-        {/* Certificate Content */}
-        <div className="max-w-4xl mx-auto p-8 certificate-content print:p-0">
-          <div className="bg-white p-8 shadow-lg print:shadow-none print:p-6">
-            <CertificateHeader />
-            
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-gray-800 underline mb-6">BARANGAY BUSINESS PERMIT</h1>
+        {/* Document Content */}
+        <div className="document-container">
+          {/* Document Header */}
+          <div className="document-header">
+            <div className="mb-4">
+              <h1 className="text-lg font-bold">REPUBLIC OF THE PHILIPPINES</h1>
+              <h2 className="text-base font-semibold">QUEZON CITY</h2>
+              <h3 className="text-base font-semibold">DISTRICT I</h3>
+              <h4 className="text-lg font-bold">Barangay West Triangle</h4>
             </div>
+            <div className="border-t-2 border-b-2 border-black py-2 mb-6">
+              <h2 className="text-xl font-bold">OFFICE OF THE PUNONG BARANGAY</h2>
+            </div>
+            <div className="document-title">BARANGAY BUSINESS PERMIT</div>
+          </div>
 
-            <div className="mb-8">
-              <p className="text-base leading-relaxed text-justify mb-4">
-                <span className="font-semibold">TO WHOM IT MAY CONCERN:</span>
-              </p>
-              
-              <p className="text-base leading-relaxed text-justify mb-6">
-                This is to certify that <span className="font-semibold underline">{applicantName.toUpperCase()}</span>, 
-                of legal age, Filipino citizen, and a resident of 
-                <span className="font-semibold"> {applicantAddress}</span>, 
-                has been granted permission to operate a business within the jurisdiction of this barangay.
-              </p>
+          {/* Document Content */}
+          <div className="content-text">
+            <strong>TO WHOM IT MAY CONCERN:</strong>
+          </div>
+          
+          <div className="content-text">
+            This is to certify that <strong><u>{applicantName.toUpperCase()}</u></strong>, 
+            of legal age, Filipino citizen, and a resident of 
+            <strong> {applicantAddress}</strong>, 
+            has been granted permission to operate a business within the jurisdiction of this barangay.
+          </div>
 
-              <div className="mb-6 p-4 border-2 border-gray-800 rounded business-details-box print:border-black">
-                <h3 className="text-lg font-semibold mb-3 text-center">BUSINESS DETAILS</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <p><span className="font-semibold">Business Name:</span> {businessName}</p>
-                    <p><span className="font-semibold">Business Type:</span> {businessType}</p>
-                  </div>
-                  <div className="space-y-2">
-                    <p><span className="font-semibold">Business Owner:</span> {businessOwner}</p>
-                    <p><span className="font-semibold">Business Address:</span> {businessAddress}</p>
-                  </div>
-                </div>
+          <div className="business-details-box">
+            <h3 className="text-lg font-semibold mb-3 text-center">BUSINESS DETAILS</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ width: '48%' }}>
+                <p><strong>Business Name:</strong> {businessName}</p>
+                <p><strong>Business Type:</strong> {businessType}</p>
               </div>
-
-              <p className="text-base leading-relaxed text-justify mb-6">
-                This permit is issued subject to compliance with all applicable barangay ordinances, 
-                municipal regulations, and national laws. The permittee is required to renew this permit annually 
-                and to notify the barangay of any changes in business operations.
-              </p>
-
-              <p className="text-base leading-relaxed text-justify mb-6">
-                This certification is issued for <span className="font-semibold">{document.purpose?.toLowerCase() || 'business permit purposes'}</span> and for whatever legal purpose it may serve the applicant.
-              </p>
-
-              <p className="text-base leading-relaxed text-justify">
-                Given this <span className="font-semibold">{new Date().getDate()}</span> day of{' '}
-                <span className="font-semibold">{new Date().toLocaleDateString('en-US', { month: 'long' })}</span>,{' '}
-                <span className="font-semibold">{new Date().getFullYear()}</span> at Brgy. Sikatuna Village, Samal, Bataan, Philippines.
-              </p>
+              <div style={{ width: '48%' }}>
+                <p><strong>Business Owner:</strong> {businessOwner}</p>
+                <p><strong>Business Address:</strong> {businessAddress}</p>
+              </div>
             </div>
+          </div>
 
-            <CertificateFooter 
-              certifyingOfficial={document.certifying_official || undefined}
-              dateIssued={dateIssued}
-              orNumber={orNumber}
-              amountPaid={document.processing_fee}
-            />
+          <div className="content-text">
+            This permit is issued subject to compliance with all applicable barangay ordinances, 
+            municipal regulations, and national laws. The permittee is required to renew this permit annually 
+            and to notify the barangay of any changes in business operations.
+          </div>
+
+          <div className="content-text">
+            This certification is issued for <strong>{document.purpose?.toLowerCase() || 'business permit purposes'}</strong> and for whatever legal purpose it may serve the applicant.
+          </div>
+
+          <div className="content-text">
+            Given this <strong>{new Date().getDate()}</strong> day of{' '}
+            <strong>{new Date().toLocaleDateString('en-US', { month: 'long' })}</strong>,{' '}
+            <strong>{new Date().getFullYear()}</strong> at Barangay West Triangle, Quezon City, Metro Manila.
+          </div>
+
+          {/* Footer Section */}
+          <div className="footer-section">
+            <div style={{ width: '50%' }}>
+              <p style={{ fontSize: '10pt', marginBottom: '4px' }}>Date Issued: {dateIssued}</p>
+              {orNumber && (
+                <p style={{ fontSize: '10pt', marginBottom: '2px' }}>O.R. Number: {orNumber}</p>
+              )}
+              {document.processing_fee !== undefined && Number(document.processing_fee) > 0 && (
+                <p style={{ fontSize: '10pt' }}>Amount Paid: ₱{Number(document.processing_fee).toFixed(2)}</p>
+              )}
+              {document.processing_fee !== undefined && Number(document.processing_fee) === 0 && (
+                <p style={{ fontSize: '10pt' }}>Amount Paid: FREE</p>
+              )}
+            </div>
+            <div className="signature-section">
+              <div style={{ marginTop: '20px' }}>
+                <div className="signature-name">{document.certifying_official || 'PUNONG BARANGAY'}</div>
+                <div className="signature-title">Punong Barangay</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
