@@ -29,7 +29,7 @@ const CertificateOfIndigencyForm: React.FC<CertificateOfIndigencyFormProps> = ({
   const form = useForm<DocumentFormData>({
     resolver: zodResolver(DocumentFormDataSchema),
     defaultValues: {
-      document_type: 'CERTIFICATE_OF_INDIGENCY',
+      type: 'CERTIFICATE_OF_INDIGENCY',
       resident_id: '',
       applicant_name: '',
       purpose: '',
@@ -562,8 +562,8 @@ const CertificateOfIndigencyForm: React.FC<CertificateOfIndigencyFormProps> = ({
           onClick={() => {
             setStep(1);
             setSelectedResident(null);
-            setSearchTerm('');          reset({
-            document_type: 'CERTIFICATE_OF_INDIGENCY',
+            setSearchTerm('');                      reset({
+            type: 'CERTIFICATE_OF_INDIGENCY',
             resident_id: '',
               applicant_name: '',
               purpose: '',

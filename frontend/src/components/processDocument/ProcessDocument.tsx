@@ -104,7 +104,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
   const [showProcessModal, setShowProcessModal] = useState(false);
 
   const documentTypes = [
-    { value: 'BARANGAY_CLEARANCE', label: 'Barangay Clearance' },
+    { value: 'BARANGAY_CLEARANCE', label: 'Barangay Clearance (Liquor)' },
     { value: 'BUSINESS_PERMIT', label: 'Business Permit' },
     { value: 'CERTIFICATE_OF_INDIGENCY', label: 'Certificate of Indigency' },
     { value: 'CERTIFICATE_OF_RESIDENCY', label: 'Certificate of Residency' }
