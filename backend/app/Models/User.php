@@ -48,6 +48,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'full_name',
+        'name',
         'initials',
         'display_name',
         'role_display',
@@ -114,6 +115,11 @@ class User extends Authenticatable
     /**
      * Computed attributes
      */
+    public function getNameAttribute(): string
+    {
+        return $this->getFullNameAttribute();
+    }
+
     public function getFullNameAttribute(): string
     {
         $parts = array_filter([
@@ -122,7 +128,7 @@ class User extends Authenticatable
             $this->last_name
         ]);
         
-        return implode(' ', $parts);
+        return implode(' ', $parts) ?: 'Unknown User';
     }
 
     public function getInitialsAttribute(): string

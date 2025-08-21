@@ -783,7 +783,7 @@ const ProcessDocumentModal: React.FC<{
                   {isLoadingOfficials ? 'Loading officials...' : 'Select certifying official'}
                 </option>
                 {officials.map((official) => {
-                  const fullName = `${official.prefix} ${official.first_name} ${official.middle_name ? official.middle_name + ' ' : ''}${official.last_name}${official.suffix ? ' ' + official.suffix : ''}`.trim();
+                  const fullName = `${official.prefix ?? ""} ${official.first_name} ${official.middle_name ? official.middle_name + ' ' : ''}${official.last_name}${official.suffix ? ' ' + official.suffix : ''}`.trim();
                   const positionText = official.position.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
                   return (
                     <option key={official.id} value={fullName}>

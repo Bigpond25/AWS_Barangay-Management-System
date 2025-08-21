@@ -24,9 +24,9 @@ class DocumentController extends Controller
         try {
             $query = Document::with([
                 'resident:id,first_name,last_name,middle_name,suffix,complete_address,mobile_number,email_address',
-                'processedByUser:id,name,role,position',
-                'approvedByUser:id,name,role,position',
-                'releasedByUser:id,name,role,position'
+                'processedByUser:id,first_name,last_name,role,position',
+                'approvedByUser:id,first_name,last_name,role,position',
+                'releasedByUser:id,first_name,last_name,role,position'
             ]);
 
             // Apply filters
@@ -147,9 +147,9 @@ class DocumentController extends Controller
         try {
             $document = Document::with([
                 'resident:id,first_name,last_name,middle_name,suffix,complete_address,mobile_number,email_address',
-                'processedByUser:id,name,role,position',
-                'approvedByUser:id,name,role,position',
-                'releasedByUser:id,name,role,position'
+                'processedByUser:id,first_name,last_name,role,position',
+                'approvedByUser:id,first_name,last_name,role,position',
+                'releasedByUser:id,first_name,last_name,role,position'
             ])->findOrFail($id);
 
             return response()->json([
@@ -190,9 +190,9 @@ class DocumentController extends Controller
             $document->update($validated);
             $document->load([
                 'resident:id,first_name,last_name,middle_name,suffix,complete_address,mobile_number,email_address',
-                'processedByUser:id,name,role,position',
-                'approvedByUser:id,name,role,position',
-                'releasedByUser:id,name,role,position'
+                'processedByUser:id,first_name,last_name,role,position',
+                'approvedByUser:id,first_name,last_name,role,position',
+                'releasedByUser:id,first_name,last_name,role,position'
             ]);
 
             return response()->json([
@@ -229,7 +229,7 @@ class DocumentController extends Controller
             $document = Document::findOrFail($id);
             
             // Only allow deletion of pending or cancelled documents
-            if (!in_array($document->status, ['pending', 'cancelled'])) {
+            if (!in_array($document->status, ['PENDING', 'CANCELLED'])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Cannot delete document that is already being processed'
@@ -264,11 +264,11 @@ class DocumentController extends Controller
         try {
             $stats = [
                 'total_documents' => Document::count(),
-                'pending_documents' => Document::where('status', 'pending')->count(),
-                'processing_documents' => Document::where('status', 'processing')->count(),
-                'approved_documents' => Document::where('status', 'approved')->count(),
-                'released_documents' => Document::where('status', 'released')->count(),
-                'rejected_documents' => Document::where('status', 'rejected')->count(),
+                'pending_documents' => Document::where('status', 'PENDING')->count(),
+                'processing_documents' => Document::where('status', 'PROCESSING')->count(),
+                'approved_documents' => Document::where('status', 'APPROVED')->count(),
+                'released_documents' => Document::where('status', 'RELEASED')->count(),
+                'rejected_documents' => Document::where('status', 'REJECTED')->count(),
                 'overdue_documents' => Document::overdue()->count(),
                 'urgent_documents' => Document::whereIn('priority', ['urgent', 'rush'])->count(),
                 'by_status' => Document::selectRaw('status, COUNT(*) as count')
@@ -298,12 +298,12 @@ class DocumentController extends Controller
                     }),
                 'revenue' => [
                     'total_processing_fees' => Document::sum('processing_fee'),
-                    'unpaid_fees' => Document::where('payment_status', 'unpaid')->sum('processing_fee'),
-                    'paid_fees' => Document::where('payment_status', 'paid')->sum('processing_fee'),
+                    'unpaid_fees' => Document::where('payment_status', 'UNPAID')->sum('processing_fee'),
+                    'paid_fees' => Document::where('payment_status', 'PAID')->sum('processing_fee'),
                 ],
                 'monthly_stats' => Document::selectRaw('
-                        strftime("%Y", submitted_at) as year,
-                        strftime("%m", submitted_at) as month,
+                        EXTRACT(YEAR FROM submitted_at) as year,
+                        EXTRACT(MONTH FROM submitted_at) as month,
                         COUNT(*) as total_requests
                     ')
                     ->whereYear('submitted_at', now()->year)
@@ -356,7 +356,7 @@ class DocumentController extends Controller
 
             $document->load([
                 'resident:id,first_name,last_name,middle_name,suffix',
-                'processedByUser:id,name,role,position'
+                'processedByUser:id,first_name,last_name,role,position'
             ]);
 
             return response()->json([
@@ -446,7 +446,7 @@ class DocumentController extends Controller
                 'certifying_official' => 'nullable|string|max:255'
             ]);
 
-            if (!in_array($document->status, ['pending', 'processing'])) {
+            if (!in_array($document->status, ['PENDING', 'PROCESSING'])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Document cannot be approved from current status'
@@ -463,7 +463,7 @@ class DocumentController extends Controller
 
             $document->load([
                 'resident:id,first_name,last_name,middle_name,suffix',
-                'approvedByUser:id,name,role,position'
+                'approvedByUser:id,first_name,last_name,role,position'
             ]);
 
             return response()->json([
@@ -514,7 +514,7 @@ class DocumentController extends Controller
 
             $document->load([
                 'resident:id,first_name,last_name,middle_name,suffix',
-                'releasedByUser:id,name,role,position'
+                'releasedByUser:id,first_name,last_name,role,position'
             ]);
 
             return response()->json([
@@ -548,7 +548,7 @@ class DocumentController extends Controller
                 'reason' => 'required|string|min:5'
             ]);
 
-            if (in_array($document->status, ['released', 'cancelled'])) {
+            if (in_array($document->status, ['RELEASED', 'CANCELLED'])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Document cannot be cancelled'
@@ -591,9 +591,9 @@ class DocumentController extends Controller
         try {
             $document = Document::with([
                 'resident:id,first_name,last_name,middle_name,suffix',
-                'processedByUser:id,name,role,position',
-                'approvedByUser:id,name,role,position',
-                'releasedByUser:id,name,role,position'
+                'processedByUser:id,first_name,last_name,role,position',
+                'approvedByUser:id,first_name,last_name,role,position',
+                'releasedByUser:id,first_name,last_name,role,position'
             ])->findOrFail($id);
 
             // Build timeline
@@ -726,9 +726,9 @@ class DocumentController extends Controller
     {
         try {
             $document = Document::with([
-                'processedByUser:id,name,role,position',
-                'approvedByUser:id,name,role,position',
-                'releasedByUser:id,name,role,position'
+                'processedByUser:id,first_name,last_name,role,position',
+                'approvedByUser:id,first_name,last_name,role,position',
+                'releasedByUser:id,first_name,last_name,role,position'
             ])->findOrFail($id);
 
             $history = [];
@@ -818,7 +818,7 @@ class DocumentController extends Controller
             $documents = Document::overdue()
                 ->with([
                     'resident:id,first_name,last_name,middle_name,suffix',
-                    'processedByUser:id,name,role'
+                    'processedByUser:id,first_name,last_name,role'
                 ])
                 ->orderBy('needed_date', 'asc')
                 ->paginate(15);
@@ -854,7 +854,7 @@ class DocumentController extends Controller
             $documents = Document::pending()
                 ->with([
                     'resident:id,first_name,last_name,middle_name,suffix',
-                    'processedByUser:id,name,role'
+                    'processedByUser:id,first_name,last_name,role'
                 ])
                 ->orderBy('submitted_at', 'asc')
                 ->paginate(15);
@@ -887,16 +887,16 @@ class DocumentController extends Controller
     private function mapFrontendStatusToBackend(string $frontendStatus): string
     {
         $statusMap = [
-            'PENDING' => 'pending',
-            'PROCESSING' => 'processing', // Fixed: frontend now uses PROCESSING
-            'UNDER_REVIEW' => 'processing', // Legacy support
-            'APPROVED' => 'approved',
-            'RELEASED' => 'released',
-            'REJECTED' => 'rejected',
-            'CANCELLED' => 'cancelled'
+            'PENDING' => 'PENDING',
+            'PROCESSING' => 'PROCESSING', // Fixed: frontend now uses PROCESSING
+            'UNDER_REVIEW' => 'PROCESSING', // Legacy support
+            'APPROVED' => 'APPROVED',
+            'RELEASED' => 'RELEASED',
+            'REJECTED' => 'REJECTED',
+            'CANCELLED' => 'CANCELLED'
         ];
         
-        return $statusMap[$frontendStatus] ?? strtolower($frontendStatus);
+        return $statusMap[$frontendStatus] ?? strtoupper($frontendStatus);
     }
 
     /**
@@ -905,12 +905,12 @@ class DocumentController extends Controller
     private function mapBackendStatusToFrontend(string $backendStatus): string
     {
         $statusMap = [
-            'pending' => 'PENDING',
-            'processing' => 'PROCESSING', // Fixed: backend maps to PROCESSING
-            'approved' => 'APPROVED',
-            'released' => 'RELEASED',
-            'rejected' => 'REJECTED',
-            'cancelled' => 'CANCELLED'
+            'PENDING' => 'PENDING',
+            'PROCESSING' => 'PROCESSING', // Fixed: backend maps to PROCESSING
+            'APPROVED' => 'APPROVED',
+            'RELEASED' => 'RELEASED',
+            'REJECTED' => 'REJECTED',
+            'CANCELLED' => 'CANCELLED'
         ];
         
         return $statusMap[$backendStatus] ?? strtoupper($backendStatus);

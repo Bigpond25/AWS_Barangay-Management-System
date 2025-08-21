@@ -121,14 +121,14 @@ const BarangayClearancePrint: React.FC = () => {
   }
 
   // Validate document type
-  if (document.document_type !== 'BARANGAY_CLEARANCE') {
+  if (document.type !== 'BARANGAY_CLEARANCE') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center bg-white p-8 rounded-lg shadow-lg max-w-md">
           <FiAlertCircle className="w-16 h-16 text-orange-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Invalid Document Type</h3>
           <p className="text-orange-600 mb-6">
-            This document is not a Barangay Clearance. Expected: Barangay Clearance, Got: {document.document_type.replace(/_/g, ' ')}
+            This document is not a Barangay Clearance. Expected: Barangay Clearance, Got: {document.type.replace(/_/g, ' ')}
           </p>
           <button
             onClick={handleClose}
