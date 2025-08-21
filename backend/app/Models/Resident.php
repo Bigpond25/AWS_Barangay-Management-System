@@ -470,7 +470,12 @@ class Resident extends Model
               ->orWhere('email_address_hash', $searchHash)
               
               // Search in non-encrypted text fields
+              ->orWhere('first_name', 'ILIKE', "%{$search}%")
               ->orWhere('middle_name', 'ILIKE', "%{$search}%")
+              ->orWhere('last_name', 'ILIKE', "%{$search}%")
+              // Combination of first name last name
+              ->orWhereRaw("CONCAT(first_name, ' ', last_name) ILIKE ?", ["%{$search}%"])
+              ->orWhereRaw("CONCAT(last_name, ' ', first_name) ILIKE ?", ["%{$search}%"])
               ->orWhere('suffix', 'ILIKE', "%{$search}%")
               ->orWhere('birth_place', 'ILIKE', "%{$search}%")
               ->orWhere('barangay', 'ILIKE', "%{$search}%")
