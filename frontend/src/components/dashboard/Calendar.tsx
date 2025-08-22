@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { FiChevronLeft, FiChevronRight, FiPlus } from 'react-icons/fi';
 import { X, Calendar as CalendarIcon } from 'lucide-react';
 import AddAgenda from './AddAgenda';
@@ -305,10 +306,24 @@ const Calendar = () => {
         </div>
       </div>
 
-      {/* Modal for Agenda with Professional Animations - FIXED */}
-      {showModal && (
-        <div className="fixed inset-0 bg-[rgba(0,0,0,0.2)] bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in" style={{ minHeight: '100vh', height: '100%' }}>
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden animate-modal-slide-in">
+      {/* Modal for Agenda with Professional Animations - FIXED FULL SCREEN OVERLAY WITH PORTAL */}
+      {showModal && createPortal(
+        <div 
+          className="fixed inset-0 bg-[rgba(0,0,0,0.2)] flex items-center justify-center p-4 animate-fade-in" 
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 99999,
+            margin: 0,
+            padding: '1rem'
+          }}
+        >
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden animate-modal-slide-in relative z-10">
             <div className="bg-gradient-to-r from-smblue-400 to-smblue-300 text-white p-4 flex justify-between items-center animate-slide-down">
               <h3 className="text-lg font-semibold animate-slide-right">
                 {selectedDate && `${monthNames[currentDate.getMonth()]} ${selectedDate.day}, ${currentDate.getFullYear()}`}
@@ -417,7 +432,8 @@ const Calendar = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* AddAgenda Modal */}

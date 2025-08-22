@@ -1,5 +1,5 @@
 // ============================================================================
-// processDocument/CertificateOfResidencyPrint.tsx - Certificate of Residency Print
+// processDocument/CertificateOfResidencyPrint.tsx - Integrated Certificate Print
 // ============================================================================
 
 import React from 'react';
@@ -8,89 +8,30 @@ import { FiPrinter, FiX, FiAlertCircle } from 'react-icons/fi';
 
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { useDocument } from '@/services/documents/useDocuments';
+import { useResident } from '@/services/residents/useResidents';
 import type { Document } from '@/services/documents/documents.types';
-
-const CertificateHeader: React.FC = () => (
-  <div className="text-center mb-8">
-    <div className="mb-4">
-      <h1 className="text-lg font-bold">REPUBLIC OF THE PHILIPPINES</h1>
-      <h2 className="text-base font-bold">QUEZON CITY</h2>
-      <h2 className="text-base font-bold">DISTRICT I</h2>
-      <h1 className="text-lg font-bold">Barangay West Triangle</h1>
-    </div>
-    
-    <div className="border-t-2 border-b-2 border-black py-2 my-5">
-      <h2 className="text-lg font-bold">OFFICE OF THE PUNONG BARANGAY</h2>
-    </div>
-    
-    <div className="text-xl font-bold underline mt-8">CERTIFICATE OF RESIDENCY</div>
-  </div>
-);
-
-interface CertificateFooterProps {
-  certifyingOfficial?: string; 
-  dateIssued?: string;
-  orNumber?: string;
-  amountPaid?: number;
-}
-
-const CertificateFooter: React.FC<CertificateFooterProps> = ({ 
-  certifyingOfficial, 
-  dateIssued, 
-  orNumber, 
-  amountPaid 
-}) => (
-  <div className="mt-10 flex justify-between items-end">
-    <div className="w-1/2">
-      <div className="text-sm mb-4">Date Issued: {dateIssued || new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      })}</div>
-      {orNumber && (
-        <div className="text-sm mb-2">O.R. Number: {orNumber}</div>
-      )}
-      {amountPaid !== undefined && Number(amountPaid) > 0 && (
-        <div className="text-sm">Amount Paid: ₱{Number(amountPaid).toFixed(2)}</div>
-      )}
-      {amountPaid !== undefined && Number(amountPaid) === 0 && (
-        <div className="text-sm">Amount Paid: FREE</div>
-      )}
-    </div>
-    
-    <div className="w-1/2 text-center">
-      <div className="inline-block w-64">
-        <div className="border-b-2 border-black mb-1"></div>
-        <div className="text-sm font-bold mt-10">
-          {certifyingOfficial || 'ELENA CRUZ RODRIGUEZ'}
-        </div>
-        <div className="text-xs text-gray-600">Punong Barangay</div>
-      </div>
-    </div>
-  </div>
-);
-
-// Helper function to get ordinal suffix for dates
-const getOrdinalSuffix = (day: number): string => {
-  if (day > 3 && day < 21) return 'th';
-  switch (day % 10) {
-    case 1: return 'st';
-    case 2: return 'nd';
-    case 3: return 'rd';
-    default: return 'th';
-  }
-};
+import { getResidentAge } from '@/utils/ageUtils';
 
 const CertificateOfResidencyPrint: React.FC = () => {
   const { documentId } = useParams<{ documentId: string }>();
   const navigate = useNavigate();
   
-  // Modern TanStack Query data fetching
+  // Modern TanStack Query data fetching - same pattern as CertificateOfResidencyForm
   const { 
     data: document, 
-    isLoading, 
-    error 
+    isLoading: isLoadingDocument, 
+    error: documentError 
   } = useDocument(documentId || '', !!documentId);
+
+  // Fetch resident data separately using the resident_id from the document
+  const { 
+    data: resident, 
+    isLoading: isLoadingResident, 
+    error: residentError 
+  } = useResident(document?.resident_id || '', !!document?.resident_id);
+
+  const isLoading = isLoadingDocument || isLoadingResident;
+  const error = documentError || residentError;
 
   const handlePrint = () => {
     window.print();
@@ -154,34 +95,80 @@ const CertificateOfResidencyPrint: React.FC = () => {
     );
   }
 
-  // Format applicant name
-  const applicantName = document.applicant_name || 
-    `${document.resident?.first_name || ''} ${document.resident?.middle_name || ''} ${document.resident?.last_name || ''}`.trim() ||
-    'N/A';
+  // Extract data for the certificate - using the same pattern as CertificateOfResidencyForm
+  // Debug log to see what data we have
+  console.log('Document data:', document);
+  console.log('Resident data:', resident);
+  console.log('Document resident_id:', document?.resident_id);
+  
+  // Use document fields for basic info (populated from form)
+  const applicantName = document?.applicant_name || 'N/A';
 
-  // Format address
-  const applicantAddress = document.applicant_address || 
-    document.resident?.complete_address || 
-    'Brgy. West Triangle, Quezon City';
+  // Parse name parts for the detailed form
+  const nameParts = applicantName.split(' ').filter(part => part.length > 0);
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+  const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : (nameParts.length === 2 ? '' : nameParts[1] || '');
 
-  // Generate OR number
-  const orNumber = document.document_number || `OR-${(document.id || 0).toString().padStart(6, '0')}`;
+  // Address from document fields (filled from form)
+  const applicantAddress = document?.applicant_address || 'Brgy. West Triangle, Quezon City';
 
-  // Format date issued
+  // Personal data from resident - same as CertificateOfResidencyForm
+  const age = resident ? getResidentAge(resident) : 'N/A';
+  const sex = resident?.gender?.toUpperCase() || 'N/A';
+  const civilStatus = resident?.civil_status?.toUpperCase() || 'N/A';
+  const nationality = resident?.nationality?.toUpperCase() || 'FILIPINO';
+  const birthPlace = resident?.birth_place?.toUpperCase() || 'QUEZON CITY';
+  const occupation = resident?.occupation?.toUpperCase() || 'N/A';
+
+  // Birth date with proper error handling
+  let birthDate = 'N/A';
+  if (resident?.birth_date) {
+    try {
+      const date = new Date(resident.birth_date);
+      if (!isNaN(date.getTime())) {
+        birthDate = date.toLocaleDateString('en-US', { 
+          day: 'numeric',
+          month: 'long', 
+          year: 'numeric' 
+        });
+      } else {
+        birthDate = resident.birth_date.toString();
+      }
+    } catch (e) {
+      console.warn('Error parsing birth date:', e);
+      birthDate = resident.birth_date?.toString() || 'N/A';
+    }
+  }
+
+  // Document specific data
+  const purpose = document.purpose?.toUpperCase() || 'GENERAL PURPOSES';
+  const certifyingOfficial = document.certifying_official || 'ELENA CRUZ RODRIGUEZ';
   const dateIssued = document.approved_date ? 
     new Date(document.approved_date).toLocaleDateString('en-US', { 
-      year: 'numeric', 
+      day: 'numeric',
       month: 'long', 
-      day: 'numeric' 
+      year: 'numeric' 
     }) : 
     new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
+      day: 'numeric',
       month: 'long', 
-      day: 'numeric' 
+      year: 'numeric' 
     });
 
-  // Format residency period if available
-  const residencyPeriod = document.residency_period;
+  // Generate document numbers
+  const orNumber = document.document_number || `OR-${(document.id || 0).toString().padStart(6, '0')}`;
+  const recordNumber = document.id?.toString().padStart(4, '0') || '0000';
+
+  // Contact information and document data
+  const contactNumber = document?.applicant_contact || resident?.mobile_number || '';
+  const email = document?.applicant_email || resident?.email_address || '';
+
+  // Photo URL - from resident data
+  const photoUrl = resident?.profile_photo_url || '';
+
+  // Extract residency period info from document
+  const residencyPeriod = document?.residency_period || 'PERMANENT';
 
   return (
     <>
@@ -189,19 +176,19 @@ const CertificateOfResidencyPrint: React.FC = () => {
         /* Print specifications for Letter size (8.5 x 11) */
         @media print {
           @page {
-            size: letter; /* 8.5 x 11 inches */
-            margin-top: 3.3cm;    /* Top margin - blank space */
-            margin-left: 5.2cm;   /* Left margin - blank space */
-            margin-right: 2.54cm; /* Right margin - 1 inch */
-            margin-bottom: 2.54cm; /* Bottom margin - 1 inch */
+            size: letter;
+            margin-top: 3.3cm;
+            margin-left: 5.2cm;
+            margin-right: 2.54cm;
+            margin-bottom: 2.54cm;
           }
           
           body {
             margin: 0 !important;
             padding: 0 !important;
             font-family: 'Times New Roman', Times, serif !important;
-            font-size: 12pt !important;
-            line-height: 1.4 !important;
+            font-size: 10pt !important;
+            line-height: 1.2 !important;
             color: black !important;
             background: white !important;
           }
@@ -215,12 +202,8 @@ const CertificateOfResidencyPrint: React.FC = () => {
             max-width: none !important;
             margin: 0 !important;
             padding: 0 !important;
-          }
-          
-          .certificate-content {
-            padding: 0 !important;
-            margin: 0 !important;
-            box-shadow: none !important;
+            page-break-inside: avoid !important;
+            height: auto !important;
           }
           
           * {
@@ -232,7 +215,7 @@ const CertificateOfResidencyPrint: React.FC = () => {
           }
         }
         
-        /* Screen styles with visual margin indicators */
+        /* Screen styles */
         @media screen {
           body {
             font-family: 'Times New Roman', Times, serif;
@@ -244,20 +227,277 @@ const CertificateOfResidencyPrint: React.FC = () => {
             margin: 0 auto;
             background: white;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            /* Visual representation of margins */
-            margin-left: calc(5.2cm + 20px);
-            margin-top: calc(3.3cm + 20px);
-            padding-right: 2.54cm;
-            padding-bottom: 2.54cm;
-            border-left: 3px dashed #ccc;
-            border-top: 3px dashed #ccc;
+            padding: 20px;
+            min-height: 600px;
           }
         }
         
-        /* Document specific styles */
-        .certificate-body {
-          text-align: justify;
-          line-height: 1.8;
+        .document-title {
+          text-align: center;
+          font-size: 16pt;
+          font-weight: bold;
+          margin-bottom: 20px;
+          letter-spacing: 2px;
+        }
+        
+        .greeting {
+          margin-bottom: 15px;
+          font-size: 10pt;
+        }
+        
+        .certification-content {
+          margin-bottom: 20px;
+          line-height: 1.4;
+          font-size: 10pt;
+        }
+        
+        /* Bio details table */
+        .bio-section {
+          display: table;
+          width: 100%;
+          margin: 15px 0;
+        }
+        
+        .left-bio {
+          display: table-cell;
+          width: 60%;
+          vertical-align: top;
+          padding-right: 20px;
+        }
+        
+        .right-bio {
+          display: table-cell;
+          width: 40%;
+          vertical-align: top;
+        }
+        
+        .info-row {
+          margin-bottom: 3px;
+          font-size: 10pt;
+          display: flex;
+        }
+        
+        .info-label {
+          width: 110px;
+          font-weight: normal;
+        }
+        
+        .info-colon {
+          width: 15px;
+        }
+        
+        .info-value {
+          font-weight: bold;
+          flex: 1;
+        }
+        
+        /* Photo/Contact/Signature section */
+        .photo-contact-section {
+          display: table;
+          width: 100%;
+          margin: 20px 0;
+        }
+        
+        .spacer-left {
+          display: table-cell;
+          width: 60%;
+        }
+        
+        .photo-contact-right {
+          display: table-cell;
+          width: 40%;
+          vertical-align: top;
+        }
+        
+        .three-column-layout {
+          display: table;
+          width: 100%;
+        }
+        
+        .photo-column {
+          display: table-cell;
+          width: 33%;
+          vertical-align: top;
+          text-align: center;
+        }
+        
+        .contact-signature-column {
+          display: table-cell;
+          width: 34%;
+          vertical-align: top;
+          padding: 0 10px;
+        }
+        
+        .thumbmark-column {
+          display: table-cell;
+          width: 33%;
+          vertical-align: top;
+          text-align: center;
+        }
+        
+        .photo-area {
+          text-align: center;
+          margin-bottom: 15px;
+        }
+        
+        .photo-placeholder {
+          width: 150px;
+          height: 150px;
+          border: 1px solid #000;
+          display: inline-block;
+          background-color: #f9f9f9;
+          line-height: 120px;
+          font-size: 8pt;
+          margin-bottom: 5px;
+          object-fit: cover;
+        }
+        
+        .photo-image {
+          width: 150px;
+          height: 150px;
+          border: 1px solid #000;
+          display: inline-block;
+          margin-bottom: 5px;
+          object-fit: cover;
+        }
+        
+        .photo-label {
+          font-size: 8pt;
+          font-weight: bold;
+        }
+        
+        .contact-fields {
+          margin-bottom: 15px;
+        }
+        
+        .contact-row {
+          display: flex;
+          margin-bottom: 5px;
+          align-items: center;
+          font-size: 9pt;
+        }
+        
+        .contact-label {
+          width: 50px;
+        }
+        
+        .contact-field {
+          border-bottom: 1px solid #000;
+          flex: 1;
+          height: 15px;
+          font-size: 8pt;
+          padding-left: 2px;
+        }
+        
+        .signature-area {
+          text-align: center;
+        }
+        
+        .signature-line {
+          border-bottom: 1px solid #000;
+          width: 150px;
+          height: 15px;
+          margin: 0 auto 5px;
+          margin-top: 40px;
+        }
+        
+        .signature-label {
+          font-size: 9pt;
+          font-weight: bold;
+          margin-bottom: 10px;
+          margin-top: 10px;
+        }
+        
+        .thumbmark-box {
+          border: 1px solid #000;
+          height: 150px;
+          width: 150px;
+          margin: 0 auto 5px;
+          background-color: #f9f9f9;
+        }
+        
+        .thumbmark-label {
+          font-size: 9pt;
+          font-weight: bold;
+        }
+        
+        .issuance-info {
+          margin: 20px 0 15px 0;
+          text-align: center;
+          font-size: 10pt;
+        }
+        
+        .date-issued {
+          font-weight: bold;
+        }
+        
+        .footer-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin-top: 15px;
+        }
+        
+        .record-info {
+          font-size: 9pt;
+        }
+        
+        .record-row {
+          margin-bottom: 8px;
+          display: flex;
+          align-items: center;
+        }
+        
+        .record-label {
+          width: 80px;
+        }
+        
+        .record-line {
+          border-bottom: 1px solid #000;
+          width: 120px;
+          height: 15px;
+        }
+        
+        .record-number {
+          border: 1px solid #000;
+          padding: 3px 8px;
+          font-weight: bold;
+          background-color: #f0f0f0;
+        }
+        
+        .official-signature {
+          text-align: center;
+        }
+        
+        .official-name {
+          font-size: 11pt;
+          font-weight: bold;
+          margin-bottom: 3px;
+        }
+        
+        .official-title {
+          font-size: 9pt;
+          font-style: italic;
+          margin-bottom: 8px;
+        }
+        
+        .qr-placeholder {
+          width: 60px;
+          height: 60px;
+          border: 1px solid #000;
+          margin: 0 auto;
+          background-color: #000;
+          line-height: 60px;
+          font-size: 6pt;
+          color: white;
+        }
+        
+        .disclaimer {
+          font-size: 7pt;
+          text-align: center;
+          margin-top: 10px;
+          font-style: italic;
+          line-height: 1.2;
         }
       `}</style>
       
@@ -281,44 +521,197 @@ const CertificateOfResidencyPrint: React.FC = () => {
         </div>
 
         {/* Certificate Content */}
-        <div className="document-container certificate-content">
-          <CertificateHeader />
-
-          {/* Certificate Body */}
-          <div className="mb-10 certificate-body">
-            <p className="font-bold mb-5">TO WHOM IT MAY CONCERN:</p>
-            
-            <p className="mb-5">
-              This is to certify that <span className="font-bold underline">{applicantName.toUpperCase()}</span>, 
-              of legal age, Filipino citizen, 
-              is a <span className="font-bold">BONAFIDE RESIDENT</span> of 
-              <span className="font-bold"> {applicantAddress}</span>
-              {residencyPeriod && <span> for <span className="font-bold">{residencyPeriod}</span></span>}.
-            </p>
-
-            <p className="mb-5">
-              This certification is issued upon the request of the above-named person for 
-              <span className="font-bold"> {document.purpose?.toLowerCase() || 'general purposes'}</span> and for whatever legal purpose 
-              it may serve him/her best.
-            </p>
-
-            <p>
-              Given this <span className="font-bold">{new Date().getDate()}{getOrdinalSuffix(new Date().getDate())}</span> day of{' '}
-              <span className="font-bold">{new Date().toLocaleDateString('en-US', { month: 'long' })}</span>,{' '}
-              <span className="font-bold">{new Date().getFullYear()}</span> at Barangay West Triangle, Quezon City, Metro Manila.
-            </p>
+        <div className="document-container">
+          <div className="document-title">
+            C e r t i f i c a t i o n
           </div>
 
-          <CertificateFooter 
-            certifyingOfficial={document.certifying_official || undefined}
-            dateIssued={dateIssued}
-            orNumber={orNumber}
-            amountPaid={document.processing_fee}
-          />
+          <div className="greeting">
+            To whom it may concern:
+          </div>
+
+          <div className="certification-content">
+            This is to certify that the person whose information, picture and signature or thumbmark appears below is presently residing at <strong>BARANGAY WEST TRIANGLE</strong>, Quezon City.
+          </div>
+
+          {/* Bio details section */}
+          <div className="bio-section">
+            <div className="left-bio">
+              <div className="info-row">
+                <div className="info-label">SURNAME</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{lastName.toUpperCase()}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">FIRST NAME</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{firstName.toUpperCase()}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">MIDDLE NAME</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{middleName.toUpperCase()}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">ADDRESS</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{applicantAddress.toUpperCase()}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">SEX</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{sex}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">BIRTHDATE</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{birthDate}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">OCCUPATION</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{occupation}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">PURPOSE</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{purpose}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">REMARKS</div>
+                <div className="info-colon">:</div>
+                <div className="info-value"><em>NO DEROGATORY RECORD ON FILE</em></div>
+              </div>
+            </div>
+            
+            <div className="right-bio">
+              <div className="info-row">
+                <div className="info-label">STATUS</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{civilStatus}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">NATIONALITY</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{nationality}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">BPLACE</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">{birthPlace}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">RESIDENCY STATUS</div>
+                <div className="info-colon">:</div>
+                <div className="info-value">BONAFIDE RES.</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Photo, Contact, and Signature section */}
+          <div className="photo-contact-section">
+            <div className="photo-contact-right">
+              <div className="three-column-layout">
+                <div className="photo-column">
+                  {photoUrl ? (
+                    <img 
+                      src={photoUrl} 
+                      alt="Resident Photo" 
+                      className="photo-image"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const placeholder = target.nextElementSibling as HTMLElement;
+                        if (placeholder) {
+                          placeholder.style.display = 'inline-block';
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <div 
+                    className="photo-placeholder" 
+                    style={{ display: photoUrl ? 'none' : 'inline-block' }}
+                  >
+                    PHOTO
+                  </div>
+                  <div className="photo-label">PHOTO</div>
+                </div>
+                
+                <div className="contact-signature-column">
+                  <div className="contact-fields">
+                    <div className="contact-row">
+                      <div className="contact-label">Contact:</div>
+                      <div className="contact-field">{contactNumber}</div>
+                    </div>
+                    <div className="contact-row">
+                      <div className="contact-label">email:</div>
+                      <div className="contact-field">{email}</div>
+                    </div>
+                    <div className="contact-row">
+                      <div className="contact-label">Age:</div>
+                      <div className="contact-field">{age}</div>
+                    </div>
+                    <div className="contact-row">
+                      <div className="contact-label">LOS:</div>
+                      <div className="contact-field">{residencyPeriod}</div>
+                    </div>
+                  </div>
+
+                  <div className="signature-area">
+                    <div className="signature-line"></div>
+                    <div className="signature-label">SIGNATURE</div>
+                  </div>
+                </div>
+                
+                <div className="thumbmark-column">
+                  <div className="thumbmark-box"></div>
+                  <div className="thumbmark-label">Right<br />Thumbmark</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="issuance-info">
+            Signed and issued this <span className="date-issued">{dateIssued}</span> at Barangay West Triangle<br />
+            Quezon City, Metro Manila.
+          </div>
+
+          <div className="footer-section">
+            <div className="record-info">
+              <div className="record-row">
+                <div className="record-label">CTC No.</div>
+                <div className="record-line"></div>
+              </div>
+              <div className="record-row">
+                <div className="record-label">Issued on</div>
+                <div className="record-line"></div>
+              </div>
+              <div className="record-row">
+                <div className="record-label">Issued at</div>
+                <div className="record-line"></div>
+              </div>
+              <div className="record-row">
+                <div className="record-label">Record No.</div>
+                <div className="record-number">{recordNumber}</div>
+              </div>
+            </div>
+            
+            <div className="official-signature">
+              <div className="official-name">{certifyingOfficial.toUpperCase()}</div>
+              <div className="official-title">Punong Barangay</div>
+              <div className="qr-placeholder">QR CODE</div>
+            </div>
+          </div>
+
+          <div className="disclaimer">
+            NOTE: 1.) Null and void if found with erasures or alterations and if without<br />
+            barangay seal.<br />
+            2.) Valid for six (6) months from date of issue.
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default CertificateOfResidencyPrint; 
+export default CertificateOfResidencyPrint;
