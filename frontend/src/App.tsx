@@ -53,6 +53,7 @@ import PermissionManagementPage from "./components/permissions/PermissionManagem
 import PermissionGuard from "./components/permissions/PermissionGuard";
 import BarangayClearanceInstallationPrint from "./components/processDocument/BarangayClearanceInstallationPrint";
 import BarangayClearanceInstallationForm from "./components/processDocument/BarangayClearanceInstallationForm";
+import CashBondForm from "./components/processDocument/CashBondForm";
 
 
 // Wrapper components to handle navigation prop
@@ -74,6 +75,11 @@ const BarangayClearanceFormWrapper = () => {
 const BarangayClearanceInstallationFormWrapper = () => {
   const navigate = useNavigate();
   return <BarangayClearanceInstallationForm onNavigate={(item) => navigate(`/${item}`)} />;
+};
+
+const CashBondFormWrapper = () => {
+  const navigate = useNavigate();
+  return <CashBondForm onNavigate={(item) => navigate(`/${item}`)} />;
 };
 
 const BusinessPermitFormWrapper = () => {
@@ -249,6 +255,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard permission="create-documents">
                 <BarangayClearanceInstallationFormWrapper />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "cash-bond",
+            element: (
+              <PermissionGuard permission="create-documents">
+                <CashBondFormWrapper />
               </PermissionGuard>
             ),
           },

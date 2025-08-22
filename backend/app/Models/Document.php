@@ -22,12 +22,12 @@ class Document extends Model implements Auditable
      * Get fillable fields from schema
      */
     protected $fillable;
-    
+
     /**
      * Get casts from schema
      */
     protected $casts;
-    
+
     public function __construct(array $attributes = [])
     {
         // Set fillable and casts from schema before calling parent constructor
@@ -39,7 +39,7 @@ class Document extends Model implements Auditable
             $this->fillable = [];
             $this->casts = [];
         }
-        
+
         parent::__construct($attributes);
     }
 
@@ -80,7 +80,7 @@ class Document extends Model implements Auditable
         if (!$this->expiry_date) {
             return false;
         }
-        
+
         return $this->expiry_date->diffInDays(now()) <= 30 && $this->expiry_date->isFuture();
     }
 
@@ -99,7 +99,7 @@ class Document extends Model implements Auditable
         if (!$this->needed_date || in_array($this->status, ['released', 'rejected', 'cancelled'])) {
             return false;
         }
-        
+
         return $this->needed_date->isPast();
     }
 
@@ -202,7 +202,7 @@ class Document extends Model implements Auditable
     public function scopeOverdue($query)
     {
         return $query->where('needed_date', '<', now())
-                    ->whereNotIn('status', ['released', 'rejected', 'cancelled']);
+            ->whereNotIn('status', ['released', 'rejected', 'cancelled']);
     }
 
     public function scopeExpired($query)
@@ -218,7 +218,7 @@ class Document extends Model implements Auditable
     public function scopeRequestedThisMonth($query)
     {
         return $query->whereMonth('submitted_at', now()->month)
-                    ->whereYear('submitted_at', now()->year);
+            ->whereYear('submitted_at', now()->year);
     }
 
     public function scopeRequestedThisYear($query)
@@ -229,7 +229,7 @@ class Document extends Model implements Auditable
     public function scopeReleasedThisMonth($query)
     {
         return $query->whereMonth('released_date', now()->month)
-                    ->whereYear('released_date', now()->year);
+            ->whereYear('released_date', now()->year);
     }
 
     public function scopeByResident($query, $residentId)
@@ -291,22 +291,22 @@ class Document extends Model implements Auditable
     protected static function boot()
     {
         parent::boot();
-        
+
         // Auto-generate document number and serial number when creating
         static::creating(function ($document) {
             if (!$document->document_number) {
                 $document->document_number = static::generateDocumentNumber($document->type);
             }
-            
+
             if (!$document->serial_number) {
                 $document->serial_number = static::generateSerialNumber();
             }
-            
+
             // Set submitted_at if not provided
             if (!$document->submitted_at) {
                 $document->submitted_at = now();
             }
-            
+
             // Set payment_status to 'PAID' by default (assume all requests are paid upon submission)
             if (!$document->payment_status) {
                 $document->payment_status = 'PAID';
@@ -344,6 +344,9 @@ class Document extends Model implements Auditable
     {
         $prefix = match ($documentType) {
             'BARANGAY_CLEARANCE' => 'BC',
+            'BARANGAY_CLEARANCE_INSTALLATION' => 'BCI',
+            'CASH_BOND' => 'CB',
+            'SUMMON' => 'SMN',
             'CERTIFICATE_OF_RESIDENCY' => 'CR',
             'CERTIFICATE_OF_INDIGENCY' => 'CI',
             'BUSINESS_PERMIT' => 'BP',
@@ -357,7 +360,7 @@ class Document extends Model implements Auditable
 
         $year = now()->year;
         $month = now()->format('m');
-        
+
         // Get next sequence number for this document type and month
         $lastDocument = static::where('type', $documentType)
             ->whereYear('submitted_at', $year)
@@ -411,7 +414,7 @@ class Document extends Model implements Auditable
     private function generateDescription($event)
     {
         $user = Auth::user() ? Auth::user()->name : 'System';
-        return match($event) {
+        return match ($event) {
             'created' => "$user created a new document record",
             'updated' => "$user updated document information",
             'deleted' => "$user deleted a document record",

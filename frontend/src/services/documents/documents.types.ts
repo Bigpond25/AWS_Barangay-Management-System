@@ -11,7 +11,9 @@ export const DocumentTypeSchema = z.enum([
   'BUSINESS_PERMIT',
   'BUSINESS_SIGN_CLEARANCE',
   'CERTIFICATE_OF_INDIGENCY',
-  'CERTIFICATE_OF_RESIDENCY'
+  'CERTIFICATE_OF_RESIDENCY',
+  'CASH_BOND',
+  'SUMMON'
 ]);
 
 export const DocumentStatusSchema = z.enum([
@@ -78,6 +80,12 @@ export const DocumentFormDataSchema = z.object({
   sign_wordings: z.string().nullable().optional(),
   sign_material: z.string().nullable().optional(),
   sign_size: z.string().nullable().optional(),
+
+  // Cash Bond Specific
+  received_from: z.string().nullable().optional(),
+  bond_amount: z.number().nullable().optional(),
+  representing_entity: z.string().nullable().optional(),
+  acknowledgement_address: z.string().nullable().optional(),
   
   // Processing Information
   requirements_submitted: z.array(z.string()).nullable().optional(),

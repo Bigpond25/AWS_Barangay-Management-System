@@ -117,6 +117,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
   const documentTypes = [
     { value: 'BARANGAY_CLEARANCE_INSTALLATION', label: 'Barangay Clearance (Installation)' },
     { value: 'BARANGAY_CLEARANCE', label: 'Barangay Clearance (Liquor)' },
+    { value: 'CASH_BOND', label: 'Cash Bond' },
     { value: 'BUSINESS_PERMIT', label: 'Business Permit' },
     { value: 'BUSINESS_SIGN_CLEARANCE', label: 'Business Sign Clearance' },
     { value: 'CERTIFICATE_OF_INDIGENCY', label: 'Certificate of Indigency' },
@@ -196,6 +197,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
     const printRouteMap: Record<string, string> = {
       'BARANGAY_CLEARANCE_INSTALLATION': 'barangay-clearance-installation',
       'BARANGAY_CLEARANCE': 'barangay-clearance',
+      'CASH_BOND': 'cash-bond',
       'CERTIFICATE_OF_RESIDENCY': 'certificate-residency', 
       'CERTIFICATE_OF_INDIGENCY': 'certificate-indigency',
       'BUSINESS_PERMIT': 'business-permit',
