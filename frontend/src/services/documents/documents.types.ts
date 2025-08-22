@@ -11,7 +11,9 @@ export const DocumentTypeSchema = z.enum([
   'BUSINESS_PERMIT',
   'BUSINESS_SIGN_CLEARANCE',
   'CERTIFICATE_OF_INDIGENCY',
-  'CERTIFICATE_OF_RESIDENCY'
+  'CERTIFICATE_OF_RESIDENCY',
+  'NOTICE_OF_HEARING',
+  'RETIREMENT_CESSATION_DISSOLUTION'
 ]);
 
 export const DocumentStatusSchema = z.enum([
@@ -79,6 +81,23 @@ export const DocumentFormDataSchema = z.object({
   sign_material: z.string().nullable().optional(),
   sign_size: z.string().nullable().optional(),
   
+  // Notice of Hearing specific
+  case_number: z.string().nullable().optional(),
+  case_title: z.string().nullable().optional(),
+  hearing_date: z.string().nullable().optional(),
+  hearing_time: z.string().nullable().optional(),
+  hearing_type: z.string().nullable().optional(),
+  complainant_name: z.string().nullable().optional(),
+  complainant_address: z.string().nullable().optional(),
+  respondent_name: z.string().nullable().optional(),
+  respondent_address: z.string().nullable().optional(),
+  case_description: z.string().nullable().optional(),
+
+  // Retirement/Cessation/Dissolution specific
+  ownership_type: z.string().nullable().optional(),
+  retirement_date: z.string().nullable().optional(),
+  business_category: z.string().optional(),
+  
   // Processing Information
   requirements_submitted: z.array(z.string()).nullable().optional(),
   notes: z.string().nullable().optional(),
@@ -122,6 +141,13 @@ export const DocumentSchema = DocumentFormDataSchema.extend({
     complete_address: z.string(),
     mobile_number: z.string().nullable().optional(),
     email_address: z.string().nullable().optional(),
+    birth_date: z.string().nullable().optional(),
+    gender: z.string().nullable().optional(),
+    civil_status: z.string().nullable().optional(),
+    nationality: z.string().nullable().optional(),
+    birth_place: z.string().nullable().optional(),
+    occupation: z.string().nullable().optional(),
+    profile_photo_url: z.string().nullable().optional(),
   }).nullable().optional(),
   
   processed_by_user: z.object({
@@ -281,6 +307,21 @@ export const transformDocumentToFormData = (document: Document | null): Document
       family_size: undefined,
       residency_period: '',
       previous_address: '',
+      sign_wordings: '',
+      sign_material: '',
+      sign_size: '',
+      case_number: '',
+      case_title: '',
+      hearing_date: '',
+      hearing_time: '',
+      hearing_type: '',
+      complainant_name: '',
+      complainant_address: '',
+      respondent_name: '',
+      respondent_address: '',
+      case_description: '',
+      ownership_type: '',
+      retirement_date: '',
       requirements_submitted: [],
       notes: '',
       remarks: '',
@@ -312,9 +353,27 @@ export const transformDocumentToFormData = (document: Document | null): Document
     family_size: document.family_size,
     residency_period: document.residency_period || '',
     previous_address: document.previous_address || '',
+    sign_wordings: document.sign_wordings || '',
+    sign_material: document.sign_material || '',
+    sign_size: document.sign_size || '',
+    case_number: document.case_number || '',
+    case_title: document.case_title || '',
+    hearing_date: document.hearing_date 
+      ? new Date(document.hearing_date).toISOString().slice(0, 10) 
+      : '',
+    hearing_time: document.hearing_time || '',
+    hearing_type: document.hearing_type || '',
+    complainant_name: document.complainant_name || '',
+    complainant_address: document.complainant_address || '',
+    respondent_name: document.respondent_name || '',
+    respondent_address: document.respondent_address || '',
+    case_description: document.case_description || '',
     requirements_submitted: document.requirements_submitted || [],
     notes: document.notes || '',
     remarks: document.remarks || '',
+    ownership_type: document.ownership_type || '',
+    retirement_date: document.retirement_date 
+      ? new Date(document.retirement_date).toISOString().slice(0, 10) 
+      : '',
   };
 };
-

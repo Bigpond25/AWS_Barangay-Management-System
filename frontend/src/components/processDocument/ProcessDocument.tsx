@@ -199,7 +199,9 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
       'CERTIFICATE_OF_RESIDENCY': 'certificate-residency', 
       'CERTIFICATE_OF_INDIGENCY': 'certificate-indigency',
       'BUSINESS_PERMIT': 'business-permit',
-      'BUSINESS_SIGN_CLEARANCE': 'business-sign-clearance'
+      'BUSINESS_SIGN_CLEARANCE': 'business-sign-clearance',
+      'NOTICE_OF_HEARING': 'notice-of-hearing',
+      'RETIREMENT_CESSATION_DISSOLUTION': 'retirement-cessation-dissolution'
     };
 
     const printRoute = printRouteMap[document.type];
