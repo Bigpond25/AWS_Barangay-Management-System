@@ -14,12 +14,14 @@ import BusinessPermitForm from "./components/processDocument/BusinessPermitForm"
 import BusinessSignClearanceForm from "./components/processDocument/BusinessSignClearanceForm";
 import CertificateOfIndigencyForm from "./components/processDocument/CertificateOfIndigencyForm";
 import CertificateOfResidencyForm from "./components/processDocument/CertificateOfResidencyForm";
+import NoticeOfHearingForm from "./components/processDocument/NoticeOfHearingForm";
 import DocumentQueue from "./components/processDocument/DocumentQueue";
 import BarangayClearancePrint from "./components/processDocument/BarangayClearancePrint";
 import CertificateOfResidencyPrint from "./components/processDocument/CertificateOfResidencyPrint";
 import CertificateOfIndigencyPrint from "./components/processDocument/CertificateOfIndigencyPrint";
 import BusinessPermitPrint from "./components/processDocument/BusinessPermitPrint";
 import BusinessSignClearancePrint from "./components/processDocument/BusinessSignClearancePrint";
+import NoticeOfHearingPrint from "./components/processDocument/NoticeOfHearingPrint";
 import HouseholdManagement from "./components/householdManagement/HouseholdManagement";
 import AddNewHousehold from "./components/householdManagement/AddNewHousehold";
 import EditHousehold from "./components/householdManagement/EditHousehold";
@@ -54,6 +56,9 @@ import PermissionGuard from "./components/permissions/PermissionGuard";
 import BarangayClearanceInstallationPrint from "./components/processDocument/BarangayClearanceInstallationPrint";
 import BarangayClearanceInstallationForm from "./components/processDocument/BarangayClearanceInstallationForm";
 import CashBondForm from "./components/processDocument/CashBondForm";
+import RetirementForm from "./components/processDocument/RetirementForm";
+import RetirementPrint from "./components/processDocument/RetirementPrint";
+
 
 
 // Wrapper components to handle navigation prop
@@ -100,6 +105,16 @@ const CertificateOfIndigencyFormWrapper = () => {
 const CertificateOfResidencyFormWrapper = () => {
   const navigate = useNavigate();
   return <CertificateOfResidencyForm onNavigate={(item) => navigate(`/${item}`)} />;
+};
+
+const NoticeOfHearingFormWrapper = () => {
+  const navigate = useNavigate();
+  return <NoticeOfHearingForm onNavigate={(item) => navigate(`/${item}`)} />;
+};
+
+const RetirementFormWrapper = () => {
+  const navigate = useNavigate();
+  return <RetirementForm onNavigate={(item) => navigate(`/${item}`)} />;
 };
 
 // Define routes using data format
@@ -306,7 +321,22 @@ const router = createBrowserRouter([
               </PermissionGuard>
             ),
           },
-
+          {
+            path: "notice-of-hearing",
+            element: (
+              <PermissionGuard permission="create-documents">
+                <NoticeOfHearingFormWrapper />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "retirement",
+            element: (
+              <PermissionGuard permission="create-documents">
+                <RetirementFormWrapper />
+              </PermissionGuard>
+            ),
+          },
         ],
       },
       {
@@ -529,6 +559,23 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requireAuth={true}>
         <BusinessSignClearancePrint />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/print/notice-of-hearing/:documentId",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <NoticeOfHearingPrint />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/print/retirement-cessation-dissolution/:documentId",
+    element: (  
+      <ProtectedRoute requireAuth={true}>
+        <RetirementPrint />
       </ProtectedRoute>
     ),
   },
