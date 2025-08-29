@@ -303,7 +303,7 @@ const SummonPrint: React.FC = () => {
         }
         
         .for-label {
-          margin-bottom: 5px;
+          margin-bottom: 0px;
         }
         
         .recipient-section {
@@ -409,7 +409,6 @@ const SummonPrint: React.FC = () => {
                   alt="Barangay Logo"
                 />
               </div>
-              <div className="logo-label">BARANGAY<br/>LOGO</div>
             </div>
             <div>
               <div className="logo-box">
@@ -418,7 +417,6 @@ const SummonPrint: React.FC = () => {
                   alt="Quezon City Logo"
                 />
               </div>
-              <div className="logo-label">QUEZON<br/>CITY<br/>LOGO</div>
             </div>
           </div>
 
@@ -438,8 +436,7 @@ const SummonPrint: React.FC = () => {
               <span className="case-number">{barangayCase}</span>
             </div>
             <div className="for-box">
-              <div className="for-label">For:</div>
-              <div>{complainant.toUpperCase()}</div>
+              <div className="for-label">For: {complainant.toUpperCase()}</div>
             </div>
           </div>
 

@@ -89,6 +89,14 @@ class DocumentSchema
             'representing_entity' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'acknowledgement_address' => ['type' => 'string', 'max' => 255, 'nullable' => true],
 
+            // Document Specific Fields (Summon)
+            'barangay_case' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'summon_date' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'summon_time' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'summon_address' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'to' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'for' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+
             // Processing Information
             'requirements_submitted' => ['type' => 'json', 'nullable' => true],
             'notes' => ['type' => 'text', 'nullable' => true],
