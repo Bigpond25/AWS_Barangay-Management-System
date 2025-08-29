@@ -9,7 +9,7 @@ import { useFormContext } from 'react-hook-form';
 interface DocumentFormFieldProps {
   name: string;
   label: string;
-  type?: 'text' | 'email' | 'tel' | 'date' | 'number' | 'textarea' | 'select' | 'time';
+  type?: 'text' | 'email' | 'tel' | 'date' | 'time' | 'number' | 'textarea' | 'select';
   placeholder?: string;
   required?: boolean;
   readOnly?: boolean;
@@ -94,4 +94,4 @@ export const DocumentFormField: React.FC<DocumentFormFieldProps> = ({
       )}
     </div>
   );
-}; 
+};

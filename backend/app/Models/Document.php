@@ -355,8 +355,10 @@ class Document extends Model implements Auditable
             'SENIOR_CITIZEN_ID' => 'SCI',
             'PWD_ID' => 'PWD',
             'BARANGAY_ID' => 'BID',
+            'RETIREMENT_CESSATION_DISSOLUTION' => 'RCD', // Add this line
+            'NOTICE_OF_HEARING' => 'NOH',
             default => 'DOC',
-        };
+        }; 
 
         $year = now()->year;
         $month = now()->format('m');

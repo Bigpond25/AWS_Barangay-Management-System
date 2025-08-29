@@ -61,10 +61,27 @@ class DocumentSchema
             'residency_period' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'previous_address' => ['type' => 'text', 'nullable' => true],
 
+            // Document Specific Fields (Retirement/Cessation/Dissolution)
+            'ownership_type' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'retirement_date' => ['type' => 'date', 'nullable' => true],
+
             // Document Specific Fields (Business Sign Clearance)
             'sign_wordings' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'sign_material' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'sign_size' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+
+            // Document Specific Fields (Notice of Hearing)
+            'case_number' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'case_title' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'case_description' => ['type' => 'text', 'nullable' => true],
+            'complainant_name' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'complainant_address' => ['type' => 'text', 'nullable' => true],
+            'respondent_name' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'respondent_address' => ['type' => 'text', 'nullable' => true],
+            'hearing_date' => ['type' => 'date', 'nullable' => true],
+            'hearing_time' => ['type' => 'string', 'max' => 50, 'nullable' => true],
+            'hearing_type' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+
 
             // Document Specific Fields (Cash Bond)
             'received_from' => ['type' => 'string', 'max' => 255, 'nullable' => true],
@@ -215,6 +232,8 @@ class DocumentSchema
             'SENIOR_CITIZEN_ID' => 'Senior Citizen ID',
             'PWD_ID' => 'PWD ID',
             'BARANGAY_ID' => 'Barangay ID',
+            'RETIREMENT_CESSATION_DISSOLUTION' => 'Retirement/Cessation/Dissolution', // ADD THIS
+            'NOTICE_OF_HEARING' => 'Notice of Hearing',
 
             // DAGDAG NI JM
             'CASH_BOND' => 'Cash Bond',
