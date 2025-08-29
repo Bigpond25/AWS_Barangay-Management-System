@@ -19,21 +19,21 @@ class DocumentSchema
             'resident_id' => ['type' => 'foreignId', 'references' => 'residents.id', 'required' => true],
             'applicant_name' => ['type' => 'string', 'max' => 255, 'required' => true],
             'purpose' => ['type' => 'text', 'required' => true],
-            
+
             // Contact Information
             'applicant_address' => ['type' => 'text', 'nullable' => true],
             'applicant_contact' => ['type' => 'string', 'max' => 20, 'nullable' => true],
             'applicant_email' => ['type' => 'string', 'max' => 255, 'nullable' => true],
-            
+
             // Request Details
             'priority' => ['type' => 'string', 'max' => 50, 'default' => 'NORMAL'],
             'needed_date' => ['type' => 'date', 'nullable' => true],
             'processing_fee' => ['type' => 'decimal', 'precision' => 10, 'scale' => 2, 'default' => 0],
-            
+
             // Document Status and Payment
             'status' => ['type' => 'string', 'max' => 50, 'default' => 'PENDING'],
             'payment_status' => ['type' => 'string', 'max' => 50, 'default' => 'UNPAID'],
-            
+
             // System tracking fields
             'document_number' => ['type' => 'string', 'max' => 255, 'nullable' => true, 'unique' => true],
             'serial_number' => ['type' => 'string', 'max' => 255, 'nullable' => true, 'unique' => true],
@@ -41,47 +41,53 @@ class DocumentSchema
             'processed_at' => ['type' => 'timestamp', 'nullable' => true],
             'approved_at' => ['type' => 'timestamp', 'nullable' => true],
             'released_at' => ['type' => 'timestamp', 'nullable' => true],
-            
+
             // Document Specific Fields (Barangay Clearance)
             'clearance_purpose' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'clearance_type' => ['type' => 'string', 'max' => 255, 'nullable' => true],
-            
+
             // Document Specific Fields (Business Permit)
             'business_name' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'business_type' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'business_address' => ['type' => 'text', 'nullable' => true],
             'business_owner' => ['type' => 'string', 'max' => 255, 'nullable' => true],
-            
+
             // Document Specific Fields (Certificate of Indigency)
             'indigency_reason' => ['type' => 'text', 'nullable' => true],
             'monthly_income' => ['type' => 'decimal', 'precision' => 10, 'scale' => 2, 'nullable' => true],
             'family_size' => ['type' => 'integer', 'nullable' => true],
-            
+
             // Document Specific Fields (Certificate of Residency)
             'residency_period' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'previous_address' => ['type' => 'text', 'nullable' => true],
-            
+
             // Document Specific Fields (Business Sign Clearance)
             'sign_wordings' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'sign_material' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'sign_size' => ['type' => 'string', 'max' => 255, 'nullable' => true],
-            
+
+            // Document Specific Fields (Cash Bond)
+            'received_from' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'bond_amount' => ['type' => 'decimal', 'precision' => 10, 'scale' => 2, 'nullable' => true],
+            'representing_entity' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+            'acknowledgement_address' => ['type' => 'string', 'max' => 255, 'nullable' => true],
+
             // Processing Information
             'requirements_submitted' => ['type' => 'json', 'nullable' => true],
             'notes' => ['type' => 'text', 'nullable' => true],
             'remarks' => ['type' => 'text', 'nullable' => true],
-            
+
             // Officials
             'certifying_official' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'processed_by' => ['type' => 'foreignId', 'references' => 'users.id', 'nullable' => true],
             'approved_by' => ['type' => 'foreignId', 'references' => 'users.id', 'nullable' => true],
             'released_by' => ['type' => 'foreignId', 'references' => 'users.id', 'nullable' => true],
-            
+
             // Additional tracking
             'expiry_date' => ['type' => 'date', 'nullable' => true],
         ];
     }
-    
+
     /**
      * Get fillable fields for the model
      */
@@ -89,7 +95,7 @@ class DocumentSchema
     {
         return array_keys(static::getFields());
     }
-    
+
     /**
      * Get validation rules for create operations
      */
@@ -98,13 +104,13 @@ class DocumentSchema
         $rules = [];
         foreach (static::getFields() as $field => $config) {
             $fieldRules = [];
-            
+
             if (isset($config['required']) && $config['required']) {
                 $fieldRules[] = 'required';
             } else {
                 $fieldRules[] = 'nullable';
             }
-            
+
             if ($config['type'] === 'string') {
                 $fieldRules[] = 'string';
                 if (isset($config['max'])) {
@@ -133,32 +139,32 @@ class DocumentSchema
             } elseif ($config['type'] === 'json') {
                 $fieldRules[] = 'array';
             }
-            
+
             // Handle email validation for applicant_email
             if ($field === 'applicant_email') {
                 $fieldRules[] = 'email';
             }
-            
+
             $rules[$field] = implode('|', $fieldRules);
         }
-        
+
         return $rules;
     }
-    
+
     /**
      * Get validation rules for update operations
      */
     public static function getUpdateValidationRules(): array
     {
         $rules = static::getCreateValidationRules();
-        
+
         // Make required fields optional for updates
         foreach ($rules as $field => $rule) {
             if (str_starts_with($rule, 'required')) {
                 $rules[$field] = 'sometimes|' . $rule;
             }
         }
-        
+
         // Handle unique fields for updates
         if (isset($rules['document_number'])) {
             $rules['document_number'] = str_replace('unique:documents,document_number', 'unique:documents,document_number,{id}', $rules['document_number']);
@@ -166,10 +172,10 @@ class DocumentSchema
         if (isset($rules['serial_number'])) {
             $rules['serial_number'] = str_replace('unique:documents,serial_number', 'unique:documents,serial_number,{id}', $rules['serial_number']);
         }
-        
+
         return $rules;
     }
-    
+
     /**
      * Get casts for the model
      */
@@ -189,10 +195,10 @@ class DocumentSchema
                 $casts[$field] = 'array';
             }
         }
-        
+
         return $casts;
     }
-    
+
     /**
      * Get document type options
      */
@@ -209,10 +215,16 @@ class DocumentSchema
             'SENIOR_CITIZEN_ID' => 'Senior Citizen ID',
             'PWD_ID' => 'PWD ID',
             'BARANGAY_ID' => 'Barangay ID',
+
+            // DAGDAG NI JM
+            'CASH_BOND' => 'Cash Bond',
+            'SUMMON' => 'Summond',
+            'BARANGAY_CLEARANCE_INSTALLATION' => 'Barangay Clearance Installation',
+
             'OTHERS' => 'Others',
         ];
     }
-    
+
     /**
      * Get priority options
      */
@@ -225,7 +237,7 @@ class DocumentSchema
             'URGENT' => 'Urgent',
         ];
     }
-    
+
     /**
      * Get status options
      */
@@ -240,7 +252,7 @@ class DocumentSchema
             'CANCELLED' => 'Cancelled',
         ];
     }
-    
+
     /**
      * Get payment status options
      */
