@@ -54,6 +54,9 @@ import PermissionGuard from "./components/permissions/PermissionGuard";
 import BarangayClearanceInstallationPrint from "./components/processDocument/BarangayClearanceInstallationPrint";
 import BarangayClearanceInstallationForm from "./components/processDocument/BarangayClearanceInstallationForm";
 import CashBondForm from "./components/processDocument/CashBondForm";
+import CashBondPrint from "./components/processDocument/CashBondPrint";
+import SummonPrint from "./components/processDocument/SummonPrint";
+import SummonForm from "./components/processDocument/SummonForm";
 
 
 // Wrapper components to handle navigation prop
@@ -80,6 +83,11 @@ const BarangayClearanceInstallationFormWrapper = () => {
 const CashBondFormWrapper = () => {
   const navigate = useNavigate();
   return <CashBondForm onNavigate={(item) => navigate(`/${item}`)} />;
+};
+
+const SummonWrapper = () => {
+  const navigate = useNavigate();
+  return <SummonForm onNavigate={(item) => navigate(`/${item}`)} />;
 };
 
 const BusinessPermitFormWrapper = () => {
@@ -263,6 +271,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard permission="create-documents">
                 <CashBondFormWrapper />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "summon",
+            element: (
+              <PermissionGuard permission="create-documents">
+                <SummonWrapper />
               </PermissionGuard>
             ),
           },
@@ -497,6 +513,22 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requireAuth={true}>
         <BarangayClearanceInstallationPrint />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/print/cash-bond/:documentId",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <CashBondPrint />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/print/summon/:documentId",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <SummonPrint />
       </ProtectedRoute>
     ),
   },

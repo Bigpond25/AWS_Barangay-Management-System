@@ -86,6 +86,14 @@ export const DocumentFormDataSchema = z.object({
   bond_amount: z.number().nullable().optional(),
   representing_entity: z.string().nullable().optional(),
   acknowledgement_address: z.string().nullable().optional(),
+
+  // Summon Specific
+  barangay_case: z.string().nullable().optional(),
+  summon_date: z.string().nullable().optional(),
+  summon_time: z.string().nullable().optional(),
+  summon_address: z.string().nullable().optional(),
+  to: z.string().nullable().optional(),
+  for: z.string().nullable().optional(),
   
   // Processing Information
   requirements_submitted: z.array(z.string()).nullable().optional(),
