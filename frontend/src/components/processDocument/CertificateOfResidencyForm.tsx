@@ -17,6 +17,8 @@ import { getResidentAge } from '@/utils/ageUtils';
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { DocumentFormField } from './_components/DocumentFormField';
 import Breadcrumb from '../_global/Breadcrumb';
+import { type BarangayOfficial } from '../../services/officials/barangayOfficials.types';
+
 
 interface CertificateOfResidencyFormProps {
   onNavigate: (page: string) => void;
@@ -51,6 +53,19 @@ const CertificateOfResidencyForm: React.FC<CertificateOfResidencyFormProps> = ({
     },
     mode: 'onChange',
   });
+
+  const formatOfficialName = (official: BarangayOfficial) => {
+    const nameParts = [
+      official.prefix,
+      official.first_name,
+      official.middle_name,
+      official.last_name,
+      official.suffix
+    ].filter(part => part && part.trim()); // Remove undefined, null, and empty strings
+    
+    return nameParts.join(' ');
+  };
+
 
   const {
     setValue,
@@ -380,7 +395,7 @@ const CertificateOfResidencyForm: React.FC<CertificateOfResidencyFormProps> = ({
               </select>
             </div>
 
-            {/* Certifying Official - Custom field */}
+            {/* Certifying Official - Fixed version */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Certifying Official <span className="text-red-500">*</span>
@@ -394,8 +409,9 @@ const CertificateOfResidencyForm: React.FC<CertificateOfResidencyFormProps> = ({
                   {isLoadingOfficials ? 'Loading officials...' : 'Select official'}
                 </option>
                 {officials.map((official) => {
-                  const fullName = `${official.prefix} ${official.first_name} ${official.middle_name ? official.middle_name + ' ' : ''}${official.last_name}${official.suffix ? ' ' + official.suffix : ''}`.trim();
+                  const fullName = formatOfficialName(official);
                   const positionText = official.position.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+                  
                   return (
                     <option key={official.id} value={fullName}>
                       {fullName} ({positionText})
