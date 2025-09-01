@@ -47,7 +47,7 @@ const HouseholdRow: React.FC<HouseholdRowProps> = ({
      </td>
      <td className="px-6 py-4 whitespace-nowrap">
        <div className="text-sm text-gray-900">
-         {memberCount} {memberCount === 1 ? t('households.table.members', { count: 1 }) : t('households.table.members_plural', { count: memberCount })}
+         {memberCount === 1 ? t('households.table.members', { count: 1 }) : t('households.table.members_plural', { count: memberCount })}
        </div>
        <div className="text-sm text-gray-500">
          {t('households.table.income')}: {household.monthly_income ? t(`households.incomeRanges.${household.monthly_income}`, { defaultValue: formatIncomeRange(household.monthly_income) }) : t('households.view.notSpecified')}

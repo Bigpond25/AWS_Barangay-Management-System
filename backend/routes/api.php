@@ -234,6 +234,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/committee/{committee}', [BarangayOfficialController::class, 'getByCommittee']);
         Route::get('/export', [BarangayOfficialController::class, 'export'])->middleware('permission:view-reports');
         Route::post('/check-duplicate', [BarangayOfficialController::class, 'checkDuplicate'])->middleware('permission:create-officials');
+        Route::get('/eligible-users', [BarangayOfficialController::class, 'getEligibleUsers'])->middleware('permission:create-officials');
+        Route::get('/eligible-residents', [BarangayOfficialController::class, 'getEligibleResidents'])->middleware('permission:create-officials');
         Route::patch('/{barangayOfficial}/performance', [BarangayOfficialController::class, 'updatePerformance'])->middleware('permission:edit-officials');
         Route::post('/{barangayOfficial}/archive', [BarangayOfficialController::class, 'archive'])->middleware('permission:edit-officials');
         Route::post('/{barangayOfficial}/reactivate', [BarangayOfficialController::class, 'reactivate'])->middleware('permission:edit-officials');

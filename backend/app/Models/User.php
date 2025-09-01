@@ -288,6 +288,25 @@ class User extends Authenticatable
     }
 
     /**
+     * Barangay official relationship
+     */
+    public function barangayOfficials(): HasMany
+    {
+        return $this->hasMany(BarangayOfficial::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get the current active barangay official record for this user
+     */
+    public function currentOfficialPosition(): ?BarangayOfficial
+    {
+        return $this->barangayOfficials()
+            ->where('status', 'ACTIVE')
+            ->where('is_current_term', true)
+            ->first();
+    }
+
+    /**
      * Scopes
      */
     public function scopeActive($query)

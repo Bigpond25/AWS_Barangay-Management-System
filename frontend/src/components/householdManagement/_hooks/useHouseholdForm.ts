@@ -156,13 +156,16 @@ export const useHouseholdForm = ({ initialData, mode = 'create' }: UseHouseholdF
       console.error('Form submission error:', error);
       
       // Handle validation errors from backend
-      const axiosError = error as { response?: { status?: number; data?: { errors?: Record<string, string[]>; message?: string } } };
+      const axiosError = error as { response?: { status?: number; data?: { errors?: Record<string, string[]>; message?: string; error?: string } } };
       if (axiosError.response?.status === 422 && axiosError.response?.data?.errors) {
         const validationErrors = axiosError.response.data.errors;
         const errorMessages = Object.entries(validationErrors)
           .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
           .join('\n');
         setFormError(`Validation errors:\n${errorMessages}`);
+      } else if (axiosError.response?.data?.error) {
+        // Use the specific error message from backend
+        setFormError(axiosError.response.data.error);
       } else if (axiosError.response?.data?.message) {
         setFormError(axiosError.response.data.message);
       } else {
@@ -173,7 +176,7 @@ export const useHouseholdForm = ({ initialData, mode = 'create' }: UseHouseholdF
       showNotification({
         type: 'error',
         title: `${mode === 'create' ? 'Create' : 'Update'} Failed`,
-        message: axiosError.response?.data?.message || (error instanceof Error ? error.message : 'Unknown error') || `Failed to ${mode} household. Please try again.`
+        message: axiosError.response?.data?.error || axiosError.response?.data?.message || (error instanceof Error ? error.message : 'Unknown error') || `Failed to ${mode} household. Please try again.`
       });
     }
   };

@@ -9,20 +9,20 @@ import {
   FaUserCheck,
 } from "react-icons/fa";
 import HorizontalStackedBarChart from "./HorizontalStackedBarChart";
-import ResponsiveAreaChart from "./ResponsiveAreaChart";
+// import ResponsiveAreaChart from "./ResponsiveAreaChart";
 import ResponsiveBarGraph from "./ResponsiveBarGraph";
 import ResponsivePieChart from "./ResponsivePieChart";
-import ResponsiveServicesTable from "./ResponsiveServicesTable";
+// import ResponsiveServicesTable from "./ResponsiveServicesTable";
 import ExportModal from "./ExportModal";
 import { reportsService } from "../../services/reports/reports.service";
 import type {
   StatisticsOverview,
   AgeGroupDistribution,
   SpecialPopulationRegistry,
-  MonthlyRevenue,
+  // MonthlyRevenue,
   PopulationDistributionByStreet,
   DocumentTypesIssued,
-  MostRequestedService,
+  // MostRequestedService,
   FilterOptions,
 } from "../../services/reports/reports.types";
 import Breadcrumb from "../_global/Breadcrumb";
@@ -41,7 +41,7 @@ export default function ReportsPage() {
   const [selectedQuarter, setSelectedQuarter] = useState<string>("All Quarters");
   const [selectedStreet, setSelectedStreet] = useState<string>("All");
 
-  // State for data
+  // State for data - only real data, no mock data
   const [statisticsOverviewData, setStatisticsOverviewData] = useState<StatisticsDisplayData[]>([]);
   const [statisticsOverview, setStatisticsOverview] = useState<StatisticsOverview>({
     totalResidents: 0,
@@ -53,10 +53,10 @@ export default function ReportsPage() {
   });
   const [ageGroupDistributionData, setAgeGroupDistributionData] = useState<AgeGroupDistribution[]>([]);
   const [specialPopulationRegistryData, setSpecialPopulationRegistryData] = useState<SpecialPopulationRegistry[]>([]);
-  const [revenueData, setRevenueData] = useState<MonthlyRevenue[]>([]);
+  // Removed: revenueData - uses mock calculation
   const [populationDistributionByStreetData, setPopulationDistributionByStreetData] = useState<PopulationDistributionByStreet[]>([]);
   const [documentsIssuedData, setDocumentsIssuedData] = useState<DocumentTypesIssued[]>([]);
-  const [mostRequestedServicesData, setMostRequestedServicesData] = useState<MostRequestedService[]>([]);
+  // Removed: mostRequestedServicesData - uses mock fallback data
   
   // State for filter options
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -113,23 +113,23 @@ export default function ReportsPage() {
           street: selectedStreet === "All" ? undefined : selectedStreet,
         };
 
-        // Load all reports data in parallel
+        // Load only real data reports in parallel - exclude mock data endpoints
         const [
           statisticsResponse,
           ageGroupResponse,
           specialPopulationResponse,
-          revenueResponse,
+          // revenueResponse, // Removed - uses mock calculation
           populationDistResponse,
           documentsResponse,
-          servicesResponse,
+          // servicesResponse, // Removed - uses mock fallback data
         ] = await Promise.all([
           reportsService.getStatisticsOverview(filters),
           reportsService.getAgeGroupDistribution(filters),
           reportsService.getSpecialPopulationRegistry(filters),
-          reportsService.getMonthlyRevenue(filters),
+          // reportsService.getMonthlyRevenue(filters), // Removed
           reportsService.getPopulationDistributionByStreet(filters),
           reportsService.getDocumentTypesIssued(filters),
-          reportsService.getMostRequestedServices(filters),
+          // reportsService.getMostRequestedServices(filters), // Removed
         ]);
 
         // Transform statistics overview to the format expected by the UI
@@ -170,13 +170,13 @@ export default function ReportsPage() {
           ]);
         }
 
-        // Set other data
+        // Set real data only
         if (ageGroupResponse.data) setAgeGroupDistributionData(ageGroupResponse.data);
         if (specialPopulationResponse.data) setSpecialPopulationRegistryData(specialPopulationResponse.data);
-        if (revenueResponse.data) setRevenueData(revenueResponse.data);
+        // Removed: revenueResponse and setRevenueData - mock data
         if (populationDistResponse.data) setPopulationDistributionByStreetData(populationDistResponse.data);
         if (documentsResponse.data) setDocumentsIssuedData(documentsResponse.data);
-        if (servicesResponse.data) setMostRequestedServicesData(servicesResponse.data);
+        // Removed: servicesResponse and setMostRequestedServicesData - mock data
 
       } catch (err) {
         console.error('Error loading reports data:', err);
@@ -201,15 +201,15 @@ export default function ReportsPage() {
     setIsExportModalOpen(true);
   };
 
-  // Prepare export data
+  // Prepare export data - only real data, no mock data
   const exportData = {
     statisticsOverview,
     ageGroupDistribution: ageGroupDistributionData,
     specialPopulationRegistry: specialPopulationRegistryData,
-    monthlyRevenue: revenueData,
+    // monthlyRevenue: revenueData, // Removed - mock data
     populationDistributionByStreet: populationDistributionByStreetData,
     documentTypesIssued: documentsIssuedData,
-    mostRequestedServices: mostRequestedServicesData,
+    // mostRequestedServices: mostRequestedServicesData, // Removed - mock data
     filters: {
       year: selectedYear,
       quarter: selectedQuarter === "All Quarters" ? undefined : selectedQuarter,
@@ -377,21 +377,10 @@ export default function ReportsPage() {
             </article>
           </section>
 
-          {/* Financial data and Population Dist by Purok/Sitio */}
-          <section className="min-h-[450px] w-full grid gap-4 grid-cols-2 @4xl/main:grid-cols-[2fr_3fr_2fr]">
-            {/* Monthly Revenue */}
-            <article className="@4xl/main:flex @4xl/main:flex-col shadow-sm rounded-2xl border col-span-2 border-gray-100 p-6 bg-white @4xl/main:order-1 @4xl/main:col-span-1">
-              <h3 className={`text-lg font-semibold text-darktext mb-6 border-l-4 border-smblue-400 pl-4 transition-all duration-700 ease-out ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`} style={{ transitionDelay: '400ms' }}>
-                Monthly Revenue Collection
-              </h3>
-
-              <ResponsiveAreaChart data={revenueData} />
-            </article>
-
+          {/* Population Distribution and Document Types - Real Data Only */}
+          <section className="min-h-[450px] w-full grid gap-4 grid-cols-1 @xl/main:grid-cols-2">
             {/* Population Distribution by Street */}
-            <article className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white col-span-2 min-h-[450px] @xl/main:col-span-1">
+            <article className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white min-h-[450px]">
               <h3 className={`text-lg font-semibold text-darktext mb-6 border-l-4 border-smblue-400 pl-4 transition-all duration-700 ease-out ${
                 isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`} style={{ transitionDelay: '450ms' }}>
@@ -402,7 +391,7 @@ export default function ReportsPage() {
             </article>
 
             {/* Document Types Issued */}
-            <article className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white min-h-[450px] col-span-2 @4xl/main:order-3 @xl/main:col-span-1">
+            <article className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white min-h-[450px]">
               <h3 className={`text-lg font-semibold text-darktext mb-6 border-l-4 border-smblue-400 pl-4 transition-all duration-700 ease-out ${
                 isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`} style={{ transitionDelay: '500ms' }}>
@@ -413,7 +402,9 @@ export default function ReportsPage() {
             </article>
           </section>
 
-          {/* Table of Most Requested Services */}
+          {/* Note: Most Requested Services section hidden - uses mock/fallback data when no real appointment data exists */}
+          {/* Uncomment when real appointment/service request data is available */}
+          {/*
           <section className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white">
             <h3 className={`text-lg font-semibold text-darktext mb-6 border-l-4 border-smblue-400 pl-4 transition-all duration-700 ease-out ${
               isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -423,6 +414,7 @@ export default function ReportsPage() {
 
             <ResponsiveServicesTable data={mostRequestedServicesData} />
           </section>
+          */}
         </>
       )}
 

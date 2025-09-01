@@ -19,10 +19,10 @@ interface ExportModalProps {
     statisticsOverview: StatisticsOverview;
     ageGroupDistribution: AgeGroupDistribution[];
     specialPopulationRegistry: SpecialPopulationRegistry[];
-    monthlyRevenue: MonthlyRevenue[];
+    monthlyRevenue?: MonthlyRevenue[]; // Optional - uses mock data
     populationDistributionByStreet: PopulationDistributionByStreet[];
     documentTypesIssued: DocumentTypesIssued[];
-    mostRequestedServices: MostRequestedService[];
+    mostRequestedServices?: MostRequestedService[]; // Optional - uses mock data
     filters: ReportsFilters;
   };
 }

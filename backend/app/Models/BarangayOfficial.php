@@ -80,6 +80,81 @@ class BarangayOfficial extends Model implements Auditable
         return $this->belongsTo(Resident::class);
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Boot the model to enforce business rules
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        // Enforce business rules when creating
+        static::creating(function ($official) {
+            // Business Rule: All barangay officials must be residents
+            if (empty($official->resident_id)) {
+                throw new \InvalidArgumentException('All barangay officials must be residents. resident_id is required.');
+            }
+            
+            // Business Rule: All barangay officials must be users
+            if (empty($official->user_id)) {
+                throw new \InvalidArgumentException('All barangay officials must be users. user_id is required.');
+            }
+            
+            // Validate that the user and resident exist
+            if (!User::find($official->user_id)) {
+                throw new \InvalidArgumentException('The specified user does not exist.');
+            }
+            
+            if (!Resident::find($official->resident_id)) {
+                throw new \InvalidArgumentException('The specified resident does not exist.');
+            }
+            
+            // Auto-populate personal details from resident
+            $official->syncPersonalDataFromResident();
+        });
+        
+        // Enforce business rules when updating
+        static::updating(function ($official) {
+            // If resident_id or user_id is being changed, validate the new values
+            if ($official->isDirty('resident_id') && empty($official->resident_id)) {
+                throw new \InvalidArgumentException('resident_id cannot be null. All barangay officials must be residents.');
+            }
+            
+            if ($official->isDirty('user_id') && empty($official->user_id)) {
+                throw new \InvalidArgumentException('user_id cannot be null. All barangay officials must be users.');
+            }
+            
+            // If resident_id changed, sync personal data from new resident
+            if ($official->isDirty('resident_id')) {
+                $official->syncPersonalDataFromResident();
+            }
+        });
+    }
+
+    /**
+     * Sync personal data from the associated resident
+     */
+    public function syncPersonalDataFromResident(): void
+    {
+        if ($this->resident_id && $this->resident) {
+            $resident = $this->resident;
+            $this->first_name = $resident->first_name;
+            $this->middle_name = $resident->middle_name;
+            $this->last_name = $resident->last_name;
+            $this->suffix = $resident->suffix;
+            $this->full_name = $resident->full_name;
+            $this->birth_date = $resident->birth_date;
+            $this->gender = $resident->gender;
+            $this->contact_number = $resident->mobile_number;
+            $this->email_address = $resident->email_address;
+            $this->address = $resident->complete_address;
+        }
+    }
+
     // Scopes
     public function scopeActive(Builder $query): Builder
     {

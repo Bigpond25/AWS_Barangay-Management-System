@@ -125,9 +125,15 @@ class ReportsController extends Controller
             }
 
             $specialPopulation = [
-                'Senior Citizens' => (clone $baseQuery)->where('senior_citizen', 'Yes')->count(),
-                'PWD' => (clone $baseQuery)->where('pwd_status', 'PWD')->count(),
-                'Solo Parents' => (clone $baseQuery)->where('civil_status', 'Single')->where('is_household_head', true)->count(),
+                'Senior Citizens' => (clone $baseQuery)->where('senior_citizen', true)->count(),
+                'PWD' => (clone $baseQuery)->where('person_with_disability', true)->count(),
+                'Solo Parents' => (clone $baseQuery)->where('civil_status', 'SINGLE')
+                    ->whereExists(function ($query) {
+                        $query->select(DB::raw(1))
+                              ->from('household_members')
+                              ->whereColumn('household_members.resident_id', 'residents.id')
+                              ->where('household_members.relationship', 'HEAD');
+                    })->count(),
                 '4Ps Beneficiaries' => (clone $baseQuery)->where('four_ps_beneficiary', true)->count(),
             ];
 
@@ -298,7 +304,7 @@ class ReportsController extends Controller
             $servicesData = $appointmentQuery->select(
                 'purpose as service',
                 DB::raw('count(*) as requested'),
-                DB::raw('sum(case when status = "Completed" then 1 else 0 end) as completed'),
+                DB::raw('sum(case when status = \'COMPLETED\' then 1 else 0 end) as completed'),
                 DB::raw('count(*) * 100 as fees_collected') // Assuming 100 pesos per service
             )
             ->whereNotNull('purpose')

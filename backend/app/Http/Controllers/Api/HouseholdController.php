@@ -155,8 +155,11 @@ class HouseholdController extends Controller
                 // Check if resident is already assigned to another household
                 if ($headResident->households()->count() > 0) {
                     return response()->json([
-                        'message' => 'Validation failed',
-                        'errors' => ['head_id' => ['This resident is already assigned to another household.']]
+                        'message' => 'Failed to create household',
+                        'error' => "Head resident {$headResident->first_name} {$headResident->last_name} is already assigned to another household.",
+                        'errors' => [
+                            'head_id' => ["Head resident {$headResident->first_name} {$headResident->last_name} is already assigned to another household."]
+                        ]
                     ], 422);
                 }
             }
@@ -188,13 +191,16 @@ class HouseholdController extends Controller
                 if (isset($validated['head_id']) && $validated['head_id']) {
                     $headResident = Resident::find($validated['head_id']);
                     if ($headResident) {
-                        // Check if resident is already in another household
-                        if ($headResident->households()->count() > 0) {
-                            Log::warning("Head resident {$headResident->id} is already assigned to another household");
-                            throw new \Exception("This resident is already assigned to another household.");
-                        }
-                        
-                        // Add head resident to household members with HEAD relationship
+                // Check if resident is already assigned to another household
+                if ($headResident->households()->count() > 0) {
+                    return response()->json([
+                        'message' => 'Failed to create household',
+                        'error' => "Head resident {$headResident->first_name} {$headResident->last_name} is already assigned to another household.",
+                        'errors' => [
+                            'head_id' => ["Head resident {$headResident->first_name} {$headResident->last_name} is already assigned to another household."]
+                        ]
+                    ], 422);
+                }                        // Add head resident to household members with HEAD relationship
                         $household->members()->attach($headResident->id, [
                             'relationship' => 'HEAD'
                         ]);
@@ -234,7 +240,13 @@ class HouseholdController extends Controller
                             // Check if member is already assigned to another household
                             if ($member->households()->count() > 0) {
                                 Log::warning("Member {$member->id} is already assigned to another household");
-                                throw new \Exception("Member {$member->first_name} {$member->last_name} is already assigned to another household.");
+                                return response()->json([
+                                    'message' => 'Failed to create household',
+                                    'error' => "Member {$member->first_name} {$member->last_name} is already assigned to another household.",
+                                    'errors' => [
+                                        'member_ids' => ["Member {$member->first_name} {$member->last_name} is already assigned to another household."]
+                                    ]
+                                ], 422);
                             }
                             
                             Log::info("Assigning member to household", [

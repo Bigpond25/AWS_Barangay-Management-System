@@ -24,7 +24,8 @@ class BarangayOfficialController extends Controller
         }
 
         if ($request->has('committee_assignment')) {
-            $query->where('committee_assignment', $request->committee_assignment);
+            // Since committee_assignments is a JSON field, we need to use JSON operations
+            $query->whereJsonContains('committee_assignments', $request->committee_assignment);
         }
 
         if ($request->has('status')) {
@@ -43,7 +44,7 @@ class BarangayOfficialController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('position', 'like', "%{$search}%")
-                  ->orWhere('committee_assignment', 'like', "%{$search}%");
+                  ->orWhereRaw('CAST(committee_assignments AS TEXT) LIKE ?', ["%{$search}%"]);
             });
         }
 
@@ -52,7 +53,7 @@ class BarangayOfficialController extends Controller
         $sortOrder = $request->get('sort_order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $officials = $query->with('resident')->paginate($request->get('per_page', 15));
+        $officials = $query->with(['resident', 'user'])->paginate($request->get('per_page', 15));
 
         // Return Laravel pagination structure directly (frontend expects this format)
         return response()->json($officials);
@@ -69,10 +70,12 @@ class BarangayOfficialController extends Controller
         $validator = Validator::make($requestData, [
             'prefix' => 'nullable|string|in:Mr.,Ms.,Mrs.,Dr.,Hon.',
             'resident_id' => 'required|string|uuid|exists:residents,id',
+            'user_id' => 'required|string|uuid|exists:users,id',
             
             // Position Information
             'position' => 'required|in:BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,KAGAWAD,SK_CHAIRPERSON,SK_KAGAWAD,BARANGAY_CLERK,BARANGAY_TANOD',
-            'committee_assignment' => 'nullable|in:Health,Education,Public Safety,Environment,Peace and Order,Sports and Recreation,Women and Family,Senior Citizens',
+            'committee_assignments' => 'nullable|array',
+            'committee_assignments.*' => 'in:Health,Education,Public Safety,Environment,Peace and Order,Sports and Recreation,Women and Family,Senior Citizens',
             
             // Term Information
             'term_start' => 'required|date',
@@ -94,34 +97,45 @@ class BarangayOfficialController extends Controller
 
         $validated = $validator->validated();
 
+        // Validate business rule: user must also be a resident if resident_id is different from user's resident_id
+        $user = User::find($validated['user_id']);
+        if ($user && $user->resident_id && $user->resident_id !== $validated['resident_id']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Business rule violation: The user is already associated with a different resident record.',
+                'errors' => ['user_id' => ['This user is already linked to a different resident']]
+            ], 422);
+        }
+
+        // Check for duplicate official position for the same resident in the same term
+        $duplicateCheck = BarangayOfficial::where('resident_id', $validated['resident_id'])
+            ->where('position', $validated['position'])
+            ->where('status', 'ACTIVE')
+            ->where('is_current_term', true)
+            ->exists();
+
+        if ($duplicateCheck) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This resident already holds this position in the current term.',
+                'errors' => ['position' => ['Duplicate position for the same resident in current term']]
+            ], 422);
+        }
+
         // Set default status if not provided
         if (!isset($validated['status'])) {
             $validated['status'] = 'ACTIVE';
         }
 
-        // Populate personal details from the resident
-        if (isset($validated['resident_id'])) {
-            $resident = Resident::find($validated['resident_id']);
-            if ($resident) {
-                $validated['first_name'] = $resident->first_name;
-                $validated['middle_name'] = $resident->middle_name;
-                $validated['last_name'] = $resident->last_name;
-                $validated['suffix'] = $resident->suffix;
-                $validated['full_name'] = $resident->full_name;
-                $validated['birth_date'] = $resident->birth_date;
-                $validated['gender'] = $resident->gender;
-                $validated['contact_number'] = $resident->mobile_number;
-                $validated['email_address'] = $resident->email_address;
-                $validated['address'] = $resident->complete_address;
-            }
-        }
+        // The model's boot method will automatically populate personal details from resident
+        // and enforce business rules, so we don't need to do it manually here
 
         $official = BarangayOfficial::create($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Barangay official created successfully',
-            'data' => $official->load('resident')
+            'data' => $official->load(['resident', 'user'])
         ], 201);
     }
 
@@ -132,7 +146,7 @@ class BarangayOfficialController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $barangayOfficial->load('resident')
+            'data' => $barangayOfficial->load(['resident', 'user'])
         ]);
     }
 
@@ -147,10 +161,12 @@ class BarangayOfficialController extends Controller
         $validator = Validator::make($requestData, [
             'prefix' => 'nullable|string|in:Mr.,Ms.,Mrs.,Dr.,Hon.',
             'resident_id' => 'sometimes|string|uuid|exists:residents,id',
+            'user_id' => 'sometimes|string|uuid|exists:users,id',
             
             // Position Information
             'position' => 'sometimes|in:BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,KAGAWAD,SK_CHAIRPERSON,SK_KAGAWAD,BARANGAY_CLERK,BARANGAY_TANOD',
-            'committee_assignment' => 'nullable|in:Health,Education,Public Safety,Environment,Peace and Order,Sports and Recreation,Women and Family,Senior Citizens',
+            'committee_assignments' => 'nullable|array',
+            'committee_assignments.*' => 'in:Health,Education,Public Safety,Environment,Peace and Order,Sports and Recreation,Women and Family,Senior Citizens',
             
             // Term Information
             'term_start' => 'sometimes|date',
@@ -172,29 +188,29 @@ class BarangayOfficialController extends Controller
 
         $validated = $validator->validated();
 
-        // If resident_id is being updated, populate personal details from the new resident
-        if (isset($validated['resident_id'])) {
-            $resident = Resident::find($validated['resident_id']);
-            if ($resident) {
-                $validated['first_name'] = $resident->first_name;
-                $validated['middle_name'] = $resident->middle_name;
-                $validated['last_name'] = $resident->last_name;
-                $validated['suffix'] = $resident->suffix;
-                $validated['full_name'] = $resident->full_name;
-                $validated['birth_date'] = $resident->birth_date;
-                $validated['gender'] = $resident->gender;
-                $validated['contact_number'] = $resident->mobile_number;
-                $validated['email_address'] = $resident->email_address;
-                $validated['address'] = $resident->complete_address;
+        // Validate business rule if user_id is being updated
+        if (isset($validated['user_id'])) {
+            $user = User::find($validated['user_id']);
+            $residentId = $validated['resident_id'] ?? $barangayOfficial->resident_id;
+            
+            if ($user && $user->resident_id && $user->resident_id !== $residentId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Business rule violation: The user is already associated with a different resident record.',
+                    'errors' => ['user_id' => ['This user is already linked to a different resident']]
+                ], 422);
             }
         }
+
+        // The model's boot method will automatically sync personal data if resident_id changed
+        // and enforce business rules, so we don't need to do it manually here
 
         $barangayOfficial->update($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Barangay official updated successfully',
-            'data' => $barangayOfficial->load('resident')
+            'data' => $barangayOfficial->load(['resident', 'user'])
         ]);
     }
 
@@ -247,7 +263,7 @@ class BarangayOfficialController extends Controller
         $officials = BarangayOfficial::where('status', 'ACTIVE')
             ->where('term_start', '<=', now())
             ->where('term_end', '>=', now())
-            ->with('resident')
+            ->with(['resident', 'user'])
             ->orderBy('position')
             ->get();
 
@@ -268,7 +284,7 @@ class BarangayOfficialController extends Controller
                       ->where('term_start', '<=', now())
                       ->where('term_end', '>=', now());
             })
-            ->with('resident')
+            ->with(['resident', 'user'])
             ->orderBy('created_at')
             ->get();
 
@@ -283,13 +299,13 @@ class BarangayOfficialController extends Controller
      */
     public function getByCommittee(Request $request, string $committee): JsonResponse
     {
-        $officials = BarangayOfficial::where('committee_assignment', $committee)
+        $officials = BarangayOfficial::whereJsonContains('committee_assignments', $committee)
             ->when($request->get('active_only'), function ($query) {
                 $query->where('status', 'ACTIVE')
                       ->where('term_start', '<=', now())
                       ->where('term_end', '>=', now());
             })
-            ->with('resident')
+            ->with(['resident', 'user'])
             ->orderBy('position')
             ->orderBy('created_at')
             ->get();
@@ -326,7 +342,7 @@ class BarangayOfficialController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Official archived successfully',
-            'data' => $barangayOfficial->load('resident')
+            'data' => $barangayOfficial->load(['resident', 'user'])
         ]);
     }
 
@@ -357,7 +373,7 @@ class BarangayOfficialController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Official reactivated successfully',
-            'data' => $barangayOfficial->load('resident')
+            'data' => $barangayOfficial->load(['resident', 'user'])
         ]);
     }
 
@@ -379,11 +395,14 @@ class BarangayOfficialController extends Controller
             'by_status' => BarangayOfficial::selectRaw('status, COUNT(*) as count')
                 ->groupBy('status')
                 ->pluck('count', 'status'),
-            'by_committee' => BarangayOfficial::selectRaw('committee_assignment, COUNT(*) as count')
-                ->where('status', 'ACTIVE')
-                ->whereNotNull('committee_assignment')
-                ->groupBy('committee_assignment')
-                ->pluck('count', 'committee_assignment'),
+            'by_committee' => BarangayOfficial::where('status', 'ACTIVE')
+                ->whereNotNull('committee_assignments')
+                ->get()
+                ->flatMap(function ($official) {
+                    return is_array($official->committee_assignments) ? $official->committee_assignments : [];
+                })
+                ->countBy()
+                ->toArray(),
             'upcoming_term_endings' => BarangayOfficial::where('status', 'ACTIVE')
                 ->where('term_end', '<=', now()->addMonths(6))
                 ->where('term_end', '>=', now())
@@ -397,11 +416,56 @@ class BarangayOfficialController extends Controller
     }
 
     /**
+     * Get eligible users who can be barangay officials
+     * Business Rule: Users must be residents to be officials
+     */
+    public function getEligibleUsers(): JsonResponse
+    {
+        // Get users who are residents (have resident_id) and are not already officials
+        $eligibleUsers = User::whereNotNull('resident_id')
+            ->whereDoesntHave('barangayOfficials', function ($query) {
+                $query->where('status', 'ACTIVE')
+                      ->where('is_current_term', true);
+            })
+            ->with('resident')
+            ->select(['id', 'first_name', 'last_name', 'middle_name', 'email', 'resident_id'])
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $eligibleUsers
+        ]);
+    }
+
+    /**
+     * Get residents who can be barangay officials
+     */
+    public function getEligibleResidents(): JsonResponse
+    {
+        // Get residents who are not already active officials
+        $eligibleResidents = Resident::whereDoesntHave('barangayOfficials', function ($query) {
+                $query->where('status', 'ACTIVE')
+                      ->where('is_current_term', true);
+            })
+            ->select(['id', 'first_name', 'last_name', 'middle_name', 'suffix', 'full_name'])
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $eligibleResidents
+        ]);
+    }
+
+    /**
      * Export officials data
      */
     public function export(Request $request): JsonResponse
     {
-        $query = BarangayOfficial::query()->with('resident');
+        $query = BarangayOfficial::query()->with(['resident', 'user']);
 
         // Apply same filters as index
         if ($request->has('position')) {
@@ -420,7 +484,7 @@ class BarangayOfficialController extends Controller
                 'prefix' => $official->prefix,
                 'full_name' => $official->resident ? $official->resident->full_name : '',
                 'position' => $official->position,
-                'committee_assignment' => $official->committee_assignment,
+                'committee_assignment' => is_array($official->committee_assignments) ? implode(', ', $official->committee_assignments) : $official->committee_assignments,
                 'term_start' => $official->term_start,
                 'term_end' => $official->term_end,
                 'term_number' => $official->term_number,
@@ -448,7 +512,8 @@ class BarangayOfficialController extends Controller
         // Map frontend field names to backend field names
         $fieldMapping = [
             'residentId' => 'resident_id',
-            'committeeAssignment' => 'committee_assignment',
+            'userId' => 'user_id',
+            'committeeAssignment' => 'committee_assignments',
             'termStart' => 'term_start',
             'termEnd' => 'term_end',
             'termNumber' => 'term_number',

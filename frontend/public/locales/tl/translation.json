@@ -186,19 +186,7 @@
         "updateError": "Nabigong i-update ang opisyal. Pakisubukang muli.",
         "error": "May naganap na error",
         "draftSaved": "Matagumpay na naisave ang draft!",
-        "draftError": "Nabigong i-save ang draft. Pakisubukang muli.",
-        "loadingOfficial": "Kinukuha ang datos ng opisyal...",
-        "loadingReferenceData": "Kinukuha ang reference data...",
-        "duplicateWarning": "May nakitang {{count}} posibleng duplicate. Pakisigurado na ito ay hindi doble.",
-        "duplicatesFound": "Mga kaparehong opisyal na natagpuan:",
-        "unsavedChanges": "May hindi naisave na pagbabago. Sigurado ka bang nais mong umalis? Mawawala ang iyong progreso.",
-        "unsavedChangesEdit": "Mawawala ang anumang hindi naisave na pagbabago. Sigurado ka bang nais mong umalis?",
-        "draftSaveError": "Nabigong i-save ang draft. Pakisubukang muli.",
-        "validationError": "Hindi pumasa sa beripikasyon: {{errors}}",
-        "networkError": "Hindi makakonekta sa server. Pakisuri ang iyong koneksyon.",
-        "notFound": "Hindi natagpuan ang opisyal",
-        "invalidId": "Hindi wasto ang ibinigay na official ID.",
-        "loadError": "Hindi makuha ang datos ng opisyal."
+        "draftError": "Nabigong i-save ang draft. Pakisubukang muli."
       },
       "fields": {
         "residentId": "ID ng Residente",
@@ -217,11 +205,7 @@
         "committeeAssignment": "Nakatalaga sa Komite",
         "termStart": "Simula ng Termino",
         "termEnd": "Katapusan ng Termino",
-        "residentSearch": "Maghanap ng Kasalukuyang Residente bilang Opisyal",
-        "suffix": "Suffix",
-        "nationality": "Nasyonalidad",
-        "employmentStatus": "Status ng Trabaho",
-        "landlineNumber": "Landline Number"
+        "residentSearch": "Maghanap ng Kasalukuyang Residente bilang Opisyal"
       },
       "placeholders": {
         "residentId": "Ilagay ang ID ng residente",
@@ -237,51 +221,8 @@
         "educationalAttainment": "hal. Nagtapos ng High School, Kolehiyo...",
         "position": "Pumili ng Posisyon",
         "committeeAssignment": "Pumili ng Komite",
-        "residentSearch": "Maghanap ng residente sa pamamagitan ng pangalan, id...",
-        "nationality": "Ilagay ang nasyonalidad...",
-        "landlineNumber": "(02) XXXX-XXXX"
-      },
-      "sections": {
-        "basicInfo": "Pangunahing Impormasyon",
-        "contactInfo": "Impormasyon sa Pakikipag-ugnayan",
-        "familyInfo": "Impormasyon sa Pamilya",
-        "governmentIds": "Government IDs at Dokumento",
-        "healthMedical": "Kalusugan at Medikal na Impormasyon",
-        "profilePhoto": "Larawan ng Profile"
-      },
-      "residentSearch": {
-        "placeholder": "Search residents...",
-        "searching": "Searching...",
-        "noPhone": "No phone",
-        "noResults": "No residents found matching \"{{searchTerm}}\""
-      },
-      "options": {
-        "selectGender": "Pumili ng Kasarian",
-        "selectCivilStatus": "Pumili ng Sibil na Katayuan",
-        "selectEmploymentStatus": "Pumili ng Katayuang Pangtrabaho",
-        "selectIdType": "Pumili ng Uri ng ID",
-        "selectSuffix": "Pumili ng Suffix"
-      },
-      "actions": {
-        "saveDraft": "I-save ang Draft",
-        "savingDraft": "Sini-save ang Draft...",
-        "cancel": "Kanselahin",
-        "register": "Irehistro ang Opisyal",
-        "update": "I-update ang Opisyal",
-        "registering": "Ini-save...",
-        "updating": "Ina-update...",
-        "close": "Isara"
-      },
-      "validation": {
-        "invalidUUID": "Hindi wastong UUID",
-        "firstNameRequired": "Kinakailangan ang unang pangalan",
-        "lastNameRequired": "Kinakailangan ang apelyido",
-        "birthDateRequired": "Kinakailangan ang petsa ng kapanganakan",
-        "termStartRequired": "Kinakailangan ang petsa ng pagsisimula ng termino",
-        "termEndRequired": "Kinakailangan ang petsa ng pagtatapos ng termino",
-        "completeAddressRequired": "Kinakailangan ang kumpletong address"
-      },
-      "error": {}
+        "residentSearch": "Maghanap ng residente sa pamamagitan ng pangalan, id..."
+      }
     },
     "search": "Maghanap ng mga opisyal...",
     "statistics": {
@@ -301,58 +242,17 @@
       },
       "noResultsSearch": "Walang nahanap na opisyal na tumutugma sa \"{{searchTerm}}\"",
       "noResults": "Walang nahanap na opisyal",
-      "noMobile": "Walang mobile number",
-      "yearsOld": "taong gulang"
+      "noMobile": "Walang mobile number"
     },
     "actions": {
       "deleting": "Nagde-deactivate...",
-      "delete": "I-deactivate ang opisyal",
-      "view": "Tingnan ang detalye ng opisyal",
-      "edit": "I-edit ang opisyal"
+      "delete": "I-deactivate ang opisyal"
     },
     "messages": {
       "deleteConfirm": "Sigurado ka bang gusto mong i-deactivate ang opisyal na ito? Magiging hindi aktibo ang kanyang katayuan.",
       "deleteSuccess": "Matagumpay na na-deactivate ang opisyal",
       "deleteError": "Hindi na-deactivate ang opisyal. Subukan ulit.",
-      "loadError": "Hindi ma-load ang mga opisyal. Subukan ulit.",
-      "loading": "Naglo-load ng mga opisyal...",
-      "statisticsError": "Hindi ma-load ang mga estadistika.",
-      "createError": "Hindi magawa ang opisyal. Subukan ulit.",
-      "updateError": "Hindi ma-update ang opisyal. Subukan ulit."
-    },
-    "title": "Mga Opisyal ng Barangay",
-    "addNew": "Magdagdag ng Bagong Opisyal",
-    "status": {
-      "active": "Aktibo",
-      "inactive": "Hindi Aktibo",
-      "suspended": "Suspendido",
-      "terminated": "Tinanggal",
-      "deceased": "Pumanaw"
-    },
-    "positions": {
-      "barangayCaptain": "Punong Barangay",
-      "barangaySecretary": "Kalihim ng Barangay",
-      "barangayTreasurer": "Ingat-Yaman ng Barangay",
-      "kagawad": "Kagawad",
-      "skChairperson": "Tagapangulo ng SK",
-      "skKagawad": "Kagawad ng SK",
-      "barangayClerk": "Klerk ng Barangay",
-      "barangayTanod": "Tanod ng Barangay"
-    },
-    "committeeAssignments": {
-      "health": "Kalusugan",
-      "education": "Edukasyon",
-      "publicSafety": "Kaligtasan ng Publiko",
-      "environment": "Kapaligiran",
-      "peaceAndOrder": "Kapayapaan at Kaayusan",
-      "sportsAndRecreation": "Palakasan at Libangan",
-      "womenAndFamily": "Kababaihan at Pamilya",
-      "seniorCitizens": "Mga Nakatatanda"
-    },
-    "pagination": {
-      "showing": "Nagpapakita ng {{from}} hanggang {{to}} sa {{total}} na resulta",
-      "previous": "Nakaraan",
-      "next": "Susunod"
+      "loadError": "Hindi ma-load ang mga opisyal. Subukan ulit."
     }
   },
   "helpDesk": {
@@ -362,9 +262,7 @@
         "updateError": "Nabigong i-update ang appointment. Subukan ulit.",
         "error": "May naganap na error",
         "createSuccess": "Matagumpay na nagawa ang appointment!",
-        "createError": "Nabigong gumawa ng appointment. Subukan ulit.",
-        "deleteSuccess": "Appointment deleted successfully!",
-        "deleteError": "Appointment delete failed!"
+        "createError": "Nabigong gumawa ng appointment. Subukan ulit."
       },
       "fields": {
         "subject": "Paksa",
@@ -372,33 +270,17 @@
         "purpose": "Layunin",
         "date": "Petsa",
         "time": "Oras",
-        "additionalNotes": "Karagdagang Tala",
-        "fullName": "Full Name",
-        "emailAddress": "Email Address",
-        "contactNumber": "Contact Number",
-        "completeAddress": "Complete Address"
+        "additionalNotes": "Karagdagang Tala"
       },
       "placeholders": {
         "subject": "Ilagay ang paksa ng appointment...",
         "department": "Pumili ng departamento...",
         "purpose": "Ilagay ang layunin ng appointment...",
         "time": "Pumili ng oras...",
-        "additionalNotes": "Ilagay ang karagdagang impormasyon...",
-        "fullName": "Enter your full name...",
-        "emailAddress": "Enter your email address...",
-        "contactNumber": "Enter contact number...",
-        "completeAddress": "Enter complete address..."
+        "additionalNotes": "Ilagay ang karagdagang impormasyon..."
       },
       "validation": {
-        "scheduleAlreadyBooked": "Ang napiling oras ay nakareserba na. Pumili ng ibang oras.",
-        "dateRequired": "Date is required",
-        "timeRequired": "Time is required",
-        "fullNameRequired": "Full name is required",
-        "contactMaxChar": "Contact number must not exceed 11 characters",
-        "completeAddressRequired": "Complete address is required",
-        "invalidDepartment": "Please select a valid department",
-        "dateNotInThePast": "Date must not be in the past",
-        "dateInMM/DD/YYYY": "Date must be in MM/DD/YYYY format"
+        "scheduleAlreadyBooked": "Ang napiling oras ay nakareserba na. Pumili ng ibang oras."
       }
     },
     "fields": {
@@ -429,9 +311,7 @@
         "updateError": "Nabigong i-update ang blotter report. Subukan ulit.",
         "error": "May naganap na error",
         "createSuccess": "Matagumpay na nagawa ang blotter report!",
-        "createError": "Nabigong gumawa ng blotter report. Subukan ulit.",
-        "deleteSuccess": "Blotter deleted successfully!",
-        "deleteError": "Blotter delete failed!"
+        "createError": "Nabigong gumawa ng blotter report. Subukan ulit."
       },
       "buttons": {
         "addNewPerson": "Magdagdag ng Bagong Tao"
@@ -440,12 +320,7 @@
         "typeOfIncident": "Ilagay ang uri ng insidente...",
         "locationOfIncident": "Ilagay ang lugar kung saan naganap ang insidente...",
         "timeOfIncident": "Pumili ng oras...",
-        "incidentDescription": "Ilarawan ang nangyaring insidente nang detalyado...",
-        "involvement": "Select involvement"
-      },
-      "validation": {
-        "locationRequired": "Location of incident is required",
-        "invalidIncidentType": "Invalid incident type"
+        "incidentDescription": "Ilarawan ang nangyaring insidente nang detalyado..."
       }
     },
     "complaintsForm": {
@@ -454,9 +329,7 @@
         "updateError": "Nabigong i-update ang reklamo. Subukan ulit.",
         "error": "May naganap na error",
         "createSuccess": "Matagumpay na nagawa ang reklamo!",
-        "createError": "Nabigong gumawa ng reklamo. Subukan ulit.",
-        "deleteSuccess": "Complaint deleted successfully!",
-        "deleteError": "Complaint delete failed!"
+        "createError": "Nabigong gumawa ng reklamo. Subukan ulit."
       },
       "fields": {
         "department": "Departamento",
@@ -471,10 +344,6 @@
         "subject": "Ilagay ang paksa ng reklamo...",
         "description": "Ilarawan ang inyong reklamo nang detalyado...",
         "location": "Ilagay ang lugar na may kinalaman sa reklamo..."
-      },
-      "validation": {
-        "invalidDepartment": "Invalid department",
-        "invalidCategory": "Invalid complaint category"
       }
     },
     "suggestionsForm": {
@@ -483,9 +352,7 @@
         "updateError": "Nabigong i-update ang mungkahi. Subukan ulit.",
         "error": "May naganap na error",
         "createSuccess": "Matagumpay na nagawa ang mungkahi!",
-        "createError": "Nabigong gumawa ng mungkahi. Subukan ulit.",
-        "deleteSuccess": "Suggestion deleted successfully!",
-        "deleteError": "Suggestion delete failed!"
+        "createError": "Nabigong gumawa ng mungkahi. Subukan ulit."
       },
       "fields": {
         "cCategory": "Kategorya",
@@ -502,9 +369,6 @@
         "expectedBenefits": "Anong benepisyo ang inaasahan ninyo?",
         "implementationIdeas": "Paano ninyo ito ipapatupad?",
         "resourcesNeeded": "Anong mga resources ang kakailanganin?"
-      },
-      "validation": {
-        "invalidCategory": "Invalid Category"
       }
     },
     "errors": {
@@ -513,17 +377,6 @@
     "messages": {
       "deleteSuccess": "Matagumpay na nabura ang ticket",
       "deleteError": "Nabigong burahin ang ticket. Subukan ulit."
-    },
-    "validation": {
-      "invalidEmailFormat": "Invalid email format",
-      "descriptionRequired": "Ticket description is required",
-      "subjectRequired": "Ticket subject is required",
-      "fullNameRequired": "Full name is required",
-      "contactLengthValidation": "Contact number must be in +63 XXX XXX XXXX format",
-      "completeAddressRequired": "Complete address is required",
-      "dateInMM/DD/YYYY": "Date must be in MM/DD/YYYY format",
-      "invalidTimeSlots": "Please select a valid time slot",
-      "invalidPriority": "Please select a valid priority"
     }
   },
   "households": {
@@ -559,15 +412,7 @@
         "noMembersYet": "Walang miyembro na nakatala pa",
         "totalHouseholdSize": "Kabuuang laki ng sambahayan"
       },
-      "householdMembers": "Mga Miyembro ng Sambahayan",
-      "householdInformation": "Impormasyon ng Sambahayan",
-      "addressInformation": "Impormasyon ng Address",
-      "economicInformation": "Impormasyon sa Ekonomiya",
-      "housingInformation": "Impormasyon sa Bahay",
-      "additionalInformation": "Karagdagang Impormasyon",
-      "utilitiesAccess": "Access sa mga Utility",
-      "totalMembers": "Kabuuang Miyembro",
-      "noAdditionalRemarks": "Walang karagdagang puna"
+      "householdMembers": "Mga Miyembro ng Sambahayan"
     },
     "title": "Pamamahala ng mga Sambahayan",
     "search": "Ilagay ang numero, address, o ulo ng pamilya...",
@@ -586,18 +431,9 @@
         "membersAndIncome": "Mga Miyembro at Kita",
         "programs": "Mga Programa",
         "status": "Katayuan",
-        "actions": "Mga Aksyon",
-        "headOfFamily": "Ulo ng Pamilya",
-        "address": "Address",
-        "members": "Mga Miyembro",
-        "type": "Uri",
-        "classifications": "Mga Klasipikasyon"
+        "actions": "Mga Aksyon"
       },
-      "noHouseholdsFound": "Walang nahanap na sambahayan. Subukang i-adjust ang inyong paghahanap o magdagdag ng bagong sambahayan.",
-      "noResults": "Walang nahanap na sambahayan",
-      "noResultsSearch": "Walang nahanap na sambahayan na tumugma sa \"{{searchTerm}}\"",
-      "members": "{{count}} miyembro",
-      "members_plural": "{{count}} mga miyembro"
+      "noHouseholdsFound": "Walang nahanap na sambahayan. Subukang i-adjust ang inyong paghahanap o magdagdag ng bagong sambahayan."
     },
     "form": {
       "sections": {
@@ -608,9 +444,7 @@
         "utilitiesAccess": "Access sa mga Utility",
         "additionalInfo": "Karagdagang Impormasyon",
         "economicInfo": "Impormasyon sa Ekonomiya",
-        "classificationsInfo": "Mga Klasipikasyon",
-        "addressInfo": "Impormasyon ng Address",
-        "utilitiesInfo": "Mga Utility at Access"
+        "classificationsInfo": "Mga Klasipikasyon"
       },
       "headSection": {
         "searchExistingResident": "Maghanap ng Existing na Residente bilang Ulo",
@@ -637,47 +471,26 @@
         "ownershipStatus": "Status ng Pagmamay-ari",
         "remarks": "Mga Puna/Karagdagang Tala",
         "monthlyIncome": "Saklaw ng Buwanang Kita",
-        "primaryIncomeSource": "Pangunahing Pinagkukunan ng Kita",
-        "headResident": "Ulo ng Pamilya",
-        "streetSitio": "Kalye/Sitio",
-        "barangay": "Barangay",
-        "fourPsBeneficiary": "Benepisyaryo ng 4Ps",
-        "indigentFamily": "Mahirap na Pamilya",
-        "hasSeniorCitizen": "May Senior Citizen na Miyembro",
-        "hasPwdMember": "May PWD na Miyembro",
-        "hasElectricity": "May Kuryente",
-        "hasWaterSupply": "May Tubig",
-        "hasInternetAccess": "May Internet",
-        "members": "Mga Miyembro ng Sambahayan",
-        "memberName": "Pangalan ng Miyembro",
-        "relationship": "Relasyon sa Ulo"
+        "primaryIncomeSource": "Pangunahing Pinagkukunan ng Kita"
       },
       "placeholders": {
         "householdNumber": "Awtomatikong gagawin kung walang laman",
         "completeAddress": "Ilagay ang kumpletong address ng sambahayan...",
         "remarks": "Ilagay ang anumang karagdagang impormasyon...",
-        "primaryIncomeSource": "hal. Trabaho, Negosyo, Pagsasaka...",
-        "houseNumber": "hal. 123, Blk 4 Lot 5",
-        "streetSitio": "hal. Rizal Street, Sitio Maligaya",
-        "searchMembers": "Maghanap ng mga residente na idadagdag...",
-        "selectHeadResident": "Pumili ng ulo ng pamilya...",
-        "selectRelationship": "Pumili ng relasyon...",
-        "barangay": "Ilagay ang pangalan ng barangay"
+        "primaryIncomeSource": "hal. Trabaho, Negosyo, Pagsasaka..."
       },
       "options": {
         "selectHouseholdType": "Pumili ng Uri ng Sambahayan",
         "selectRelationship": "Pumili ng Relasyon",
         "selectHouseType": "Pumili ng Uri ng Bahay",
         "selectOwnershipStatus": "Pumili ng Status ng Pagmamay-ari",
-        "selectIncomeRange": "Pumili ng Saklaw ng Kita",
-        "selectBarangay": "Pumili ng Barangay",
-        "selectHeadResident": "Pumili ng Ulo ng Pamilya"
+        "selectIncomeRange": "Pumili ng Saklaw ng Kita"
       },
       "members": {
-        "loadError": "Hindi ma-load ang mga miyembro ng sambahayan",
+        "loadError": "Nabigong ma-load ang mga miyembro ng sambahayan",
         "selectResidentAndRelationship": "Pakipili ang residente at relasyon",
-        "addError": "Hindi maidagdag ang miyembro ng sambahayan",
-        "removeError": "Hindi maalis ang miyembro ng sambahayan",
+        "addError": "Nabigong idagdag ang miyembro ng sambahayan",
+        "removeError": "Nabigong alisin ang miyembro ng sambahayan",
         "title": "Mga Miyembro ng Sambahayan",
         "addMember": "Magdagdag ng Miyembro",
         "headOfFamily": "Ulo ng Pamilya",
@@ -693,14 +506,10 @@
         "memberName": "Pangalan",
         "relationship": "Relasyon",
         "actions": "Mga Aksyon",
-        "removeMember": "Alisin ang Miyembro",
-        "memberCount": "{{count}} miyembro",
-        "memberCount_plural": "{{count}} mga miyembro"
+        "removeMember": "Alisin ang Miyembro"
       },
       "confirmations": {
-        "removeMember": "Sigurado ka bang gusto mong alisin ang miyembrong ito sa sambahayan?",
-        "changeHead": "Sigurado ka bang gusto mong palitan ang ulo ng sambahayan na ito?",
-        "deleteHousehold": "Sigurado ka bang gusto mong burahin ang sambahayan na ito? Hindi na ito mababawi."
+        "removeMember": "Sigurado ka bang gusto mong alisin ang miyembrong ito sa sambahayan?"
       },
       "actions": {
         "cancel": "Kanselahin",
@@ -710,11 +519,7 @@
         "save": "I-save ang Sambahayan",
         "close": "Isara",
         "updating": "Ina-update...",
-        "update": "I-update ang Sambahayan",
-        "edit": "I-edit ang Sambahayan",
-        "addMember": "Magdagdag ng Miyembro",
-        "removeMember": "Alisin ang Miyembro",
-        "selectMember": "Pumili ng Miyembro"
+        "update": "I-update ang Sambahayan"
       },
       "membersSection": {
         "residentNotFound": "Hindi natagpuan ang residente",
@@ -737,45 +542,11 @@
         "createErrorTitle": "Error sa Paggawa",
         "createError": "Nabigong i-save ang sambahayan. Pakisubukang muli.",
         "updateErrorTitle": "Error sa Pag-update",
-        "updateError": "Nabigong i-update ang sambahayan. Pakisubukang muli.",
-        "loadingHousehold": "Kinukuha ang datos ng sambahayan...",
-        "loadingMembers": "Kinukuha ang mga miyembro ng sambahayan...",
-        "duplicateWarning": "May nakitang {{count}} posibleng katulad na sambahayan. Pakisigurado na hindi ito doble.",
-        "duplicatesFound": "Mga kaparehong sambahayan na natagpuan:",
-        "draftSaveError": "Nabigong i-save ang draft. Pakisubukang muli.",
-        "createSuccess": "Matagumpay na nagawa ang sambahayan!",
-        "updateSuccess": "Matagumpay na na-update ang sambahayan!",
-        "validationError": "Hindi pumasa sa beripikasyon: {{errors}}",
-        "networkError": "Hindi makakonekta sa server. Pakisuri ang inyong koneksyon.",
-        "notFound": "Hindi natagpuan ang sambahayan",
-        "invalidId": "Hindi wasto ang ibinigay na household ID.",
-        "loadError": "Hindi makuha ang datos ng sambahayan.",
-        "memberAlreadyExists": "Ang residenteng ito ay miyembro na ng sambahayan na ito",
-        "headCannotBeRemoved": "Hindi maaaring alisin ang ulo ng pamilya. Magtalaga muna ng bagong ulo.",
-        "noMembersSelected": "Pakipili ng kahit isang miyembro ng sambahayan"
+        "updateError": "Nabigong i-update ang sambahayan. Pakisubukang muli."
       },
       "addTitle": "Magdagdag ng Bagong Profile ng Sambahayan",
       "editTitle": "I-edit ang Profile ng Sambahayan",
-      "editingLabel": "Ini-edit...",
-      "viewTitle": "Tingnan ang Profile ng Sambahayan",
-      "validation": {
-        "required": "Kailangang punan ang patlang na ito",
-        "householdNumberRequired": "Kailangan ang numero ng sambahayan",
-        "houseNumberRequired": "Kailangan ang numero ng bahay",
-        "streetSitioRequired": "Kailangan ang kalye/sitio",
-        "barangayRequired": "Kailangan ang barangay",
-        "completeAddressRequired": "Kailangan ang kumpletong address",
-        "minLength": "Dapat ay hindi bababa sa {{min}} karakter",
-        "maxLength": "Dapat ay hindi hihigit sa {{max}} karakter",
-        "invalidFormat": "Hindi wastong format"
-      },
-      "error": {
-        "householdNumberRequired": "Kailangan ang numero ng sambahayan",
-        "houseNumberRequired": "Kailangan ang numero ng bahay",
-        "streetSitioRequired": "Kailangan ang kalye/sitio",
-        "barangayRequired": "Kailangan ang barangay",
-        "completeAddressRequired": "Kailangan ang kumpletong address"
-      }
+      "editingLabel": "Ini-edit..."
     },
     "types": {
       "NUCLEAR": "Nuclear na Pamilya",
@@ -785,43 +556,17 @@
       "OTHER": "Iba pa"
     },
     "relationships": {
-      "HEAD": "Ulo",
-      "SPOUSE": "Asawa",
-      "SON": "Anak na Lalaki",
-      "DAUGHTER": "Anak na Babae",
-      "FATHER": "Ama",
-      "MOTHER": "Ina",
-      "BROTHER": "Kapatid na Lalaki",
-      "SISTER": "Kapatid na Babae",
-      "GRANDFATHER": "Lolo",
-      "GRANDMOTHER": "Lola",
-      "GRANDSON": "Apo na Lalaki",
-      "GRANDDAUGHTER": "Apo na Babae",
-      "UNCLE": "Tito",
-      "AUNT": "Tita",
-      "NEPHEW": "Pamangkin na Lalaki",
-      "NIECE": "Pamangkin na Babae",
-      "COUSIN": "Pinsan",
-      "IN_LAW": "Bilas",
-      "BOARDER": "Nakatira",
-      "OTHER": "Iba pa"
+      "HEAD": "Ulo"
     },
     "status": {
-      "active": "Aktibo",
-      "inactive": "Hindi Aktibo",
-      "transferred": "Nalipat"
+      "active": "Aktibo"
     },
     "statistics": {
       "totalHouseholds": "Kabuuang Sambahayan",
       "fourPsBeneficiaries": "Benepisyaryo ng 4Ps",
       "withSeniorCitizens": "May Senior Citizens",
       "indigentFamilies": "Mga Mahirap na Pamilya",
-      "title": "Estadistika ng mga Sambahayan",
-      "activeHouseholds": "Aktibong Sambahayan",
-      "withPWD": "May PWD na Miyembro",
-      "withElectricity": "May Kuryente",
-      "withWaterSupply": "May Tubig",
-      "withInternetAccess": "May Internet"
+      "title": "Estadistika ng mga Sambahayan"
     },
     "messages": {
       "loading": "Naglo-load ng mga sambahayan...",
@@ -829,14 +574,7 @@
       "deleteConfirm": "Sigurado ka bang gusto mong burahin ang sambahayan na ito? Hindi na ito mababawi.",
       "loadError": "Hindi ma-load ang mga sambahayan. Subukan ulit.",
       "deleteErrorTitle": "Error sa Pagbura",
-      "deleteError": "Hindi nabura ang sambahayan. Subukan ulit.",
-      "statisticsError": "Hindi ma-load ang mga estadistika.",
-      "createError": "Hindi nagawa ang sambahayan. Subukan ulit.",
-      "updateError": "Hindi na-update ang sambahayan. Subukan ulit.",
-      "deleteSuccess": "Matagumpay na nabura ang sambahayan",
-      "notFound": "Hindi natagpuan ang sambahayan",
-      "invalidId": "Hindi wasto ang ibinigay na household ID.",
-      "networkError": "Hindi makakonekta sa server. Pakisuri ang inyong koneksyon."
+      "deleteError": "Hindi nabura ang sambahayan. Subukan ulit."
     },
     "pagination": {
       "showing": "Nagpapakita ng {{from}} hanggang {{to}} sa {{total}} na resulta",
@@ -862,37 +600,6 @@
       "RANGE_25000_50000": "₱25,000 - ₱50,000",
       "RANGE_50000_100000": "₱50,000 - ₱100,000",
       "ABOVE_100000": "Higit sa ₱100,000"
-    },
-    "common": {
-      "errors": {
-        "unableToLoadData": "Hindi makuha ang datos.",
-        "resourceNotFound": "Hindi natagpuan ang hiniling na resource.",
-        "networkError": "Hindi makakonekta sa server. Pakisuri ang inyong koneksyon.",
-        "genericError": "May error habang kinukuha ang datos.",
-        "notFound": "Hindi Natagpuan",
-        "error": "Error",
-        "loading": "Naglo-load..."
-      },
-      "actions": {
-        "goBack": "Bumalik",
-        "tryAgain": "Subukan Ulit"
-      }
-    },
-    "headSection": {
-      "searchExistingResident": "Maghanap ng Existing na Residente bilang Ulo",
-      "searchPlaceholder": "Ilagay ang pangalan, ID, o numero ng telepono",
-      "selectedHead": "Napiling Ulo ng Sambahayan",
-      "addNewResident": "Magdagdag ng Bagong Residente bilang Ulo",
-      "removeHead": "Alisin ang ulo ng sambahayan",
-      "householdHead": "Ulo ng Sambahayan",
-      "noContact": "Walang contact",
-      "or": "O",
-      "table": {
-        "name": "Pangalan",
-        "contact": "Contact",
-        "role": "Tungkulin",
-        "actions": "Mga Aksyon"
-      }
     }
   },
   "residents": {
@@ -904,9 +611,7 @@
         "upload": "Mag-upload ng Larawan ng Profile",
         "chooseFile": "Pumili mula sa mga File",
         "takePhoto": "Kumuha ng Larawan",
-        "supportedFormats": "Mga suportadong format: JPG, PNG, GIF",
-        "clickToBrowse": "I-click upang pumili o i-drag and drop",
-        "uploadError": "Nabigong mag-upload ng larawan."
+        "supportedFormats": "Mga suportadong format: JPG, PNG, GIF"
       },
       "messages": {
         "loadingResident": "Kinukuha ang datos ng residente...",
@@ -930,17 +635,7 @@
         "createErrorTitle": "Error sa Pagrehistro",
         "createError": "Nabigong i-save ang residente. Pakisubukang muli.",
         "updateErrorTitle": "Error sa Pag-update",
-        "updateError": "Nabigong i-update ang residente. Pakisubukang muli.",
-        "loadingReferenceData": "Kinukuha ang reference data...",
-        "duplicatesFound": "Mga kaparehong residente na natagpuan:",
-        "unsavedChanges": "May hindi naisave na pagbabago. Sigurado ka bang nais mong umalis? Mawawala ang iyong progreso.",
-        "unsavedChangesEdit": "Mawawala ang anumang hindi naisave na pagbabago. Sigurado ka bang nais mong umalis?",
-        "draftSaveError": "Nabigong i-save ang draft. Pakisubukang muli.",
-        "validationError": "Hindi pumasa sa beripikasyon: {{errors}}",
-        "networkError": "Hindi makakonekta sa server. Pakisuri ang iyong koneksyon.",
-        "notFound": "Hindi natagpuan ang residente",
-        "invalidId": "Hindi wasto ang ibinigay na resident ID.",
-        "loadError": "Hindi makuha ang datos ng residente."
+        "updateError": "Nabigong i-update ang residente. Pakisubukang muli."
       },
       "addTitle": "Magdagdag ng Bagong Residente",
       "editTitle": "I-edit ang Profile ng Residente",
@@ -1001,11 +696,7 @@
         "indigenousPeople": "Katutubo (Indigenous People)",
         "fourPsBeneficiary": "Benepisyaryo ng 4Ps",
         "indigenousGroup": "Grupo ng Katutubo",
-        "fourPsHouseholdId": "4Ps Household ID",
-        "monthlyIncome": "Buwanang Kita",
-        "streetAddress": "Address sa Kalye",
-        "householdId": "Household ID",
-        "purok": "Purok"
+        "fourPsHouseholdId": "4Ps Household ID"
       },
       "placeholders": {
         "firstName": "Ilagay ang unang pangalan...",
@@ -1043,9 +734,7 @@
         "allergies": "Ilista ang anumang kilalang allergy (pagkain, gamot, kapaligiran)...",
         "disabilityType": "Tukuyin ang uri ng kapansanan",
         "indigenousGroup": "Tukuyin ang grupo ng katutubo",
-        "fourPsHouseholdId": "Ilagay ang 4Ps household ID",
-        "educationalAttainment": "hal. Nagtapos ng High School, Kolehiyo...",
-        "streetAddress": "e.g. Rizal Street"
+        "fourPsHouseholdId": "Ilagay ang 4Ps household ID"
       },
       "options": {
         "selectSuffix": "Pumili ng Suffix",
@@ -1053,9 +742,7 @@
         "selectCivilStatus": "Pumili ng Sibil na Katayuan",
         "other": "Iba pa",
         "selectEducationalAttainment": "Pumili ng natapos na pag-aaral",
-        "selectEmploymentStatus": "Pumili ng Katayuang Pangtrabaho",
-        "selectIdType": "Pumili ng Uri ng ID",
-        "selectPurok": "Pumili ng Purok"
+        "selectEmploymentStatus": "Pumili ng Katayuang Pangtrabaho"
       },
       "genderOptions": {
         "male": "Lalaki",
@@ -1088,8 +775,7 @@
         "judaism": "Judaism",
         "atheist": "Atheist",
         "aglipayan": "Aglipayan",
-        "preferNotToSay": "Ayaw sabihin",
-        "other": "Other"
+        "preferNotToSay": "Ayaw sabihin"
       },
       "educationalAttainmentOptions": {
         "noFormalEducation": "Walang Pormal na Edukasyon",
@@ -1100,8 +786,7 @@
         "collegeUndergraduate": "Hindi Nagtapos ng College",
         "collegeGraduate": "Nagtapos ng College",
         "postGraduate": "May Post Graduate",
-        "vocational": "Vocational/Technical",
-        "other": "Other"
+        "vocational": "Vocational/Technical"
       },
       "employmentStatusOptions": {
         "employed": "May Trabaho",
@@ -1135,51 +820,7 @@
         "registering": "Ini-save...",
         "updating": "Ina-update...",
         "register": "Irehistro ang Residente",
-        "update": "I-update ang Residente",
-        "savingDraft": "Sini-save ang Draft...",
-        "cancel": "Kanselahin"
-      },
-      "educationalAttainmentEnumOptions": {
-        "noFormalEducation": "No Formal Education",
-        "elementaryUndergraduate": "Elementary Undergraduate",
-        "elementaryGraduate": "Elementary Graduate",
-        "highSchoolUndergraduate": "High School Undergraduate",
-        "highSchoolGraduate": "High School Graduate",
-        "collegeUndergraduate": "College Undergraduate",
-        "collegeGraduate": "College Graduate",
-        "postGraduate": "Post Graduate (MA/MS/PhD)",
-        "vocational": "Vocational/Technical Course",
-        "other": "Other"
-      },
-      "specialClassifications": {
-        "title": "Espesyal na Klasipikasyon",
-        "description": "Lagyan ng tsek ang naaangkop:",
-        "seniorCitizen": "Senior Citizen (60+)",
-        "personWithDisability": "Taong May Kapansanan",
-        "indigenousPeople": "Katutubong Mamamayan",
-        "fourPsBeneficiary": "Benepisyaryo ng 4Ps",
-        "disabilityType": "Uri ng Kapansanan",
-        "indigenousGroup": "Grupong Katutubo",
-        "fourPsHouseholdId": "4Ps Household ID",
-        "disabilityTypePlaceholder": "Tukuyin ang uri ng kapansanan...",
-        "indigenousGroupPlaceholder": "Tukuyin ang grupong katutubo...",
-        "fourPsHouseholdIdPlaceholder": "Ilagay ang 4Ps Household ID..."
-      },
-      "validation": {
-        "required": "Kailangang punan ang patlang na ito",
-        "email": "Maglagay ng wastong email address",
-        "minLength": "Dapat ay hindi bababa sa {{min}} karakter",
-        "maxLength": "Dapat ay hindi hihigit sa {{max}} karakter",
-        "invalidDate": "Maglagay ng wastong petsa",
-        "invalidPhone": "Maglagay ng wastong numero ng telepono"
-      },
-      "error": {
-        "firstNameRequired": "Kailangan ang unang pangalan",
-        "lastNameRequired": "Kailangan ang apelyido",
-        "birthDateRequired": "Kailangan ang petsa ng kapanganakan",
-        "birthPlaceRequired": "Kailangan ang lugar ng kapanganakan",
-        "birthDateFuture": "Hindi maaaring nasa hinaharap ang petsa ng kapanganakan",
-        "agePositive": "Ang edad ay dapat na hihigit sa 0"
+        "update": "I-update ang Residente"
       }
     },
     "pagination": {
@@ -1202,9 +843,7 @@
       "deleteSuccess": "Matagumpay na na-deactivate ang residente",
       "deleteError": "Hindi na-deactivate ang residente. Subukan ulit.",
       "loadError": "Hindi ma-load ang mga residente. Subukan ulit.",
-      "deleteErrorTitle": "Error sa Pagbura",
-      "createError": "Hindi nagawa ang residente. Subukan ulit.",
-      "updateError": "Hindi na-update ang residente. Subukan ulit."
+      "deleteErrorTitle": "Error sa Pagbura"
     },
     "table": {
       "headers": {
@@ -1284,13 +923,7 @@
         "transferred": "Nalipat"
       }
     },
-    "title": "Pamamahala ng mga Residente",
-    "status": {
-      "active": "Aktibo",
-      "inactive": "Hindi Aktibo",
-      "deceased": "Namatay",
-      "transferred": "Nalipat"
-    }
+    "title": "Pamamahala ng mga Residente"
   },
   "users": {
     "form": {

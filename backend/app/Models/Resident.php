@@ -138,6 +138,46 @@ class Resident extends Model
                 $model->senior_citizen = $age >= 60;
             }
         });
+
+        // Sync data to barangay official records when resident data changes
+        static::updated(function ($model) {
+            // Check if personal data fields have changed
+            $personalFields = [
+                'first_name', 'middle_name', 'last_name', 'suffix', 
+                'birth_date', 'gender', 'mobile_number', 'email_address', 
+                'complete_address'
+            ];
+            
+            $hasPersonalChanges = collect($personalFields)->some(function ($field) use ($model) {
+                return $model->isDirty($field);
+            });
+            
+            if ($hasPersonalChanges) {
+                // Sync data to all barangay official records for this resident
+                $model->syncToBarangayOfficialRecords();
+            }
+        });
+    }
+
+    /**
+     * Sync resident data to all associated barangay official records
+     */
+    public function syncToBarangayOfficialRecords(): void
+    {
+        $this->barangayOfficials()->each(function (BarangayOfficial $official) {
+            $official->update([
+                'first_name' => $this->first_name,
+                'middle_name' => $this->middle_name,
+                'last_name' => $this->last_name,
+                'suffix' => $this->suffix,
+                'full_name' => $this->full_name,
+                'birth_date' => $this->birth_date,
+                'gender' => $this->gender,
+                'contact_number' => $this->mobile_number,
+                'email_address' => $this->email_address,
+                'address' => $this->complete_address,
+            ]);
+        });
     }
 
     /**
@@ -291,6 +331,33 @@ class Resident extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(Document::class, 'resident_id', 'id');
+    }
+
+    /**
+     * Barangay official relationship
+     */
+    public function barangayOfficials(): HasMany
+    {
+        return $this->hasMany(BarangayOfficial::class, 'resident_id', 'id');
+    }
+
+    /**
+     * Get the current active barangay official record for this resident
+     */
+    public function currentOfficialPosition(): ?BarangayOfficial
+    {
+        return $this->barangayOfficials()
+            ->where('status', 'ACTIVE')
+            ->where('is_current_term', true)
+            ->first();
+    }
+
+    /**
+     * Check if this resident is currently a barangay official
+     */
+    public function isBarangayOfficial(): bool
+    {
+        return $this->currentOfficialPosition() !== null;
     }
 
     /**

@@ -14,21 +14,27 @@ class BarangayOfficialSchema
     public static function getFields(): array
     {
         return [
-            // Personal Information
+            // Foreign Key Relationships (Business Rules: Must be both resident and user)
+            'resident_id' => ['type' => 'foreignId', 'references' => 'residents.id', 'required' => true],
+            'user_id' => ['type' => 'foreignId', 'references' => 'users.id', 'required' => true],
+            
+            // Personal Information (auto-synced from resident)
+            'prefix' => ['type' => 'enum', 'values' => ['Mr.', 'Ms.', 'Mrs.', 'Dr.', 'Hon.'], 'nullable' => true],
             'first_name' => ['type' => 'string', 'max' => 255, 'required' => true],
             'last_name' => ['type' => 'string', 'max' => 255, 'required' => true],
             'middle_name' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'suffix' => ['type' => 'string', 'max' => 10, 'nullable' => true],
+            'full_name' => ['type' => 'string', 'max' => 500, 'nullable' => true],
             'birth_date' => ['type' => 'date', 'required' => true],
             'gender' => ['type' => 'enum', 'values' => ['MALE', 'FEMALE'], 'required' => true],
             
-            // Contact Information
+            // Contact Information (auto-synced from resident)
             'contact_number' => ['type' => 'string', 'max' => 20, 'nullable' => true],
             'email_address' => ['type' => 'email', 'max' => 255, 'nullable' => true],
-            'address' => ['type' => 'text', 'required' => true],
+            'address' => ['type' => 'text', 'nullable' => true],
             
             // Official Position
-            'position' => ['type' => 'enum', 'values' => ['PUNONG_BARANGAY', 'BARANGAY_KAGAWAD', 'SK_CHAIRPERSON', 'BARANGAY_SECRETARY', 'BARANGAY_TREASURER', 'LUPON_MEMBER', 'OTHER'], 'required' => true],
+            'position' => ['type' => 'enum', 'values' => ['BARANGAY_CAPTAIN', 'BARANGAY_SECRETARY', 'BARANGAY_TREASURER', 'KAGAWAD', 'SK_CHAIRPERSON', 'SK_KAGAWAD', 'BARANGAY_CLERK', 'BARANGAY_TANOD'], 'required' => true],
             'position_title' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'committee_assignments' => ['type' => 'json', 'nullable' => true],
             'committee_memberships' => ['type' => 'json', 'nullable' => true],

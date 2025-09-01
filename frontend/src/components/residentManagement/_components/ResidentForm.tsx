@@ -130,6 +130,25 @@ export const ResidentForm: React.FC<ResidentFormProps> = ({
   const watchPersonWithDisability = form.watch('person_with_disability');
   const watchIndigenousPeople = form.watch('indigenous_people');
   const watchFourPsBeneficiary = form.watch('four_ps_beneficiary');
+  const watchBirthDate = form.watch('birth_date');
+
+  // Calculate age for display (not stored in form)
+  const calculateAge = (birthDateStr: string): number => {
+    if (!birthDateStr) return 0;
+    
+    const birthDate = new Date(birthDateStr);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age >= 0 ? age : 0;
+  };
+
+  const calculatedAge = calculateAge(watchBirthDate);
 
   // State to track if we're initially loading data (to prevent clearing dependent fields)
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -380,12 +399,15 @@ export const ResidentForm: React.FC<ResidentFormProps> = ({
                 type="date"
                 required
               />
-              <ResidentFormField
-                name="age"
-                label={t('residents.form.fields.age')}
-                type="number"
-                readOnly
-              />
+              {/* Custom Age Display */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  {t('residents.form.fields.age')}
+                </label>
+                <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-600">
+                  {calculatedAge > 0 ? `${calculatedAge} years old` : 'Enter birth date to calculate age'}
+                </div>
+              </div>
               <ResidentFormField
                 name="birth_place"
                 label={t('residents.form.fields.birthPlace')}
