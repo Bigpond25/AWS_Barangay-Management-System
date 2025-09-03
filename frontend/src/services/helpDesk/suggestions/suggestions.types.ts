@@ -31,7 +31,7 @@ export const CreateSuggestionSchema = z.object({
     status: true, // DEFAULTS TO 'OPEN'
   }).extend({
     resident_search: z.string().optional().nullable(),
-    category: z.literal('SUGGESTION')
+    type: z.literal('SUGGESTION')
   }),
 
   suggestion: SuggestionSchema.omit({
@@ -46,7 +46,7 @@ export const EditSuggestionSchema = z.object({
     ticket_number: true, // Cannot change ticket number
     created_at: true,   // Cannot change creation date
     updated_at: true, // AUTO GENERATED
-    category: true      // Cannot change category type
+    type: true      // Cannot change type
   }).extend({
     requester_name: z.string().optional().nullable(),
     contact_number: z.string().optional().nullable(),

@@ -17,6 +17,7 @@ import { getResidentAge } from '@/utils/ageUtils';
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { DocumentFormField } from './_components/DocumentFormField';
 import Breadcrumb from '../_global/Breadcrumb';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface BarangayClearanceFormProps {
   onNavigate: (page: string) => void;
@@ -28,6 +29,9 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
   const { showNotification } = useNotifications();
+
+  // Debounce search to avoid too many API calls
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   // Direct destructuring approach (as suggested by your classmate)
   const form = useForm<DocumentFormData>({
@@ -90,7 +94,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
     data: residentsData,
     isLoading: searchLoading
   } = useResidents({
-    search: searchTerm,
+    search: debouncedSearchTerm,
     per_page: 10
   });
 
@@ -246,7 +250,7 @@ const BarangayClearanceForm: React.FC<BarangayClearanceFormProps> = ({ onNavigat
           </div>
         )}
 
-        {residents.length > 0 && searchTerm && (
+        {residents.length > 0 && debouncedSearchTerm && (
           <div className="mt-2 border border-gray-200 rounded-lg max-h-64 overflow-y-auto">
             {residents.map((resident) => (
               <div

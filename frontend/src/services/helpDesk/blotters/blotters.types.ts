@@ -69,7 +69,7 @@ export const CreateBlotterSchema = z.object({
     status: true, // DEFAULTS TO 'OPEN'
   }).extend({
     resident_search: z.string().optional().nullable(),
-    category: z.literal('BLOTTER')
+    type: z.literal('BLOTTER')
   }),
 
   blotter: BlotterSchema.omit({
@@ -84,7 +84,7 @@ export const EditBlotterSchema = z.object({
     ticket_number: true, // Cannot change ticket number
     created_at: true,   // Cannot change creation date
     updated_at: true, // AUTO GENERATED
-    category: true      // Cannot change category type
+    type: true      // Cannot change type
   }).extend({
     resident_search: z.string().optional().nullable(),
   }),

@@ -15,16 +15,15 @@ class Ticket extends Model
 
     protected $fillable = [
         'ticket_number',
+        'type',
         'subject',
-        'description',
+        'message',
         'priority',
-        'requester_name',
-        'resident_id',
-        'contact_number',
-        'email_address',
-        'complete_address',
-        'category',
         'status',
+        'resident_id',
+        'assigned_to',
+        'resolved_at',
+        'resolution_notes'
     ];
 
     protected $casts = [
@@ -48,9 +47,9 @@ class Ticket extends Model
     }
 
     // Scopes
-    public function scopeByCategory($query, $category)
+    public function scopeByType($query, $type)
     {
-        return $query->where('category', $category);
+        return $query->where('type', $type);
     }
 
     public function scopeByStatus($query, $status)
@@ -65,7 +64,7 @@ class Ticket extends Model
 
         static::creating(function ($ticket) {
             if (empty($ticket->ticket_number)) {
-                $ticket->ticket_number = static::generateTicketNumber($ticket->category);
+                $ticket->ticket_number = static::generateTicketNumber($ticket->type);
             }
             if (empty($ticket->status)) {
                 $ticket->status = 'OPEN';
@@ -73,9 +72,9 @@ class Ticket extends Model
         });
     }
 
-    private static function generateTicketNumber($category): string
+    private static function generateTicketNumber($type): string
     {
-        $prefix = match ($category) {
+        $prefix = match ($type) {
             'APPOINTMENT' => 'APT',
             'BLOTTER' => 'BLT',
             'COMPLAINT' => 'CMP',
@@ -86,8 +85,8 @@ class Ticket extends Model
         $year = date('Y');
         $month = date('m');
 
-        // Get the latest ticket number for this category and month
-        $lastTicket = static::where('category', $category)
+        // Get the latest ticket number for this type and month
+        $lastTicket = static::where('type', $type)
             ->where('ticket_number', 'like', "{$prefix}-{$year}{$month}%")
             ->orderBy('ticket_number', 'desc')
             ->first();

@@ -490,7 +490,7 @@ const CertificateOfIndigencyPrint: React.FC = () => {
 
           {/* Bottom Section with Remarks and Signature */}
           <CertificateBottomSection
-            certifyingOfficial={document.certifying_official}
+            certifyingOfficial={document.certifying_official || undefined}
             orNumber={orNumber}
             remarks={document.remarks ? [document.remarks] : []}
           />

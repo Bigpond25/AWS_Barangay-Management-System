@@ -32,7 +32,7 @@ export const CreateComplaintSchema = z.object({
     status: true, // DEFAULTS TO 'OPEN'
   }).extend({
     resident_search: z.string().optional().nullable(),
-    category: z.literal('COMPLAINT')
+    type: z.literal('COMPLAINT')
   }),
 
   complaint: ComplaintSchema.omit({
@@ -47,7 +47,7 @@ export const EditComplaintSchema = z.object({
     ticket_number: true, // Cannot change ticket number
     created_at: true,   // Cannot change creation date
     updated_at: true, // AUTO GENERATED
-    category: true      // Cannot change category type
+    type: true      // Cannot change type
   }).extend({
     requester_name: z.string().optional().nullable(),
     contact_number: z.string().optional().nullable(),

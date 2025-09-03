@@ -12,6 +12,7 @@ import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { DocumentFormField } from './_components/DocumentFormField';
 import Breadcrumb from '../_global/Breadcrumb';
 import { getResidentAge } from '@/utils/ageUtils';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface CertificateOfIndigencyFormProps {
   onNavigate: (page: string) => void;
@@ -24,6 +25,9 @@ const CertificateOfIndigencyForm: React.FC<CertificateOfIndigencyFormProps> = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [declarationAgreed, setDeclarationAgreed] = useState(false);
   const { showNotification } = useNotifications();
+
+  // Debounce search to avoid too many API calls
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   // React Hook Form setup with Zod validation
   const form = useForm<DocumentFormData>({
@@ -84,7 +88,7 @@ const CertificateOfIndigencyForm: React.FC<CertificateOfIndigencyFormProps> = ({
     data: residentsData, 
     isLoading: searchLoading 
   } = useResidents({ 
-    search: searchTerm, 
+    search: debouncedSearchTerm, 
     per_page: 10 
   });
 

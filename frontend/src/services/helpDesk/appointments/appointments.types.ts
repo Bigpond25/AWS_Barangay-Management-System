@@ -56,7 +56,7 @@ export const CreateAppointmentSchema = z.object({
     status: true, // DEFAULTS TO 'OPEN'
   }).extend({
     resident_search: z.string().optional().nullable(),
-    category: z.literal('APPOINTMENT')
+    type: z.literal('APPOINTMENT')
   }),
 
   appointment: AppointmentSchema.omit({
@@ -71,7 +71,7 @@ export const EditAppointmentSchema = z.object({
     ticket_number: true, // Cannot change ticket number
     created_at: true,   // Cannot change creation date
     updated_at: true, // AUTO GENERATED
-    category: true      // Cannot change category type
+    type: true      // Cannot change type
   }).extend({
     resident_search: z.string().optional().nullable(),
   }),

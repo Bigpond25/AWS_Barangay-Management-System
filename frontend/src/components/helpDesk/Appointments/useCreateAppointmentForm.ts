@@ -34,7 +34,7 @@ export function useCreateAppointmentForm ({ onSuccess }: useCreateAppointmentFor
     // const department = watch('appointment.department')
 
     // PALAGING  APPOINTMENT TO
-    setValue("ticket.category", "APPOINTMENT");
+    setValue("ticket.type", "APPOINTMENT");
 
     const { data: filteredResidents, isLoading: isLoadingResidents, error: residentsError } = useResidents({ search: searchResident || "" });
 

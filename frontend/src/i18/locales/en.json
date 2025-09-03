@@ -1239,7 +1239,7 @@
         "close": "Close"
       },
       "profile": {
-        "ageYears": "years old",
+        "ageYears": "{{age}} years old",
         "birthDate": "Birth Date",
         "civilStatus": "Civil Status"
       },
@@ -1282,6 +1282,16 @@
         "inactive": "Inactive",
         "deceased": "Deceased",
         "transferred": "Transferred"
+      },
+      "tabs": {
+        "basic": "Basic Info",
+        "contact": "Contact & Address",
+        "employment": "Employment & Education",
+        "family": "Family",
+        "government": "Government IDs",
+        "health": "Health & Medical",
+        "classifications": "Classifications",
+        "system": "System Info"
       }
     },
     "title": "Resident Management",

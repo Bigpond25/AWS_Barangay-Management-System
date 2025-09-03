@@ -99,8 +99,8 @@ const BusinessPermitPrint: React.FC = () => {
   const orNumber = document.document_number || `OR-${(document.id || 0).toString().padStart(6, '0')}`;
 
   // Format date issued
-  const dateIssued = document.approved_at ? 
-    new Date(document.approved_at).toLocaleDateString('en-US', { 
+  const dateIssued = document.approved_date ? 
+    new Date(document.approved_date).toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 

@@ -35,9 +35,11 @@ import DataImport from "./components/import/DataImport";
 import ReportsPage from "./components/reports/ReportsPage";
 import SettingsPage from "./components/_settings/SettingsPage";
 import LoginPage from "./components/_auth/LoginPage";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import './i18';
+import queryClient from './lib/queryClient';
+import { initializeCacheManager } from './utils/cacheInvalidation';
 import ViewBarangayOfficial from "./components/barangayOfficials/ViewBarangayOfficial";
 import ActivityLogManagement from "./components/activityLogs/ActivityLogManagement";
 import HelpDeskPage from "./components/helpDesk/HelpDeskPage";
@@ -615,7 +617,11 @@ const router = createBrowserRouter([
 
 // Main App Component
 function App() {
-  const [queryClient] = useState(() => new QueryClient());
+  // Initialize cache manager with our optimized query client
+  useState(() => {
+    initializeCacheManager(queryClient);
+    return null;
+  });
 
   return (
     <AuthProvider>

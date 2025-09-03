@@ -1,6 +1,6 @@
 import {
     type BaseTicket,
-    type TicketCategory,
+    type TicketType,
   } from "@/services/helpDesk/helpDesk.type";
   import { AlertCircle, Calendar, Edit, Eye, FileText, Trash } from "lucide-react";
 import { getTypeColor } from "../utilities/getTypeColor";
@@ -20,8 +20,8 @@ import { PaginationNavigation } from "./PaginationNavigation";
     },
     handlePageChange: (page: number) => void;
     handleDelete: (ticket: BaseTicket) => void;
-    handleView: (baseTicketId: string, category: TicketCategory) => void;
-    handleEdit: (baseTicketId: string, category: TicketCategory) => void;
+    handleView: (baseTicketId: string, type: TicketType) => void;
+    handleEdit: (baseTicketId: string, type: TicketType) => void;
   }
   
   export const TicketsList: React.FC<TicketsListProps> = ({
@@ -94,10 +94,10 @@ import { PaginationNavigation } from "./PaginationNavigation";
                         <div className="flex flex-wrap items-center gap-2 mb-3">
                           <span
                             className={`px-2 py-1 text-xs font-medium rounded-full border ${getTypeColor(
-                              ticket.category
+                              ticket.type
                             )}`}
                           >
-                            {ticket.category
+                            {ticket.type
                                 .split("_")
                                 .map(
                                 (word) =>
@@ -203,16 +203,16 @@ import { PaginationNavigation } from "./PaginationNavigation";
   
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleView(ticket.id || '', ticket.category)}
-                      className="cursor-pointer p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                      title="View Details"
+                      className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                      title="View Ticket"
+                      onClick={() => handleView(ticket.id || '', ticket.type)}
                     >
                       <Eye className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => handleEdit(ticket.id || '', ticket.category)}
-                      className="cursor-pointer p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Edit Ticket"
+                      onClick={() => handleEdit(ticket.id || '', ticket.type)}
                     >
                       <Edit className="w-4 h-4" />
                     </button>

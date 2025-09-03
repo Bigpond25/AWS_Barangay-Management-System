@@ -22,6 +22,9 @@ interface HouseholdTableProps {
  onDelete: (id: string, householdNumber: string) => void;
  isDeleting: boolean;
  deletingId?: string;
+ selectedHouseholds?: Set<string>;
+ onHouseholdSelect?: (id: string, selected: boolean) => void;
+ onSelectAll?: (selected: boolean) => void;
 }
 
 const HouseholdTable: React.FC<HouseholdTableProps> = ({
@@ -34,9 +37,23 @@ const HouseholdTable: React.FC<HouseholdTableProps> = ({
  onView,
  onDelete,
  isDeleting,
- deletingId
+ deletingId,
+ selectedHouseholds = new Set(),
+ onHouseholdSelect,
+ onSelectAll
 }) => {
  const { t } = useTranslation();
+
+ const allSelected = households.length > 0 && households.every(h => selectedHouseholds.has(h.id));
+ const someSelected = households.some(h => selectedHouseholds.has(h.id));
+
+ const handleSelectAll = (checked: boolean) => {
+   onSelectAll?.(checked);
+ };
+
+ const handleSelectHousehold = (id: string, checked: boolean) => {
+   onHouseholdSelect?.(id, checked);
+ };
 
  return (
    <>
@@ -51,6 +68,19 @@ const HouseholdTable: React.FC<HouseholdTableProps> = ({
          <table className="min-w-full">
            <thead className="bg-gray-50">
              <tr>
+               {onHouseholdSelect && (
+                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                   <input
+                     type="checkbox"
+                     checked={allSelected}
+                     ref={(el) => {
+                       if (el) el.indeterminate = someSelected && !allSelected;
+                     }}
+                     onChange={(e) => handleSelectAll(e.target.checked)}
+                     className="w-4 h-4 text-smblue-400 border-gray-300 rounded focus:ring-smblue-400"
+                   />
+                 </th>
+               )}
                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                  {t('households.table.headers.householdNumber')}
                </th>
@@ -74,7 +104,7 @@ const HouseholdTable: React.FC<HouseholdTableProps> = ({
            <tbody className="bg-white divide-y divide-gray-200">
              {households.length === 0 ? (
                <tr>
-                 <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                 <td colSpan={onHouseholdSelect ? 7 : 6} className="px-6 py-12 text-center text-gray-500">
                    {t('households.table.noHouseholdsFound')}
                  </td>
                </tr>
@@ -87,6 +117,8 @@ const HouseholdTable: React.FC<HouseholdTableProps> = ({
                    onView={onView}
                    onDelete={onDelete}
                    isDeleting={isDeleting && deletingId === household.id}
+                   isSelected={selectedHouseholds.has(household.id)}
+                   onSelect={onHouseholdSelect ? (selected) => handleSelectHousehold(household.id, selected) : undefined}
                  />
                ))
              )}

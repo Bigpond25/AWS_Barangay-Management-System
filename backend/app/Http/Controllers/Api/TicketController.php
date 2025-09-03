@@ -41,7 +41,7 @@ class TicketController extends Controller
 
         // Apply filters
         if ($request->has('category') && $request->category !== '') {
-            $query->byCategory($request->category);
+            $query->byType($request->category);
         }
 
         if ($request->has('priority') && $request->priority !== '') {

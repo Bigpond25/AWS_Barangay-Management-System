@@ -1,10 +1,10 @@
 import {
-  categoryOptionsAll,
+  typeOptionsAll,
   prioritiesAll,
   statusOptionsAll,
   type Priority,
   type Status,
-  type TicketCategory,
+  type TicketType,
 } from "@/services/helpDesk/helpDesk.type";
 import { FiSearch } from "react-icons/fi";
 import { CustomDropdown } from "./CustomDropdown";
@@ -12,11 +12,11 @@ import { enumToTitleCase } from "../utilities/enumToTitleCase";
 
 interface HelpDeskSearchProps {
   searchTerm: string;
-  activeTab: TicketCategory | undefined;
+  activeTab: TicketType | undefined;
   status: Status | undefined;
   priority: Priority | undefined;
   onSearchChange: (term: string) => void;
-  handleActiveTabChange: (category: TicketCategory | undefined) => void;
+  handleActiveTabChange: (category: TicketType | undefined) => void;
   handleStatusChange: (status: Status | undefined) => void;
   handlePriorityChange: (priority: Priority | undefined) => void;
 }
@@ -91,7 +91,7 @@ export const HelpDeskSearch: React.FC<HelpDeskSearchProps> = ({
 
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 mt-6 border-b border-gray-200">
-        {categoryOptionsAll.map((tab) => (
+        {typeOptionsAll.map((tab) => (
           <button
             key={tab}
             onClick={() =>

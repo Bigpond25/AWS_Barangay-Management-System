@@ -11,7 +11,11 @@ import {
 } from '@tanstack/react-query';
 
 import { useNotifications } from '@/components/_global/NotificationSystem';
-import type { Resident, ResidentParams, ResidentFormData } from './residents.types';
+import type { 
+  Resident, 
+  ResidentParams, 
+  ResidentFormData
+} from './residents.types';
 import { residentsService } from '@/services/residents/residents.service';
 import { useTranslation } from 'react-i18next';
 
@@ -116,15 +120,79 @@ export function useCreateResident() {
 
   return useMutation({
     mutationFn: (data: ResidentFormData) => residentsService.createResident(data),
+    onMutate: async (newResident) => {
+      // Cancel any outgoing refetches so they don't overwrite our optimistic update
+      await queryClient.cancelQueries({ queryKey: residentsKeys.lists() });
+
+      // Snapshot the previous value
+      const previousResidents = queryClient.getQueriesData({ queryKey: residentsKeys.lists() });
+
+      // Optimistically update the cache
+      queryClient.setQueriesData({ queryKey: residentsKeys.lists() }, (old: unknown) => {
+        const oldData = old as { data?: Resident[]; total?: number } | undefined;
+        if (!oldData?.data) return oldData;
+        
+        // Create temporary resident with optimistic ID
+        const tempResident = {
+          id: `temp_${Date.now()}`,
+          ...newResident,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        } as Resident;
+
+        return {
+          ...oldData,
+          data: [tempResident, ...oldData.data],
+          total: (oldData.total || 0) + 1,
+        };
+      });
+
+      // Return context object with the snapshotted value
+      return { previousResidents };
+    },
     onSuccess: (newResident: Resident) => {
-      queryClient.invalidateQueries({ queryKey: residentsKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: residentsKeys.statistics() });
+      // Update specific list queries more efficiently
+      queryClient.setQueriesData({ queryKey: residentsKeys.lists() }, (old: unknown) => {
+        const oldData = old as { data?: Resident[] } | undefined;
+        if (!oldData?.data) return oldData;
+        
+        // Replace temporary resident with real one
+        const updatedData = oldData.data.map((resident: Resident) => 
+          resident.id.startsWith('temp_') ? newResident : resident
+        );
+
+        return {
+          ...oldData,
+          data: updatedData,
+        };
+      });
+
+      // Only invalidate statistics (less frequent)
+      queryClient.invalidateQueries({ 
+        queryKey: residentsKeys.statistics(),
+        refetchType: 'inactive' // Only refetch if not currently fetching
+      });
+
+      // Set specific resident detail
       queryClient.setQueryData(
         residentsKeys.detail(newResident.id),
         newResident
       );
+
+      showNotification({
+        type: 'success',
+        title: t('residents.form.messages.createSuccessTitle'),
+        message: t('residents.form.messages.createSuccess'),
+      });
     },
-    onError: (error) => {
+    onError: (error, newResident, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousResidents) {
+        context.previousResidents.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+
       const title = t('residents.form.messages.createErrorTitle');
       const message = t('residents.form.messages.createError');
 
@@ -135,6 +203,13 @@ export function useCreateResident() {
       });
 
       console.error('Create Resident Error:', error);
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure cache consistency
+      queryClient.invalidateQueries({ 
+        queryKey: residentsKeys.lists(),
+        refetchType: 'inactive'
+      });
     },
   });
 }

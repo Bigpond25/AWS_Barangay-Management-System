@@ -1,6 +1,6 @@
-import type { TicketCategory } from "@/services/helpDesk/helpDesk.type";
+import type { TicketType } from "@/services/helpDesk/helpDesk.type";
 
-export const getTypeColor = (type: TicketCategory): string => {
+export const getTypeColor = (type: TicketType): string => {
     const typeColors = {
         APPOINTMENT: "bg-blue-100 text-blue-800 border-blue-200",
         BLOTTER: "bg-red-100 text-red-800 border-red-200",

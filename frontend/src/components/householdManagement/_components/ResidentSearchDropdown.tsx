@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiSearch } from 'react-icons/fi';
 import { useResidentSearch } from '@/services/residents/useResidents';
+import { useDebounce } from '@/hooks/useDebounce';
+import type { Resident } from '@/services/residents/residents.types';
 
 interface ResidentSearchDropdownProps {
  searchTerm: string;
@@ -24,10 +26,13 @@ const ResidentSearchDropdown: React.FC<ResidentSearchDropdownProps> = ({
  const [showDropdown, setShowDropdown] = useState(false);
  const dropdownRef = useRef<HTMLDivElement>(null);
 
- // Use the existing resident search hook
+ // Debounce the search term to avoid making API calls on every keystroke
+ const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+ // Use the existing resident search hook with debounced search term
  const { data: searchResults = [], isLoading } = useResidentSearch(
-   searchTerm,
-   searchTerm.trim().length >= 2
+   debouncedSearchTerm,
+   debouncedSearchTerm.trim().length >= 2
  );
 
  // Filter out excluded residents
@@ -53,7 +58,7 @@ const ResidentSearchDropdown: React.FC<ResidentSearchDropdownProps> = ({
    setShowDropdown(value.trim().length >= 2);
  };
 
- const handleSelectResident = (resident: any) => {
+ const handleSelectResident = (resident: Resident) => {
    const fullName = `${resident.first_name} ${resident.last_name}`;
    onSelectResident(resident.id, fullName);
    setShowDropdown(false);

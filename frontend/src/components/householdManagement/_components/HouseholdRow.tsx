@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiEdit, FiTrash2, FiEye } from 'react-icons/fi';
 import HouseholdActions from './HouseholdActions';
 import { getHouseholdPrograms, formatIncomeRange, getProgramBadgeColor } from '../_utils/householdUtils';
 import type { Household } from '@/services/households/households.types';
@@ -11,6 +10,8 @@ interface HouseholdRowProps {
  onView: (id: string) => void;
  onDelete: (id: string, householdNumber: string) => void;
  isDeleting: boolean;
+ isSelected?: boolean;
+ onSelect?: (selected: boolean) => void;
 }
 
 const HouseholdRow: React.FC<HouseholdRowProps> = ({
@@ -18,7 +19,9 @@ const HouseholdRow: React.FC<HouseholdRowProps> = ({
  onEdit,
  onView,
  onDelete,
- isDeleting
+ isDeleting,
+ isSelected = false,
+ onSelect
 }) => {
  const { t } = useTranslation();
  const programs = getHouseholdPrograms(household);
@@ -27,8 +30,22 @@ const HouseholdRow: React.FC<HouseholdRowProps> = ({
    : t('households.table.noHead');
  const memberCount = household.members ? household.members.length : 0;
 
+ const handleSelectChange = (checked: boolean) => {
+   onSelect?.(checked);
+ };
+
  return (
    <tr className="hover:bg-gray-50">
+     {onSelect && (
+       <td className="px-6 py-4 whitespace-nowrap w-12">
+         <input
+           type="checkbox"
+           checked={isSelected}
+           onChange={(e) => handleSelectChange(e.target.checked)}
+           className="w-4 h-4 text-smblue-400 border-gray-300 rounded focus:ring-smblue-400"
+         />
+       </td>
+     )}
      <td className="px-6 py-4 whitespace-nowrap">
        <div className="text-sm font-medium text-gray-900">
          {household.household_number}

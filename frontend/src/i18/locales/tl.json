@@ -1239,7 +1239,7 @@
         "close": "Isara"
       },
       "profile": {
-        "ageYears": "taong gulang",
+        "ageYears": "{{age}} taong gulang",
         "birthDate": "Petsa ng Kapanganakan",
         "civilStatus": "Civil Status"
       },
@@ -1282,6 +1282,16 @@
         "inactive": "Hindi Aktibo",
         "deceased": "Namatay",
         "transferred": "Nalipat"
+      },
+      "tabs": {
+        "basic": "Pangunahing Impormasyon",
+        "contact": "Contact at Address",
+        "employment": "Trabaho at Edukasyon",
+        "family": "Pamilya",
+        "government": "Government IDs",
+        "health": "Kalusugan",
+        "classifications": "Mga Klasipikasyon",
+        "system": "System Info"
       }
     },
     "title": "Pamamahala ng mga Residente",

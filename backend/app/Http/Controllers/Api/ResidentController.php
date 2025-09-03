@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class ResidentController extends Controller
 {
     /**
-     * Display a listing of residents
+     * Display a listing of residents (OPTIMIZED)
      */
     public function index(Request $request): JsonResponse
     {
@@ -76,11 +76,36 @@ class ResidentController extends Controller
                 $query->byVoterStatus($request->voter_status);
             }
 
-            // Include relationships - updated for pivot table approach
-            $query->with([
-                'households', // pivot relationship
+            // OPTIMIZED: Only load necessary relationships for list view
+            // Avoid loading heavy relationships unless specifically requested
+            $includes = [];
+            if ($request->has('include')) {
+                $requestedIncludes = explode(',', $request->get('include'));
+                $validIncludes = ['households', 'createdBy', 'updatedBy'];
+                $includes = array_intersect($requestedIncludes, $validIncludes);
+            }
+
+            // Default minimal relationships for performance
+            $defaultIncludes = [
                 'createdBy:id,first_name,last_name',
                 'updatedBy:id,first_name,last_name'
+            ];
+
+            // Only add households if specifically requested (expensive join)
+            if (in_array('households', $includes)) {
+                $defaultIncludes[] = 'households:id,household_number';
+            }
+
+            $query->with($defaultIncludes);
+
+            // OPTIMIZED: Use select to limit fields for list view
+            $query->select([
+                'id', 'first_name', 'last_name', 'middle_name', 'suffix',
+                'gender', 'birth_date', 'civil_status', 'complete_address',
+                'mobile_number', 'email_address', 'employment_status',
+                'senior_citizen', 'person_with_disability', 'four_ps_beneficiary',
+                'status', 'profile_photo_url', 'created_at', 'updated_at',
+                'created_by', 'updated_by'
             ]);
 
             // Pagination
@@ -491,75 +516,76 @@ class ResidentController extends Controller
     }
 
     /**
-     * Get residents statistics
+     * Get residents statistics (OPTIMIZED - single query approach)
      */
     public function statistics(): JsonResponse
     {
         try {
-            // Base query for active residents
-            $activeResidents = Resident::active();
-            
-            // Age group calculations using birth_date
-            $currentDate = now()->format('Y-m-d');
-            $ageGroups = [
-                'children' => (clone $activeResidents)->minors()->count(),
-                'adults' => (clone $activeResidents)->adults()->count(),
-                'seniors' => (clone $activeResidents)->seniors()->count(),
-            ];
+            // Single optimized query to get all basic counts at once
+            $basicStats = Resident::selectRaw("
+                COUNT(*) as total_residents,
+                COUNT(CASE WHEN status = 'ACTIVE' THEN 1 END) as active_residents,
+                COUNT(CASE WHEN status != 'ACTIVE' THEN 1 END) as inactive_residents,
+                COUNT(CASE WHEN status = 'ACTIVE' AND gender = 'MALE' THEN 1 END) as male_residents,
+                COUNT(CASE WHEN status = 'ACTIVE' AND gender = 'FEMALE' THEN 1 END) as female_residents,
+                COUNT(CASE WHEN status = 'ACTIVE' AND senior_citizen = true THEN 1 END) as senior_citizens,
+                COUNT(CASE WHEN status = 'ACTIVE' AND person_with_disability = true THEN 1 END) as pwd_residents,
+                COUNT(CASE WHEN status = 'ACTIVE' AND four_ps_beneficiary = true THEN 1 END) as four_ps_beneficiaries,
+                COUNT(CASE WHEN status = 'ACTIVE' AND indigenous_people = true THEN 1 END) as indigenous_people,
+                COUNT(CASE WHEN status = 'ACTIVE' AND voter_status = 'REGISTERED' THEN 1 END) as registered_voters,
+                COUNT(CASE WHEN status = 'ACTIVE' AND employment_status IN ('EMPLOYED', 'SELF_EMPLOYED') THEN 1 END) as employed_residents,
+                COUNT(CASE WHEN status = 'ACTIVE' AND EXTRACT(YEAR FROM AGE(birth_date)) < 18 THEN 1 END) as children,
+                COUNT(CASE WHEN status = 'ACTIVE' AND EXTRACT(YEAR FROM AGE(birth_date)) BETWEEN 18 AND 59 THEN 1 END) as adults,
+                COUNT(CASE WHEN status = 'ACTIVE' AND EXTRACT(YEAR FROM AGE(birth_date)) >= 60 THEN 1 END) as seniors
+            ")->first();
 
-            // Get employed residents count
-            $employedResidents = (clone $activeResidents)->whereIn('employment_status', ['EMPLOYED', 'SELF_EMPLOYED'])->count();
+            // Optimized household heads count using direct join
+            $householdHeads = Resident::join('household_members', 'residents.id', '=', 'household_members.resident_id')
+                ->where('residents.status', 'ACTIVE')
+                ->where('household_members.relationship', 'HEAD')
+                ->count();
 
-            // Get barangay distribution
-            $residentsByBarangay = (clone $activeResidents)
-                ->selectRaw('barangay, COUNT(*) as count')
+            // Optimized grouped queries - only run if needed
+            $residentsByBarangay = Resident::where('status', 'ACTIVE')
                 ->whereNotNull('barangay')
+                ->selectRaw('barangay, COUNT(*) as count')
                 ->groupBy('barangay')
                 ->pluck('count', 'barangay')
                 ->toArray();
 
-            // Get civil status distribution  
-            $residentsByCivilStatus = (clone $activeResidents)
-                ->selectRaw('civil_status, COUNT(*) as count')
+            $residentsByCivilStatus = Resident::where('status', 'ACTIVE')
                 ->whereNotNull('civil_status')
+                ->selectRaw('civil_status, COUNT(*) as count')
                 ->groupBy('civil_status')
                 ->pluck('count', 'civil_status')
                 ->toArray();
 
-            // Get employment status distribution
-            $residentsByEmploymentStatus = (clone $activeResidents)
-                ->selectRaw('employment_status, COUNT(*) as count')
+            $residentsByEmploymentStatus = Resident::where('status', 'ACTIVE')
                 ->whereNotNull('employment_status')
+                ->selectRaw('employment_status, COUNT(*) as count')
                 ->groupBy('employment_status')
                 ->pluck('count', 'employment_status')
                 ->toArray();
 
-            // Get counts for the main statistics
-            $totalResidents = (clone $activeResidents)->count();
-            $maleResidents = (clone $activeResidents)->where('gender', 'MALE')->count();
-            $femaleResidents = (clone $activeResidents)->where('gender', 'FEMALE')->count();
-            $seniorCitizens = (clone $activeResidents)->where('senior_citizen', true)->count();
-            $personsWithDisability = (clone $activeResidents)->where('person_with_disability', true)->count();
-            $fourPsBeneficiaries = (clone $activeResidents)->where('four_ps_beneficiary', true)->count();
-            $indigenousPeople = (clone $activeResidents)->where('indigenous_people', true)->count();
-            $householdHeads = (clone $activeResidents)->householdHeads()->count();
-            $registeredVoters = (clone $activeResidents)->where('voter_status', 'REGISTERED')->count();
-
             $stats = [
-                'total_residents' => $totalResidents,
-                'active_residents' => $totalResidents,
-                'inactive_residents' => Resident::inactive()->count(),
-                'male_residents' => $maleResidents,
-                'female_residents' => $femaleResidents,
-                'senior_citizens' => $seniorCitizens,
-                'pwd_residents' => $personsWithDisability,
-                'four_ps_beneficiaries' => $fourPsBeneficiaries,
-                'indigenous_people' => $indigenousPeople,
-                'household_heads' => $householdHeads,
-                'registered_voters' => $registeredVoters,
-                'employed_residents' => $employedResidents,
+                'total_residents' => (int) $basicStats->total_residents,
+                'active_residents' => (int) $basicStats->active_residents,
+                'inactive_residents' => (int) $basicStats->inactive_residents,
+                'male_residents' => (int) $basicStats->male_residents,
+                'female_residents' => (int) $basicStats->female_residents,
+                'senior_citizens' => (int) $basicStats->senior_citizens,
+                'pwd_residents' => (int) $basicStats->pwd_residents,
+                'four_ps_beneficiaries' => (int) $basicStats->four_ps_beneficiaries,
+                'indigenous_people' => (int) $basicStats->indigenous_people,
+                'household_heads' => (int) $householdHeads,
+                'registered_voters' => (int) $basicStats->registered_voters,
+                'employed_residents' => (int) $basicStats->employed_residents,
                 
-                'by_age_group' => $ageGroups,
+                'by_age_group' => [
+                    'children' => (int) $basicStats->children,
+                    'adults' => (int) $basicStats->adults,
+                    'seniors' => (int) $basicStats->seniors,
+                ],
                 'by_civil_status' => $residentsByCivilStatus,
                 'by_employment_status' => $residentsByEmploymentStatus,
                 'by_barangay' => $residentsByBarangay,

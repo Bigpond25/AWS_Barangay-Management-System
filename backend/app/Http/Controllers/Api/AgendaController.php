@@ -420,7 +420,7 @@ class AgendaController extends Controller
                     'title' => $agenda->title,
                     'date' => $agenda->date,
                     'time' => $agenda->time,
-                    'endTime' => $agenda->end_time,
+                    'end_time' => $agenda->end_time,
                     'category' => $agenda->category,
                     'priority' => $agenda->priority,
                     'status' => $agenda->status,
@@ -428,9 +428,7 @@ class AgendaController extends Controller
                     'location' => $agenda->location,
                     'venue' => $agenda->venue,
                     'organizer' => $agenda->organizer,
-                    'isToday' => $agenda->is_today,
-                    'isUpcoming' => $agenda->is_upcoming,
-                    'isOverdue' => $agenda->is_overdue,
+                    'description' => $agenda->description,
                 ];
             });
 

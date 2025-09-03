@@ -8,6 +8,7 @@ import { FiPrinter, FiX, FiAlertCircle } from 'react-icons/fi';
 
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { useDocument } from '@/services/documents/useDocuments';
+import { formatDocumentType } from '@/utils/documentTypeUtils';
 import type { Document } from '@/services/documents/documents.types';
 
 const BusinessSignClearancePrint: React.FC = () => {
@@ -68,7 +69,7 @@ const BusinessSignClearancePrint: React.FC = () => {
           <FiAlertCircle className="w-16 h-16 text-orange-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Invalid Document Type</h3>
           <p className="text-orange-600 mb-6">
-            This document is not a Business Sign Clearance. Expected: Business Sign Clearance, Got: {document.type.replace(/_/g, ' ')}
+            This document is not a Business Sign Clearance. Expected: Business Sign Clearance, Got: {formatDocumentType(document.type)}
           </p>
           <button
             onClick={handleClose}
@@ -90,10 +91,10 @@ const BusinessSignClearancePrint: React.FC = () => {
   const signSize = document.sign_size || 'N/A';
   const certifyingOfficial = document.certifying_official || 'ELMER TIMOTHY J. LIGON';
   const permitNumber = document.document_number ? document.document_number.split('-').pop() : '2897';
-  const processingFee = parseFloat(document.processing_fee) || 0;
+  const processingFee = parseFloat(String(document.processing_fee)) || 0;
   
-  const dateIssued = document.approved_at ? 
-    new Date(document.approved_at).toLocaleDateString('en-US', { 
+  const dateIssued = document.approved_date ? 
+    new Date(document.approved_date).toLocaleDateString('en-US', { 
       day: '2-digit',
       month: 'short', 
       year: '2-digit' 

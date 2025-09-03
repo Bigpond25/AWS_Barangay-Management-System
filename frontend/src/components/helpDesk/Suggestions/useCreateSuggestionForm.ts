@@ -28,7 +28,7 @@ export function useCreateSuggestionForm({ onSuccess }: useCreateSuggestionFormPr
     const searchResident = watch('ticket.resident_search');
 
     // PALAGING SUGGESTION TO
-    setValue("ticket.category", "SUGGESTION");
+    setValue("ticket.type", "SUGGESTION");
 
     const { data: filteredResidents, isLoading: isLoadingResidents, error: residentsError } = useResidents({ search: searchResident || "" });
 

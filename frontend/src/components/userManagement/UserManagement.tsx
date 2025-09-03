@@ -8,6 +8,7 @@ import StatCard from '../_global/StatCard';
 import { UsersService } from '../../services/users/users.service';
 import type { User, UserParams, UserRole, UserFormData } from '../../services/users/users.types';
 import Breadcrumb from '../_global/Breadcrumb';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const UserManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +21,9 @@ const UserManagement: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<UserRole | ''>('');
   const [statusFilter, setStatusFilter] = useState('');
   const [isLoaded, setIsLoaded] = useState(false); // Add isLoaded state
+  
+  // Debounce search to avoid too many API calls
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   
   // Service integration state
   const [users, setUsers] = useState<User[]>([]);
@@ -49,7 +53,7 @@ const UserManagement: React.FC = () => {
       const params: UserParams = {
         page: currentPage,
         per_page: 15,
-        search: searchTerm || undefined,
+        search: debouncedSearchTerm || undefined,
         role: roleFilter || undefined,
         is_active: statusFilter === 'Active' ? true : statusFilter === 'Inactive' ? false : undefined,
       };
@@ -81,7 +85,7 @@ const UserManagement: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchTerm, roleFilter, statusFilter, usersService]);
+  }, [currentPage, debouncedSearchTerm, roleFilter, statusFilter, usersService]);
 
   const fetchStats = useCallback(async () => {
     try {

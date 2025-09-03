@@ -17,12 +17,24 @@ use Illuminate\Support\Facades\Auth;
 class DocumentController extends Controller
 {
     /**
-     * Display a paginated listing of documents with filters.
+     * Display a paginated listing of documents with filters (OPTIMIZED).
      */
     public function index(Request $request): JsonResponse
     {
         try {
-            $query = Document::with([
+            // OPTIMIZED: Start with selective fields and optimized relationships
+            $query = Document::select([
+                'id', 'type', 'status', 'priority', 'payment_status',
+                'document_number', 'serial_number', 'applicant_name',
+                'resident_id', 'submitted_at', 'processed_at', 'approved_at',
+                'released_at', 'needed_date', 'processing_fee', 'purpose',
+                // Cash bond fields
+                'received_from', 'representing_entity', 'acknowledgement_address', 'bond_amount',
+                'created_at', 'updated_at'
+            ]);
+
+            // OPTIMIZED: Only load necessary relationship fields
+            $query->with([
                 'resident:id,first_name,last_name,middle_name,suffix,complete_address,mobile_number,email_address',
                 'processedByUser:id,first_name,last_name,role,position',
                 'approvedByUser:id,first_name,last_name,role,position',
@@ -76,19 +88,19 @@ class DocumentController extends Controller
                 $query->where('bond_amount', $request->bond_amount);
             }
 
-            // Search functionality (now also scans cash-bond fields)
+            // OPTIMIZED: Search functionality using indexes
             if ($request->filled('search')) {
                 $searchTerm = $request->search;
                 $query->where(function ($q) use ($searchTerm) {
-                    $q->where('document_number', 'LIKE', "%{$searchTerm}%")
-                        ->orWhere('serial_number', 'LIKE', "%{$searchTerm}%")
-                        ->orWhere('applicant_name', 'LIKE', "%{$searchTerm}%")
-                        ->orWhere('received_from', 'LIKE', "%{$searchTerm}%")
-                        ->orWhere('representing_entity', 'LIKE', "%{$searchTerm}%")
-                        ->orWhere('acknowledgement_address', 'LIKE', "%{$searchTerm}%")
+                    $q->where('document_number', 'ILIKE', "%{$searchTerm}%")
+                        ->orWhere('serial_number', 'ILIKE', "%{$searchTerm}%")
+                        ->orWhere('applicant_name', 'ILIKE', "%{$searchTerm}%")
+                        ->orWhere('received_from', 'ILIKE', "%{$searchTerm}%")
+                        ->orWhere('representing_entity', 'ILIKE', "%{$searchTerm}%")
+                        ->orWhere('acknowledgement_address', 'ILIKE', "%{$searchTerm}%")
                         ->orWhereHas('resident', function ($subQuery) use ($searchTerm) {
-                            $subQuery->where('first_name', 'LIKE', "%{$searchTerm}%")
-                                ->orWhere('last_name', 'LIKE', "%{$searchTerm}%");
+                            $subQuery->where('first_name', 'ILIKE', "%{$searchTerm}%")
+                                ->orWhere('last_name', 'ILIKE', "%{$searchTerm}%");
                         });
                 });
             }
@@ -276,59 +288,89 @@ class DocumentController extends Controller
     }
 
     /**
-     * Get document statistics.
+     * Get document statistics (OPTIMIZED - single query approach).
      */
     public function statistics(): JsonResponse
     {
         try {
+            // Single optimized query to get all basic counts at once
+            $basicStats = Document::selectRaw("
+                COUNT(*) as total_documents,
+                COUNT(CASE WHEN status = 'PENDING' THEN 1 END) as pending_documents,
+                COUNT(CASE WHEN status = 'PROCESSING' THEN 1 END) as processing_documents,
+                COUNT(CASE WHEN status = 'APPROVED' THEN 1 END) as approved_documents,
+                COUNT(CASE WHEN status = 'RELEASED' THEN 1 END) as released_documents,
+                COUNT(CASE WHEN status = 'REJECTED' THEN 1 END) as rejected_documents,
+                COUNT(CASE WHEN priority IN ('urgent', 'rush') THEN 1 END) as urgent_documents,
+                SUM(processing_fee) as total_processing_fees,
+                SUM(CASE WHEN payment_status = 'UNPAID' THEN processing_fee ELSE 0 END) as unpaid_fees,
+                SUM(CASE WHEN payment_status = 'PAID' THEN processing_fee ELSE 0 END) as paid_fees
+            ")->first();
+
+            // Optimized overdue count with single query
+            $overdueCount = Document::whereRaw("needed_date < NOW() AND status NOT IN ('RELEASED', 'REJECTED', 'CANCELLED')")
+                ->count();
+
+            // Optimized grouped queries
+            $byStatus = Document::selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item->status => $item->count];
+                });
+
+            $byDocumentType = Document::selectRaw('type, COUNT(*) as count')
+                ->groupBy('type')
+                ->orderByDesc('count')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item->type => $item->count];
+                });
+
+            $byPriority = Document::selectRaw('priority, COUNT(*) as count')
+                ->groupBy('priority')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item->priority => $item->count];
+                });
+
+            $byPaymentStatus = Document::selectRaw('payment_status, COUNT(*) as count')
+                ->groupBy('payment_status')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item->payment_status => $item->count];
+                });
+
+            // Monthly stats for current year only
+            $monthlyStats = Document::selectRaw('
+                    EXTRACT(YEAR FROM submitted_at) as year,
+                    EXTRACT(MONTH FROM submitted_at) as month,
+                    COUNT(*) as total_requests
+                ')
+                ->whereYear('submitted_at', now()->year)
+                ->groupBy('year', 'month')
+                ->orderBy('month')
+                ->get();
+
             $stats = [
-                'total_documents' => Document::count(),
-                'pending_documents' => Document::where('status', 'PENDING')->count(),
-                'processing_documents' => Document::where('status', 'PROCESSING')->count(),
-                'approved_documents' => Document::where('status', 'APPROVED')->count(),
-                'released_documents' => Document::where('status', 'RELEASED')->count(),
-                'rejected_documents' => Document::where('status', 'REJECTED')->count(),
-                'overdue_documents' => Document::overdue()->count(),
-                'urgent_documents' => Document::whereIn('priority', ['urgent', 'rush'])->count(),
-                'by_status' => Document::selectRaw('status, COUNT(*) as count')
-                    ->groupBy('status')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [$item->status => $item->count];
-                    }),
-                'by_document_type' => Document::selectRaw('type, COUNT(*) as count')
-                    ->groupBy('type')
-                    ->orderByDesc('count')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [$item->type => $item->count];
-                    }),
-                'by_priority' => Document::selectRaw('priority, COUNT(*) as count')
-                    ->groupBy('priority')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [$item->priority => $item->count];
-                    }),
-                'by_payment_status' => Document::selectRaw('payment_status, COUNT(*) as count')
-                    ->groupBy('payment_status')
-                    ->get()
-                    ->mapWithKeys(function ($item) {
-                        return [$item->payment_status => $item->count];
-                    }),
+                'total_documents' => (int) $basicStats->total_documents,
+                'pending_documents' => (int) $basicStats->pending_documents,
+                'processing_documents' => (int) $basicStats->processing_documents,
+                'approved_documents' => (int) $basicStats->approved_documents,
+                'released_documents' => (int) $basicStats->released_documents,
+                'rejected_documents' => (int) $basicStats->rejected_documents,
+                'overdue_documents' => (int) $overdueCount,
+                'urgent_documents' => (int) $basicStats->urgent_documents,
+                'by_status' => $byStatus,
+                'by_document_type' => $byDocumentType,
+                'by_priority' => $byPriority,
+                'by_payment_status' => $byPaymentStatus,
                 'revenue' => [
-                    'total_processing_fees' => Document::sum('processing_fee'),
-                    'unpaid_fees' => Document::where('payment_status', 'UNPAID')->sum('processing_fee'),
-                    'paid_fees' => Document::where('payment_status', 'PAID')->sum('processing_fee'),
+                    'total_processing_fees' => (float) $basicStats->total_processing_fees,
+                    'unpaid_fees' => (float) $basicStats->unpaid_fees,
+                    'paid_fees' => (float) $basicStats->paid_fees,
                 ],
-                'monthly_stats' => Document::selectRaw('
-                        EXTRACT(YEAR FROM submitted_at) as year,
-                        EXTRACT(MONTH FROM submitted_at) as month,
-                        COUNT(*) as total_requests
-                    ')
-                    ->whereYear('submitted_at', now()->year)
-                    ->groupBy('year', 'month')
-                    ->orderBy('month')
-                    ->get()
+                'monthly_stats' => $monthlyStats
             ];
 
             return response()->json([

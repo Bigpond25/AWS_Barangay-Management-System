@@ -86,20 +86,21 @@ export class AppointmentsService extends BaseApiService {
       const responseSchema = ApiResponseSchema(z.boolean());
 
       const response = await this.request(
-        `/help-desk/appointments/check-vacancy/${schedule}`,
+        `/help-desk/appointments/check-vacancy`,
         responseSchema,
         {
-          method: 'GET'
+          method: 'GET',
+          params: schedule
         }
       );
 
-      if (!response.data) {
+      if (response.data === undefined) {
         throw new Error('Server returned invalid response format');
       }
       return response.data;
     } catch (error) {
         if (error instanceof Error) {
-          throw new Error(`Failed to check official status: ${error.message}`);
+          throw new Error(`Failed to check schedule availability: ${error.message}`);
         }
         throw new Error('An unexpected error occurred while checking schedule vacancy');
     }

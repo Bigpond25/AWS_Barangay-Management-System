@@ -36,7 +36,7 @@ export const ActiveTickets: React.FC<ActiveTicketsProps> = ({ tickets = [] }) =>
       contact_number: '+639123456789',
       email_address: 'juan@example.com',
       complete_address: '123 Main St, Barangay Sample',
-      category: 'APPOINTMENT',
+      type: 'APPOINTMENT',
       created_at: new Date('2024-01-15T08:00:00Z'),
       updated_at: new Date('2024-01-15T08:00:00Z')
     },
@@ -51,7 +51,7 @@ export const ActiveTickets: React.FC<ActiveTicketsProps> = ({ tickets = [] }) =>
       contact_number: '+639987654321',
       email_address: 'maria@example.com',
       complete_address: '456 Oak Ave, Barangay Sample',
-      category: 'COMPLAINT',
+      type: 'COMPLAINT',
       created_at: new Date('2024-01-14T20:30:00Z'),
       updated_at: new Date('2024-01-15T09:00:00Z')
     },
@@ -66,7 +66,7 @@ export const ActiveTickets: React.FC<ActiveTicketsProps> = ({ tickets = [] }) =>
       contact_number: '+639111222333',
       email_address: 'roberto@example.com',
       complete_address: '789 Pine St, Barangay Sample',
-      category: 'BLOTTER',
+      type: 'BLOTTER',
       created_at: new Date('2024-01-13T14:15:00Z'),
       updated_at: new Date('2024-01-15T10:30:00Z')
     }
@@ -159,7 +159,7 @@ export const ActiveTickets: React.FC<ActiveTicketsProps> = ({ tickets = [] }) =>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-sm font-medium text-gray-500 uppercase">
-                      {ticket.category}
+                      {ticket.type}
                     </span>
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(ticket.priority)}`}>
                       {ticket.priority}

@@ -2,6 +2,7 @@
 // NoticeOfHearingForm.tsx - Notice of Hearing Request Form
 // ============================================================================
 
+import { useDebounce } from '@/hooks/useDebounce';
 import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,6 +28,7 @@ const NoticeOfHearingForm: React.FC<NoticeOfHearingFormProps> = ({ onNavigate })
   const [selectedComplainant, setSelectedComplainant] = useState<Resident | null>(null);
   const [selectedRespondent, setSelectedRespondent] = useState<Resident | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [searchType, setSearchType] = useState<'complainant' | 'respondent'>('complainant');
   const [isLoaded, setIsLoaded] = useState(false);
   const { showNotification } = useNotifications();
@@ -97,7 +99,7 @@ const NoticeOfHearingForm: React.FC<NoticeOfHearingFormProps> = ({ onNavigate })
     data: residentsData,
     isLoading: searchLoading
   } = useResidents({
-    search: searchTerm,
+    search: debouncedSearchTerm,
     per_page: 10
   });
 

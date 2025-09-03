@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Schemas\ResidentSchema;
-use App\Traits\HasEncryptedFields;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -17,7 +16,7 @@ use Carbon\Carbon;
 
 class Resident extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes, HasEncryptedFields, LogsActivity;
+    use HasFactory, HasUuids, SoftDeletes, LogsActivity;
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -82,28 +81,6 @@ class Resident extends Model
         
         parent::__construct($attributes);
     }
-
-    /**
-     * Define encrypted fields for HasEncryptedFields trait
-     */
-    protected $encrypted = [
-        // 'first_name',
-        // 'last_name',
-        // 'mobile_number',
-        // 'email_address',
-        // 'complete_address',
-        // 'current_address'
-    ];
-
-    /**
-     * Define fields that should have search hashes
-     */
-    protected $hashed = [
-        'first_name',
-        'last_name',
-        'mobile_number',
-        'email_address'
-    ];
 
     /**
      * Boot the model
@@ -528,18 +505,13 @@ class Resident extends Model
         $search = trim($search);
         
         return $query->where(function ($q) use ($search) {
-            // Search in encrypted fields using hash fields for exact matches
-            $searchHash = hash('sha256', strtolower($search));
-            
-            $q->where('first_name_hash', $searchHash)
-              ->orWhere('last_name_hash', $searchHash)
-              ->orWhere('mobile_number_hash', $searchHash)
-              ->orWhere('email_address_hash', $searchHash)
-              
-              // Search in non-encrypted text fields
-              ->orWhere('first_name', 'ILIKE', "%{$search}%")
+            // Direct search in all text fields
+            $q->where('first_name', 'ILIKE', "%{$search}%")
               ->orWhere('middle_name', 'ILIKE', "%{$search}%")
               ->orWhere('last_name', 'ILIKE', "%{$search}%")
+              ->orWhere('mobile_number', 'ILIKE', "%{$search}%")
+              ->orWhere('email_address', 'ILIKE', "%{$search}%")
+              
               // Combination of first name last name
               ->orWhereRaw("CONCAT(first_name, ' ', last_name) ILIKE ?", ["%{$search}%"])
               ->orWhereRaw("CONCAT(last_name, ' ', first_name) ILIKE ?", ["%{$search}%"])
@@ -548,6 +520,7 @@ class Resident extends Model
               ->orWhere('barangay', 'ILIKE', "%{$search}%")
               ->orWhere('street', 'ILIKE', "%{$search}%")
               ->orWhere('house_number', 'ILIKE', "%{$search}%")
+              ->orWhere('complete_address', 'ILIKE', "%{$search}%")
               ->orWhere('mother_name', 'ILIKE', "%{$search}%")
               ->orWhere('father_name', 'ILIKE', "%{$search}%")
               ->orWhere('occupation', 'ILIKE', "%{$search}%")

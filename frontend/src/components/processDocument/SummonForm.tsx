@@ -2,6 +2,7 @@
 // SummonForm.tsx - Barangay Summon Form
 // ============================================================================
 
+import { useDebounce } from '@/hooks/useDebounce';
 import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,6 +27,7 @@ const SummonForm: React.FC<SummonFormProps> = ({ onNavigate }) => {
   const [step, setStep] = useState(1);
   const [selectedResident, setSelectedResident] = useState<Resident | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [isLoaded, setIsLoaded] = useState(false);
   const { showNotification } = useNotifications();
 
@@ -91,7 +93,7 @@ const SummonForm: React.FC<SummonFormProps> = ({ onNavigate }) => {
     data: residentsData,
     isLoading: searchLoading
   } = useResidents({
-    search: searchTerm,
+    search: debouncedSearchTerm,
     per_page: 10
   });
 

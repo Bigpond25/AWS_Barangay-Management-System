@@ -480,6 +480,45 @@ export function usePhilippineAddress() {
     }
   }, []);
 
+  // Load full address cascade - used for initial data loading
+  const loadFullAddressCascade = useCallback(async (formValues: {
+    region?: string;
+    province?: string;
+    city?: string;
+    barangay?: string;
+  }) => {
+    if (!formValues.region) return;
+
+    console.log('Loading full address cascade:', formValues);
+
+    try {
+      setIsLoadingAddress(true);
+      
+      // Load provinces for the region
+      await loadProvinces(formValues.region);
+      setSelectedRegionCode(formValues.region);
+      
+      if (formValues.province) {
+        // Wait a bit for provinces to be set in state
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await loadCities(formValues.province);
+        setSelectedProvinceCode(formValues.province);
+        
+        if (formValues.city) {
+          // Wait a bit for cities to be set in state
+          await new Promise(resolve => setTimeout(resolve, 100));
+          await loadBarangays(formValues.city);
+          setSelectedCityCode(formValues.city);
+        }
+      }
+    } catch (error) {
+      console.error('Error in full address cascade:', error);
+      setError('Failed to load address cascade. Please try again.');
+    } finally {
+      setIsLoadingAddress(false);
+    }
+  }, [loadProvinces, loadCities, loadBarangays]);
+
   // Handler functions that update internal state and trigger cascading
   const handleRegionChange = useCallback((regionCode: string) => {
     setSelectedRegionCode(regionCode);
@@ -524,6 +563,7 @@ export function usePhilippineAddress() {
     loadProvinces,
     loadCities,
     loadBarangays,
+    loadFullAddressCascade,
     handleRegionChange,
     handleProvinceChange,
     handleCityChange,

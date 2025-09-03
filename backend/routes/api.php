@@ -50,7 +50,7 @@ Route::prefix('help-desk')->group(function () {
         Route::get('/view/{id}', [AppointmentController::class, 'view']);
         Route::post('/', [AppointmentController::class, 'store']);
         Route::put('/{id}', [AppointmentController::class, 'update']);
-        Route::get('/check-vacancy/{schedule}', [AppointmentController::class, 'checkScheduleVacancy']);
+        Route::get('/check-vacancy', [AppointmentController::class, 'checkScheduleVacancy']);
     });
 
     // Public blotter

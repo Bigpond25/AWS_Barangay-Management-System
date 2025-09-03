@@ -28,7 +28,7 @@ export function useCreateComplaintForm({ onSuccess }: useCreateComplaintFormProp
     const searchResident = watch('ticket.resident_search');
 
     // PALAGING  COMPLAINT TO
-    setValue("ticket.category", "COMPLAINT");
+    setValue("ticket.type", "COMPLAINT");
 
     const { data: filteredResidents, isLoading: isLoadingResidents, error: residentsError } = useResidents({ search: searchResident || "" });
 

@@ -96,10 +96,10 @@ export const ResidentForm: React.FC<ResidentFormProps> = ({
     provinces,
     cities,
     barangays,
+    loadFullAddressCascade,
     handleRegionChange,
     handleProvinceChange,
     handleCityChange,
-    handleBarangayChange,
     isLoadingAddress,
     error: addressError,
     retry: retryAddressLoad
@@ -123,7 +123,7 @@ export const ResidentForm: React.FC<ResidentFormProps> = ({
   const isLastStep = currentStep === 7;
   const isFirstStep = currentStep === 0;
 
-  // Watch for address changes to load dependent options - only clear dependent fields when user changes selection
+  // Watch for address changes to load dependent options
   const selectedRegion = form.watch('region');
   const selectedProvince = form.watch('province');
   const selectedCity = form.watch('city');
@@ -150,120 +150,118 @@ export const ResidentForm: React.FC<ResidentFormProps> = ({
 
   const calculatedAge = calculateAge(watchBirthDate);
 
-  // State to track if we're initially loading data (to prevent clearing dependent fields)
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  // Track if we're in the process of loading initial form data
+  const [isLoadingFormData, setIsLoadingFormData] = useState(true);
+  const [hasInitializedAddress, setHasInitializedAddress] = useState(false);
 
+  // Handle initial address cascade when form data is loaded (for edit mode or draft)
   useEffect(() => {
-    if (selectedRegion) {
-      handleRegionChange(selectedRegion);
-      // Only clear dependent fields if this is user interaction, not initial load
-      if (!isInitialLoad) {
-        form.setValue('province', '');
-        form.setValue('city', '');
-        form.setValue('barangay', '');
-      }
-    }
-  }, [selectedRegion, handleRegionChange, form, isInitialLoad]);
-
-  useEffect(() => {
-    if (selectedProvince) {
-      handleProvinceChange(selectedProvince);
-      // Only clear dependent fields if this is user interaction, not initial load
-      if (!isInitialLoad) {
-        form.setValue('city', '');
-        form.setValue('barangay', '');
-      }
-    }
-  }, [selectedProvince, handleProvinceChange, form, isInitialLoad]);
-
-  useEffect(() => {
-    if (selectedCity) {
-      handleCityChange(selectedCity);
-      // Only clear dependent fields if this is user interaction, not initial load
-      if (!isInitialLoad) {
-        form.setValue('barangay', '');
-      }
-    }
-  }, [selectedCity, handleCityChange, form, isInitialLoad]);
-
-  // Handle initial address cascade when form data is loaded (draft or edit)
-  useEffect(() => {
-    const handleInitialAddressCascade = async () => {
-      const formValues = form.getValues();
-      console.log('Address cascade triggered with values:', formValues);
-      
-      // If we have complete address data, load all cascading options sequentially
-      if (formValues.region && formValues.province && formValues.city) {
-        console.log('Loading full address cascade for:', formValues.region, formValues.province, formValues.city, formValues.barangay);
-        
-        try {
-          // Load provinces first
-          handleRegionChange(formValues.region);
-          
-          // Wait for provinces to load, then load cities
-          await new Promise(resolve => setTimeout(resolve, 500));
-          handleProvinceChange(formValues.province);
-          
-          // Wait for cities to load, then load barangays
-          await new Promise(resolve => setTimeout(resolve, 500));
-          handleCityChange(formValues.city);
-          
-          // Mark initial load as complete after everything is loaded
-          await new Promise(resolve => setTimeout(resolve, 300));
-          console.log('Address cascade completed, setting initial load to false');
-          setIsInitialLoad(false);
-        } catch (error) {
-          console.error('Error loading address cascade:', error);
-          setIsInitialLoad(false);
-        }
-      } else if (formValues.region) {
-        // Partial address data - load what we can
-        console.log('Loading partial address cascade for region:', formValues.region);
-        try {
-          handleRegionChange(formValues.region);
-          if (formValues.province) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-            handleProvinceChange(formValues.province);
-          }
-          setTimeout(() => setIsInitialLoad(false), 300);
-        } catch (error) {
-          console.error('Error loading partial address cascade:', error);
-          setIsInitialLoad(false);
-        }
-      } else {
-        // No address data
-        console.log('No address data found, setting initial load to false');
-        setIsInitialLoad(false);
-      }
-    };
-
-    // Subscribe to form watch for reset events
+    // Subscribe to form reset events
     const subscription = form.watch((value, { name, type }) => {
-      // Only run on form reset (when data is loaded)
-      if (type === 'change' && !name) {
-        console.log('Form reset detected, triggering address cascade');
-        // Use setTimeout to ensure the form values are set before running cascade
-        setTimeout(() => {
-          handleInitialAddressCascade();
+      // Form reset detected (when loading edit data or draft)
+      if (type === 'change' && !name && !hasInitializedAddress) {
+        console.log('Form reset detected, initializing address cascade');
+        setIsLoadingFormData(true);
+        
+        // Use a small delay to ensure form values are set
+        setTimeout(async () => {
+          const formValues = form.getValues();
+          
+          if (formValues.region) {
+            console.log('Loading address cascade for:', {
+              region: formValues.region,
+              province: formValues.province,
+              city: formValues.city,
+              barangay: formValues.barangay
+            });
+            
+            try {
+              await loadFullAddressCascade({
+                region: formValues.region,
+                province: formValues.province,
+                city: formValues.city,
+                barangay: formValues.barangay
+              });
+            } catch (error) {
+              console.error('Error loading address cascade:', error);
+            }
+          }
+          
+          setHasInitializedAddress(true);
+          setIsLoadingFormData(false);
         }, 100);
       }
     });
 
-    // Also run on mount
-    handleInitialAddressCascade();
-
     return () => subscription.unsubscribe();
-  }, [form, handleRegionChange, handleProvinceChange, handleCityChange]);
+  }, [form, loadFullAddressCascade, hasInitializedAddress]);
 
-  // Debug form values (can be removed in production)
+  // Handle user-initiated address changes (not initial load)
   useEffect(() => {
-    const subscription = form.watch((value, { name, type }) => {
-      if (name === 'region' || name === 'province' || name === 'city' || name === 'barangay' || name === 'profile_photo_url') {
-        console.log(`Form field ${name} changed:`, value[name], 'type:', type);
+    if (!isLoadingFormData && hasInitializedAddress && selectedRegion) {
+      console.log('User changed region:', selectedRegion);
+      handleRegionChange(selectedRegion);
+      
+      // Clear dependent fields only for user changes
+      form.setValue('province', '');
+      form.setValue('city', '');
+      form.setValue('barangay', '');
+    }
+  }, [selectedRegion, handleRegionChange, form, isLoadingFormData, hasInitializedAddress]);
+
+  useEffect(() => {
+    if (!isLoadingFormData && hasInitializedAddress && selectedProvince) {
+      console.log('User changed province:', selectedProvince);
+      handleProvinceChange(selectedProvince);
+      
+      // Clear dependent fields only for user changes
+      form.setValue('city', '');
+      form.setValue('barangay', '');
+    }
+  }, [selectedProvince, handleProvinceChange, form, isLoadingFormData, hasInitializedAddress]);
+
+  useEffect(() => {
+    if (!isLoadingFormData && hasInitializedAddress && selectedCity) {
+      console.log('User changed city:', selectedCity);
+      handleCityChange(selectedCity);
+      
+      // Clear dependent fields only for user changes
+      form.setValue('barangay', '');
+    }
+  }, [selectedCity, handleCityChange, form, isLoadingFormData, hasInitializedAddress]);
+
+  // Initialize for create mode (no form reset event)
+  useEffect(() => {
+    if (mode === 'create' && !hasInitializedAddress) {
+      // For create mode, check if we have draft data with address
+      const formValues = form.getValues();
+      
+      if (formValues.region) {
+        console.log('Create mode: Loading address cascade for draft data');
+        setIsLoadingFormData(true);
+        
+        setTimeout(async () => {
+          try {
+            await loadFullAddressCascade({
+              region: formValues.region,
+              province: formValues.province,
+              city: formValues.city,
+              barangay: formValues.barangay
+            });
+          } catch (error) {
+            console.error('Error loading address cascade for create mode:', error);
+          }
+          
+          setHasInitializedAddress(true);
+          setIsLoadingFormData(false);
+        }, 100);
+      } else {
+        // No address data in create mode
+        setHasInitializedAddress(true);
+        setIsLoadingFormData(false);
       }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+    }
+  }, [mode, form, loadFullAddressCascade, hasInitializedAddress]);
 
   // Check if current step is valid
   const validateCurrentStep = () => {

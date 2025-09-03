@@ -28,7 +28,7 @@ export function useCreateBlotterForm({ onSuccess }: useCreateBlotterFormProps) {
     const searchResident = watch('ticket.resident_search');
 
     // PALAGING  BLOTTER TO
-    setValue("ticket.category", "BLOTTER");
+    setValue("ticket.type", "BLOTTER");
 
     const { data: filteredResidents, isLoading: isLoadingResidents, error: residentsError } = useResidents({ search: searchResident || "" });
 

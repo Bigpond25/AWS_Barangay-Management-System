@@ -8,7 +8,7 @@ import type {
   HelpDeskTicketParams,
   Priority,
   Status,
-  TicketCategory,
+  TicketType,
 } from "@/services/helpDesk/helpDesk.type";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -38,14 +38,14 @@ const HelpDeskPage: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<TicketCategory | undefined>(
+  const [activeTab, setActiveTab] = useState<TicketType | undefined>(
     undefined
   );
   const [status, setStatus] = useState<Status | undefined>(undefined);
   const [priority, setPriority] = useState<Priority | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
   const [modalId, setModalId] = useState<string | null>(null);
-  const [modalCategory, setModalCategory] = useState<TicketCategory | null>(
+  const [modalCategory, setModalCategory] = useState<TicketType | null>(
     null
   );
   const [mode, setMode] = useState<"edit" | "view">("view");
@@ -62,7 +62,7 @@ const HelpDeskPage: React.FC = () => {
     page: currentPage,
     per_page: 5,
     search: debouncedSearchTerm,
-    category: activeTab,
+    type: activeTab,
     status: status,
     priority: priority,
   };
@@ -123,7 +123,7 @@ const HelpDeskPage: React.FC = () => {
     }
   };
 
-  const handleActiveTabChange = (category: TicketCategory | undefined) => {
+  const handleActiveTabChange = (category: TicketType | undefined) => {
     setActiveTab(category);
     setCurrentPage(1);
   };
@@ -138,14 +138,14 @@ const HelpDeskPage: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleEditTicket = (id: string, category: TicketCategory) => {
+  const handleEditTicket = (id: string, category: TicketType) => {
     setMode("edit");
     setShowModal(true);
     setModalId(id);
     setModalCategory(category);
   };
 
-  const handleViewTicket = (id: string, category: TicketCategory) => {
+  const handleViewTicket = (id: string, category: TicketType) => {
     setMode("view");
     setShowModal(true);
     setModalId(id);

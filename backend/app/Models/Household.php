@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Schemas\HouseholdSchema;
-use App\Traits\HasEncryptedFields;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Household extends Model implements Auditable
 {
-    use HasFactory, HasUuids, HasEncryptedFields, LogsActivity, \OwenIt\Auditing\Auditable;
+    use HasFactory, HasUuids, LogsActivity, \OwenIt\Auditing\Auditable;
 
     protected $auditModel = ActivityLog::class;
     protected $keyType = 'string';
@@ -59,20 +58,6 @@ class Household extends Model implements Auditable
         
         parent::__construct($attributes);
     }
-
-    /**
-     * Define encrypted fields for HasEncryptedFields trait
-     */
-    protected $encrypted = [
-        'complete_address'
-    ];
-
-    /**
-     * Define fields that should have search hashes
-     */
-    protected $hashed = [
-        'complete_address'
-    ];
 
     /**
      * Boot the model

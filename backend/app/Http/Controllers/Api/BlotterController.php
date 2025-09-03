@@ -77,7 +77,7 @@ class BlotterController extends Controller
             'ticket.contact_number' => 'required|string|size:16',
             'ticket.email_address' => 'nullable|email|max:255',
             'ticket.complete_address' => 'required|string|max:255',
-            'ticket.category' => 'required|in:BLOTTER',
+            'ticket.type' => 'required|in:BLOTTER',
 
             // Blotter fields
             'blotter.type_of_incident' => [
@@ -147,7 +147,7 @@ class BlotterController extends Controller
             // Create ticket
             $ticket = Ticket::create([
                 ...$request->input('ticket'),
-                'category' => 'BLOTTER',
+                'type' => 'BLOTTER',
                 'status' => 'OPEN'
             ]);
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const TicketCategorySchema = z.enum(['APPOINTMENT', 'BLOTTER', 'COMPLAINT', 'SUGGESTION'])
+export const TicketTypeSchema = z.enum(['APPOINTMENT', 'BLOTTER', 'COMPLAINT', 'SUGGESTION'])
 export const PrioritySchema = z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'])
 // appointment status and base ticket status are one and the same now
 export const StatusSchema = z.enum(['OPEN', 'IN_PROGRESS', 'PENDING', 'RESOLVED', 'CLOSED'])
@@ -44,7 +44,7 @@ export const BaseTicketSchema = z.object({
     // email_address: z.string().email('helpDesk.validation.invalidEmailFormat').max(255).optional(),
     email_address: z.string().optional().nullable(),
     complete_address: z.string().optional().nullable(),
-    category: TicketCategorySchema,
+    type: TicketTypeSchema,
     status: StatusSchema,
     created_at: z.date(),
     updated_at: z.date(),
@@ -69,7 +69,7 @@ export const HelpDeskStatisticsSchema = z.object({
 
 export const HelpDeskTicketParamsSchema = z.object({
   page: z.number().min(1).optional(),
-  category: TicketCategorySchema.optional(),
+  type: TicketTypeSchema.optional(),
   priority: PrioritySchema.optional(),
   status: StatusSchema.optional(),
   search: z.string().optional(),
@@ -78,7 +78,7 @@ export const HelpDeskTicketParamsSchema = z.object({
   per_page: z.number().optional()
 })
 
-export type TicketCategory = z.infer<typeof TicketCategorySchema>
+export type TicketType = z.infer<typeof TicketTypeSchema>
 export type Priority = z.infer<typeof PrioritySchema>
 export type Status = z.infer<typeof StatusSchema>
 export type BaseTicket = z.infer<typeof BaseTicketSchema>
@@ -92,6 +92,6 @@ export const priorities = PrioritySchema.options;
 export const prioritiesAll = z.enum(["ALL", ...PrioritySchema.options] as const).options;
 export const statusOptions = StatusSchema.options;
 export const statusOptionsAll = z.enum(["ALL", ...StatusSchema.options] as const).options;
-export const categoryOptions = TicketCategorySchema.options;
-export const categoryOptionsAll = z.enum(["ALL", ...TicketCategorySchema.options] as const).options;
+export const typeOptions = TicketTypeSchema.options;
+export const typeOptionsAll = z.enum(["ALL", ...TicketTypeSchema.options] as const).options;
 export const feedbackCategoryOptions = FeedbackCategorySchema.options;

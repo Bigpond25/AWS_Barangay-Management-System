@@ -50,22 +50,52 @@ use Illuminate\Support\Facades\DB;
 class HouseholdController extends Controller
 {
     /**
-     * Display a listing of households.
+     * Display a listing of households (OPTIMIZED).
      */
     public function index(Request $request): JsonResponse
     {
         try {
-            $query = Household::with(['headResident', 'members']);
+            // OPTIMIZED: Start with selective fields
+            $query = Household::select([
+                'id', 'household_number', 'household_type', 'head_resident_id',
+                'complete_address', 'monthly_income', 'primary_income_source',
+                'four_ps_beneficiary', 'indigent_family', 'has_senior_citizen',
+                'has_pwd_member', 'house_type', 'ownership_status',
+                'has_electricity', 'has_water_supply', 'has_internet_access',
+                'created_at', 'updated_at', 'created_by', 'updated_by'
+            ]);
+
+            // OPTIMIZED: Only load necessary relationship fields for list view
+            $includes = [];
+            if ($request->has('include')) {
+                $requestedIncludes = explode(',', $request->get('include'));
+                $validIncludes = ['headResident', 'members', 'createdBy', 'updatedBy'];
+                $includes = array_intersect($requestedIncludes, $validIncludes);
+            }
+
+            // Default minimal relationships for performance
+            $defaultIncludes = [
+                'headResident:id,first_name,last_name,middle_name,suffix',
+                'createdBy:id,first_name,last_name',
+                'updatedBy:id,first_name,last_name'
+            ];
+
+            // Only add members if specifically requested (expensive join through pivot)
+            if (in_array('members', $includes)) {
+                $defaultIncludes[] = 'members:id,first_name,last_name,middle_name';
+            }
+
+            $query->with($defaultIncludes);
 
             // Apply search functionality similar to ResidentController
             if ($request->has('search')) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
-                    $q->where('complete_address', 'LIKE', "%{$search}%")
-                      ->orWhere('household_number', 'LIKE', "%{$search}%")
+                    $q->where('complete_address', 'ILIKE', "%{$search}%")
+                      ->orWhere('household_number', 'ILIKE', "%{$search}%")
                       ->orWhereHas('headResident', function ($subQuery) use ($search) {
-                          $subQuery->where('first_name', 'LIKE', "%{$search}%")
-                                   ->orWhere('last_name', 'LIKE', "%{$search}%");
+                          $subQuery->where('first_name', 'ILIKE', "%{$search}%")
+                                   ->orWhere('last_name', 'ILIKE', "%{$search}%");
                       });
                 });
             }
@@ -485,28 +515,24 @@ class HouseholdController extends Controller
     }
 
     /**
-     * Get household statistics.
+     * Get household statistics (OPTIMIZED - single query approach).
      */
     public function statistics(): JsonResponse
     {
         try {
-            // Basic counts
-            $totalHouseholds = Household::count();
-            $fourPsBeneficiaries = Household::where('four_ps_beneficiary', true)->count();
-            $indigentFamilies = Household::where('indigent_family', true)->count();
-            $withSeniorCitizens = Household::where('has_senior_citizen', true)->count();
-            $withPwdMembers = Household::where('has_pwd_member', true)->count();
+            // Single optimized query to get all basic counts at once
+            $basicStats = Household::selectRaw("
+                COUNT(*) as total_households,
+                COUNT(CASE WHEN four_ps_beneficiary = true THEN 1 END) as four_ps_beneficiaries,
+                COUNT(CASE WHEN indigent_family = true THEN 1 END) as indigent_families,
+                COUNT(CASE WHEN has_senior_citizen = true THEN 1 END) as with_senior_citizens,
+                COUNT(CASE WHEN has_pwd_member = true THEN 1 END) as with_pwd_members,
+                COUNT(CASE WHEN has_electricity = true THEN 1 END) as with_electricity,
+                COUNT(CASE WHEN has_water_supply = true THEN 1 END) as with_water_supply,
+                COUNT(CASE WHEN has_internet_access = true THEN 1 END) as with_internet_access
+            ")->first();
 
-            // Utility access
-            $withElectricity = Household::where('has_electricity', true)->count();
-            $withWaterSupply = Household::where('has_water_supply', true)->count();
-            $withInternetAccess = Household::where('has_internet_access', true)->count();
-
-            // Distribution by categories
-            // Note: Barangay data is now part of complete_address, 
-            // so we cannot easily group by barangay anymore
-            $householdsByBarangay = [];
-
+            // Optimized grouped queries - only execute what's needed
             $householdsByType = Household::selectRaw('household_type, COUNT(*) as count')
                 ->whereNotNull('household_type')
                 ->groupBy('household_type')
@@ -531,20 +557,23 @@ class HouseholdController extends Controller
                 ->pluck('count', 'monthly_income')
                 ->toArray();
 
+            // Since barangay data is now part of complete_address, skip this expensive query
+            $householdsByBarangay = [];
+
             $stats = [
                 // Basic counts - matching frontend expectations exactly
-                'total_households' => $totalHouseholds,
+                'total_households' => (int) $basicStats->total_households,
                 
                 // Special categories - matching frontend field names
-                'four_ps_beneficiaries' => $fourPsBeneficiaries,
-                'indigent_families' => $indigentFamilies,
-                'with_senior_citizens' => $withSeniorCitizens,
-                'with_pwd_members' => $withPwdMembers,
+                'four_ps_beneficiaries' => (int) $basicStats->four_ps_beneficiaries,
+                'indigent_families' => (int) $basicStats->indigent_families,
+                'with_senior_citizens' => (int) $basicStats->with_senior_citizens,
+                'with_pwd_members' => (int) $basicStats->with_pwd_members,
                 
                 // Utility access
-                'with_electricity' => $withElectricity,
-                'with_water_supply' => $withWaterSupply,
-                'with_internet_access' => $withInternetAccess,
+                'with_electricity' => (int) $basicStats->with_electricity,
+                'with_water_supply' => (int) $basicStats->with_water_supply,
+                'with_internet_access' => (int) $basicStats->with_internet_access,
                 
                 // Geographic and demographic distribution
                 'households_by_barangay' => $householdsByBarangay,
@@ -562,17 +591,17 @@ class HouseholdController extends Controller
                 
                 // Classifications grouped
                 'classifications' => [
-                    'four_ps_beneficiaries' => $fourPsBeneficiaries,
-                    'indigent_families' => $indigentFamilies,
-                    'with_senior_citizens' => $withSeniorCitizens,
-                    'with_pwd_members' => $withPwdMembers,
+                    'four_ps_beneficiaries' => (int) $basicStats->four_ps_beneficiaries,
+                    'indigent_families' => (int) $basicStats->indigent_families,
+                    'with_senior_citizens' => (int) $basicStats->with_senior_citizens,
+                    'with_pwd_members' => (int) $basicStats->with_pwd_members,
                 ],
                 
                 // Utilities grouped
                 'utilities' => [
-                    'with_electricity' => $withElectricity,
-                    'with_water_supply' => $withWaterSupply,
-                    'with_internet_access' => $withInternetAccess,
+                    'with_electricity' => (int) $basicStats->with_electricity,
+                    'with_water_supply' => (int) $basicStats->with_water_supply,
+                    'with_internet_access' => (int) $basicStats->with_internet_access,
                 ]
             ];
 

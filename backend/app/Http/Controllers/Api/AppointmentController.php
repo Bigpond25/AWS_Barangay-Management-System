@@ -118,7 +118,7 @@ class AppointmentController extends Controller
             // Create ticket first
             $ticket = Ticket::create([
                 ...$request->input('ticket'),
-                'category' => 'APPOINTMENT',
+                'type' => 'APPOINTMENT',
                 'status' => 'OPEN'
             ]);
 

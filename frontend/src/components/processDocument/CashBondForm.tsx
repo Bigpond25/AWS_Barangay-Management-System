@@ -17,6 +17,7 @@ import { getResidentAge } from '@/utils/ageUtils';
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { DocumentFormField } from './_components/DocumentFormField';
 import Breadcrumb from '../_global/Breadcrumb';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface CashBondFormProps {
   onNavigate: (page: string) => void;
@@ -28,6 +29,9 @@ const CashBondForm: React.FC<CashBondFormProps> = ({ onNavigate }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
   const { showNotification } = useNotifications();
+
+  // Debounce search to avoid too many API calls
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   // Form initialization with react-hook-form and zod
   const form = useForm<DocumentFormData>({
@@ -89,7 +93,7 @@ const CashBondForm: React.FC<CashBondFormProps> = ({ onNavigate }) => {
     data: residentsData,
     isLoading: searchLoading
   } = useResidents({
-    search: searchTerm,
+    search: debouncedSearchTerm,
     per_page: 10
   });
 

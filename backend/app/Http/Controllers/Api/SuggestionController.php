@@ -66,7 +66,7 @@ class SuggestionController extends Controller
             'ticket.contact_number' => 'nullable|string|size:16',
             'ticket.email_address' => 'nullable|email|max:255',
             'ticket.complete_address' => 'nullable|string|max:255',
-            'ticket.category' => 'required|in:SUGGESTION',
+            'ticket.type' => 'required|in:SUGGESTION',
 
             // Suggestion fields
             'suggestion.s_category' => ['required', Rule::in(Suggestion::CATEGORIES)],
@@ -89,7 +89,7 @@ class SuggestionController extends Controller
             // Create ticket
             $ticket = Ticket::create([
                 ...$request->input('ticket'),
-                'category' => 'SUGGESTION',
+                'type' => 'SUGGESTION',
                 'status' => 'OPEN'
             ]);
 

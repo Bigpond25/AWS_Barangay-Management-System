@@ -2,15 +2,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaUsers, FaHome, FaUserFriends, FaDollarSign } from 'react-icons/fa';
 import StatCard from '../../_global/StatCard';
-import type { HouseholdStatistics } from '@/services/households/households.types';
+import type { HouseholdStatistics as HouseholdStatisticsType } from '@/services/households/households.types';
 
-interface HouseholdStatsProps {
- statistics?: HouseholdStatistics;
+interface HouseholdStatisticsProps {
+ statistics?: HouseholdStatisticsType;
  isLoading: boolean;
  isLoaded: boolean;
 }
 
-const HouseholdStats: React.FC<HouseholdStatsProps> = ({
+export const HouseholdStatistics: React.FC<HouseholdStatisticsProps> = ({
  statistics,
  isLoading,
  isLoaded
@@ -82,4 +82,4 @@ const HouseholdStats: React.FC<HouseholdStatsProps> = ({
  );
 };
 
-export default HouseholdStats;
+export default HouseholdStatistics;

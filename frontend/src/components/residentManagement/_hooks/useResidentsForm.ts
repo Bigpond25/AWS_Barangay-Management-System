@@ -89,10 +89,12 @@ export function useResidentForm({ mode, residentId, onSuccess }: UseResidentForm
   useEffect(() => {
     if (mode === 'edit' && resident) {
       const formData = transformResidentToFormData(resident);
-      // Reset form synchronously first
+      console.log('Loading resident data for edit:', formData);
+      
+      // Reset form with the transformed data
       form.reset(formData);
       
-      // Then set photo preview
+      // Set photo preview
       if (resident.profile_photo_url) {
         setProfilePhotoPreview(resident.profile_photo_url);
       }
@@ -106,10 +108,12 @@ export function useResidentForm({ mode, residentId, onSuccess }: UseResidentForm
       if (savedDraft) {
         try {
           const draftData = JSON.parse(savedDraft);
-          // Reset form synchronously first
+          console.log('Loading draft data:', draftData);
+          
+          // Reset form with draft data
           form.reset(draftData);
           
-          // Then set photo preview
+          // Set photo preview
           if (draftData.profile_photo_url) {
             setProfilePhotoPreview(draftData.profile_photo_url);
           }
