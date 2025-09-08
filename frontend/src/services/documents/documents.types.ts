@@ -112,7 +112,7 @@ export const DocumentFormDataSchema = z.object({
   // Retirement/Cessation/Dissolution specific
   ownership_type: z.string().nullable().optional(),
   retirement_date: z.string().nullable().optional(),
-  business_category: z.string().optional(),
+  business_category: z.string().nullable().optional(),
   
   // Processing Information
   requirements_submitted: z.array(z.string()).nullable().optional(),
@@ -338,6 +338,7 @@ export const transformDocumentToFormData = (document: Document | null): Document
       case_description: '',
       ownership_type: '',
       retirement_date: '',
+      business_category: '',
       requirements_submitted: [],
       notes: '',
       remarks: '',
@@ -391,5 +392,6 @@ export const transformDocumentToFormData = (document: Document | null): Document
     retirement_date: document.retirement_date 
       ? new Date(document.retirement_date).toISOString().slice(0, 10) 
       : '',
+    business_category: document.business_category || '',
   };
 };

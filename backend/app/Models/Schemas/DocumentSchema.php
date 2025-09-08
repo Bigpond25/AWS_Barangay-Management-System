@@ -62,8 +62,10 @@ class DocumentSchema
             'previous_address' => ['type' => 'text', 'nullable' => true],
 
             // Document Specific Fields (Retirement/Cessation/Dissolution)
+                        // Retirement/Cessation/Dissolution specific
             'ownership_type' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'retirement_date' => ['type' => 'date', 'nullable' => true],
+            'business_category' => ['type' => 'string', 'max' => 255, 'nullable' => true],
 
             // Document Specific Fields (Business Sign Clearance)
             'sign_wordings' => ['type' => 'string', 'max' => 255, 'nullable' => true],

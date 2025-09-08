@@ -19,29 +19,38 @@ class Document extends Model implements Auditable
     public $incrementing = false;
 
     /**
-     * Get fillable fields from schema
+     * Cached fillable fields from schema
      */
-    protected $fillable;
+    protected $fillable = [
+        'type', 'resident_id', 'applicant_name', 'purpose', 'applicant_address', 
+        'applicant_contact', 'applicant_email', 'priority', 'needed_date', 'processing_fee',
+        'status', 'payment_status', 'document_number', 'serial_number', 'submitted_at',
+        'processed_at', 'approved_at', 'released_at', 'clearance_purpose', 'clearance_type',
+        'business_name', 'business_type', 'business_address', 'business_owner', 
+        'business_category', 'indigency_reason', 'family_monthly_income', 'family_size',
+        'residency_period', 'previous_address', 'requirements_submitted', 'notes',
+        'remarks', 'certifying_official', 'file_path', 'file_bucket', 'file_storage_path',
+        'file_storage_provider', 'file_migrated_to_supabase', 'processed_by', 'approved_by',
+        'released_by', 'created_by', 'updated_by', 'received_from', 'representing_entity',
+        'acknowledgement_address', 'bond_amount', 'expiry_date'
+    ];
 
     /**
-     * Get casts from schema
+     * Cached casts from schema
      */
-    protected $casts;
-
-    public function __construct(array $attributes = [])
-    {
-        // Set fillable and casts from schema before calling parent constructor
-        try {
-            $this->fillable = DocumentSchema::getFillableFields() ?? [];
-            $this->casts = DocumentSchema::getCasts() ?? [];
-        } catch (\Exception $e) {
-            // Fallback in case schema is not available
-            $this->fillable = [];
-            $this->casts = [];
-        }
-
-        parent::__construct($attributes);
-    }
+    protected $casts = [
+        'needed_date' => 'date',
+        'submitted_at' => 'datetime',
+        'processed_at' => 'datetime', 
+        'approved_at' => 'datetime',
+        'released_at' => 'datetime',
+        'expiry_date' => 'date',
+        'processing_fee' => 'decimal:2',
+        'family_monthly_income' => 'decimal:2',
+        'bond_amount' => 'decimal:2',
+        'family_size' => 'integer',
+        'file_migrated_to_supabase' => 'boolean'
+    ];
 
     /**
      * Computed attributes
@@ -96,7 +105,7 @@ class Document extends Model implements Auditable
 
     public function getIsOverdueAttribute(): bool
     {
-        if (!$this->needed_date || in_array($this->status, ['released', 'rejected', 'cancelled'])) {
+        if (!$this->needed_date || in_array($this->status, ['RELEASED', 'REJECTED', 'CANCELLED'])) {
             return false;
         }
 
@@ -156,27 +165,27 @@ class Document extends Model implements Auditable
      */
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', 'PENDING');
     }
 
     public function scopeProcessing($query)
     {
-        return $query->where('status', 'processing');
+        return $query->where('status', 'PROCESSING');
     }
 
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', 'APPROVED');
     }
 
     public function scopeReleased($query)
     {
-        return $query->where('status', 'released');
+        return $query->where('status', 'RELEASED');
     }
 
     public function scopeRejected($query)
     {
-        return $query->where('status', 'rejected');
+        return $query->where('status', 'REJECTED');
     }
 
     public function scopeByDocumentType($query, $type)
@@ -202,7 +211,7 @@ class Document extends Model implements Auditable
     public function scopeOverdue($query)
     {
         return $query->where('needed_date', '<', now())
-            ->whereNotIn('status', ['released', 'rejected', 'cancelled']);
+            ->whereNotIn('status', ['RELEASED', 'REJECTED', 'CANCELLED']);
     }
 
     public function scopeExpired($query)
@@ -267,22 +276,22 @@ class Document extends Model implements Auditable
 
     public function canBeProcessed(): bool
     {
-        return $this->status === 'pending' && $this->hasRequiredDocuments();
+        return $this->status === 'PENDING' && $this->hasRequiredDocuments();
     }
 
     public function canBeApproved(): bool
     {
-        return $this->status === 'processing';
+        return $this->status === 'PROCESSING';
     }
 
     public function canBeReleased(): bool
     {
-        return $this->status === 'approved' && $this->payment_status === 'paid';
+        return $this->status === 'APPROVED' && $this->payment_status === 'PAID';
     }
 
     public function canBeRejected(): bool
     {
-        return !in_array($this->status, ['released', 'rejected', 'cancelled']);
+        return !in_array($this->status, ['RELEASED', 'REJECTED', 'CANCELLED']);
     }
 
     /**

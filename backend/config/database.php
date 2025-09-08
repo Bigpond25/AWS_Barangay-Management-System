@@ -119,6 +119,11 @@ return [
                 // AWS RDS optimizations
                 PDO::ATTR_TIMEOUT => env('DB_TIMEOUT', 60),
                 PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
+                // Additional performance optimizations for high-latency connections
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_STRINGIFY_FETCHES => false,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]) : [],
         ],
 

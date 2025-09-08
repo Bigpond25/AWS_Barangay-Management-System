@@ -88,21 +88,24 @@ class DocumentController extends Controller
                 $query->where('bond_amount', $request->bond_amount);
             }
 
-            // OPTIMIZED: Search functionality using indexes
+            // OPTIMIZED: Search functionality using LEFT JOIN instead of EXISTS subquery
             if ($request->filled('search')) {
                 $searchTerm = $request->search;
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('document_number', 'ILIKE', "%{$searchTerm}%")
-                        ->orWhere('serial_number', 'ILIKE', "%{$searchTerm}%")
-                        ->orWhere('applicant_name', 'ILIKE', "%{$searchTerm}%")
-                        ->orWhere('received_from', 'ILIKE', "%{$searchTerm}%")
-                        ->orWhere('representing_entity', 'ILIKE', "%{$searchTerm}%")
-                        ->orWhere('acknowledgement_address', 'ILIKE', "%{$searchTerm}%")
-                        ->orWhereHas('resident', function ($subQuery) use ($searchTerm) {
-                            $subQuery->where('first_name', 'ILIKE', "%{$searchTerm}%")
-                                ->orWhere('last_name', 'ILIKE', "%{$searchTerm}%");
-                        });
-                });
+                
+                // For search queries, use LEFT JOIN to avoid expensive EXISTS subqueries
+                $query->leftJoin('residents', 'documents.resident_id', '=', 'residents.id')
+                      ->where(function ($q) use ($searchTerm) {
+                          $q->where('documents.document_number', 'ILIKE', "%{$searchTerm}%")
+                            ->orWhere('documents.serial_number', 'ILIKE', "%{$searchTerm}%")
+                            ->orWhere('documents.applicant_name', 'ILIKE', "%{$searchTerm}%")
+                            ->orWhere('documents.received_from', 'ILIKE', "%{$searchTerm}%")
+                            ->orWhere('documents.representing_entity', 'ILIKE', "%{$searchTerm}%")
+                            ->orWhere('documents.acknowledgement_address', 'ILIKE', "%{$searchTerm}%")
+                            ->orWhere('residents.first_name', 'ILIKE', "%{$searchTerm}%")
+                            ->orWhere('residents.last_name', 'ILIKE', "%{$searchTerm}%");
+                      })
+                      ->whereNull('residents.deleted_at') // Exclude soft-deleted residents
+                      ->select('documents.*'); // Only select document columns to avoid conflicts
             }
 
             // Apply sorting
@@ -661,7 +664,7 @@ class DocumentController extends Controller
                     'date' => $document->processed_at,
                     'completed' => true,
                     'user' => $document->processedByUser ? [
-                        'name' => $document->processedByUser->name,
+                        'name' => $document->processedByUser->first_name . ' ' . $document->processedByUser->last_name,
                         'role' => $document->processedByUser->role
                     ] : null
                 ];
@@ -675,7 +678,7 @@ class DocumentController extends Controller
                     'date' => $document->approved_at,
                     'completed' => true,
                     'user' => $document->approvedByUser ? [
-                        'name' => $document->approvedByUser->name,
+                        'name' => $document->approvedByUser->first_name . ' ' . $document->approvedByUser->last_name,
                         'role' => $document->approvedByUser->role
                     ] : null
                 ];
@@ -689,7 +692,7 @@ class DocumentController extends Controller
                     'date' => $document->released_at,
                     'completed' => true,
                     'user' => $document->releasedByUser ? [
-                        'name' => $document->releasedByUser->name,
+                        'name' => $document->releasedByUser->first_name . ' ' . $document->releasedByUser->last_name,
                         'role' => $document->releasedByUser->role
                     ] : null
                 ];
@@ -790,7 +793,7 @@ class DocumentController extends Controller
                     'date' => $document->processed_at,
                     'user' => $document->processedByUser ? [
                         'id' => $document->processedByUser->id,
-                        'name' => $document->processedByUser->name,
+                        'name' => $document->processedByUser->first_name . ' ' . $document->processedByUser->last_name,
                         'role' => $document->processedByUser->role,
                         'position' => $document->processedByUser->position
                     ] : null
@@ -805,7 +808,7 @@ class DocumentController extends Controller
                     'date' => $document->approved_at,
                     'user' => $document->approvedByUser ? [
                         'id' => $document->approvedByUser->id,
-                        'name' => $document->approvedByUser->name,
+                        'name' => $document->approvedByUser->first_name . ' ' . $document->approvedByUser->last_name,
                         'role' => $document->approvedByUser->role,
                         'position' => $document->approvedByUser->position
                     ] : null
@@ -820,7 +823,7 @@ class DocumentController extends Controller
                     'date' => $document->released_at,
                     'user' => $document->releasedByUser ? [
                         'id' => $document->releasedByUser->id,
-                        'name' => $document->releasedByUser->name,
+                        'name' => $document->releasedByUser->first_name . ' ' . $document->releasedByUser->last_name,
                         'role' => $document->releasedByUser->role,
                         'position' => $document->releasedByUser->position
                     ] : null
@@ -924,7 +927,7 @@ class DocumentController extends Controller
             'CANCELLED' => 'CANCELLED'
         ];
 
-        return $statusMap[$frontendStatus] ?? strtoupper($frontendStatus);
+        return $statusMap[$frontendStatus] ?? $frontendStatus;
     }
 
     private function mapBackendStatusToFrontend(string $backendStatus): string
@@ -938,7 +941,7 @@ class DocumentController extends Controller
             'CANCELLED' => 'CANCELLED'
         ];
 
-        return $statusMap[$backendStatus] ?? strtoupper($backendStatus);
+        return $statusMap[$backendStatus] ?? $backendStatus;
     }
 
     /**

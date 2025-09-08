@@ -70,15 +70,15 @@ export class DocumentsService extends BaseApiService {
     if (!status) return undefined;
     
     const statusMap: Record<DocumentStatus, string> = {
-      'PENDING': 'pending',
-      'PROCESSING': 'processing', // Fixed: was 'under_review'
-      'APPROVED': 'approved',
-      'RELEASED': 'released',
-      'REJECTED': 'rejected',
-      'CANCELLED': 'cancelled'
+      'PENDING': 'PENDING',
+      'PROCESSING': 'PROCESSING', 
+      'APPROVED': 'APPROVED',
+      'RELEASED': 'RELEASED',
+      'REJECTED': 'REJECTED',
+      'CANCELLED': 'CANCELLED'
     };
     
-    return statusMap[status] || status.toLowerCase();
+    return statusMap[status] || status;
   }
 
   /**
@@ -88,16 +88,23 @@ export class DocumentsService extends BaseApiService {
     if (!status) return 'PENDING';
     
     const statusMap: Record<string, DocumentStatus> = {
+      'PENDING': 'PENDING',
       'pending': 'PENDING',
-      'processing': 'PROCESSING', // Backend uses 'processing'
+      'PROCESSING': 'PROCESSING',
+      'processing': 'PROCESSING',
       'under_review': 'PROCESSING', // Legacy support
+      'UNDER_REVIEW': 'PROCESSING', // Legacy support
+      'APPROVED': 'APPROVED',
       'approved': 'APPROVED',
+      'RELEASED': 'RELEASED',
       'released': 'RELEASED',
+      'REJECTED': 'REJECTED',
       'rejected': 'REJECTED',
+      'CANCELLED': 'CANCELLED',
       'cancelled': 'CANCELLED'
     };
     
-    return statusMap[status.toLowerCase()] || 'PENDING';
+    return statusMap[status] || 'PENDING';
   }
 
   /**
