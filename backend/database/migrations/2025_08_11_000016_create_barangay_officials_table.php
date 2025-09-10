@@ -124,7 +124,8 @@ return new class extends Migration
             $table->integer('order_index')->default(0);
             
             // Relationships
-            $table->uuid('resident_id')->nullable();
+            $table->uuid('resident_id'); // Required field
+            $table->uuid('user_id')->nullable(); // Optional user account link
             
             // Audit fields
             $table->uuid('created_by')->nullable();
@@ -135,7 +136,8 @@ return new class extends Migration
             // Foreign keys
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('resident_id')->references('id')->on('residents')->onDelete('set null');
+            $table->foreign('resident_id')->references('id')->on('residents')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             
             // Indexes
             $table->index('position');
@@ -144,6 +146,7 @@ return new class extends Migration
             $table->index(['last_name', 'first_name']);
             $table->index(['is_current_term']);
             $table->index(['term_start', 'term_end']);
+            $table->index('user_id');
         });
     }
 
