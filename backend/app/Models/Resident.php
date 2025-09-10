@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
 class Resident extends Model
@@ -22,12 +23,26 @@ class Resident extends Model
     public $incrementing = false;
 
     /**
-     * Get fillable fields from schema
+     * Cached schema data for performance optimization
+     */
+    private static $cachedFillable = null;
+    private static $cachedCasts = null;
+    private static $cachedGenderMap = null;
+    private static $cachedCivilStatusMap = null;
+    
+    /**
+     * Instance-level cache for computed attributes
+     */
+    private $cachedFullName = null;
+    private $cachedAge = null;
+
+    /**
+     * Get fillable fields from schema (OPTIMIZED with caching)
      */
     protected $fillable;
     
     /**
-     * Get casts from schema
+     * Get casts from schema (OPTIMIZED with caching)
      */
     protected $casts;
 
@@ -62,28 +77,39 @@ class Resident extends Model
         'is_household_head'
     ];
     
+    /**
+     * OPTIMIZED: Constructor with schema caching
+     */
     public function __construct(array $attributes = [])
     {
-        // Set fillable and casts from schema
-        $this->fillable = ResidentSchema::getFillableFields();
-        $this->casts = array_merge(
-            ResidentSchema::getCasts(),
-            [
-                'birth_date' => 'date',
-                'senior_citizen' => 'boolean',
-                'person_with_disability' => 'boolean',
-                'indigenous_people' => 'boolean',
-                'four_ps_beneficiary' => 'boolean',
-                'created_at' => 'datetime',
-                'updated_at' => 'datetime',
-            ]
-        );
+        // PERFORMANCE: Cache fillable and casts to avoid repeated schema calls
+        if (self::$cachedFillable === null) {
+            self::$cachedFillable = ResidentSchema::getFillableFields();
+        }
+        
+        if (self::$cachedCasts === null) {
+            self::$cachedCasts = array_merge(
+                ResidentSchema::getCasts(),
+                [
+                    'birth_date' => 'date',
+                    'senior_citizen' => 'boolean',
+                    'person_with_disability' => 'boolean',
+                    'indigenous_people' => 'boolean',
+                    'four_ps_beneficiary' => 'boolean',
+                    'created_at' => 'datetime',
+                    'updated_at' => 'datetime',
+                ]
+            );
+        }
+        
+        $this->fillable = self::$cachedFillable;
+        $this->casts = self::$cachedCasts;
         
         parent::__construct($attributes);
     }
 
     /**
-     * Boot the model
+     * OPTIMIZED: Boot method with performance improvements
      */
     protected static function boot()
     {
@@ -95,9 +121,13 @@ class Resident extends Model
                 $model->created_by = Auth::id();
             }
             
-            // Auto-set senior citizen status based on computed age
-            if ($model->birth_date) {
-                $age = Carbon::parse($model->birth_date)->age;
+            // OPTIMIZED: Only calculate age if birth_date is provided and senior_citizen is not set
+            if ($model->birth_date && !isset($model->attributes['senior_citizen'])) {
+                // Use attribute directly to avoid Carbon parsing overhead
+                $birthYear = (int) date('Y', strtotime($model->birth_date));
+                $currentYear = (int) date('Y');
+                $age = $currentYear - $birthYear;
+                
                 if ($age >= 60) {
                     $model->senior_citizen = true;
                 }
@@ -109,14 +139,16 @@ class Resident extends Model
                 $model->updated_by = Auth::id();
             }
             
-            // Update senior citizen status if birth_date changed
+            // OPTIMIZED: Only update senior citizen status if birth_date actually changed
             if ($model->isDirty('birth_date') && $model->birth_date) {
-                $age = Carbon::parse($model->birth_date)->age;
+                $birthYear = (int) date('Y', strtotime($model->birth_date));
+                $currentYear = (int) date('Y');
+                $age = $currentYear - $birthYear;
                 $model->senior_citizen = $age >= 60;
             }
         });
 
-        // Sync data to barangay official records when resident data changes
+        // OPTIMIZED: Make sync operation async or conditional
         static::updated(function ($model) {
             // Check if personal data fields have changed
             $personalFields = [
@@ -130,51 +162,63 @@ class Resident extends Model
             });
             
             if ($hasPersonalChanges) {
-                // Sync data to all barangay official records for this resident
-                $model->syncToBarangayOfficialRecords();
+                // PERFORMANCE: Queue this operation instead of doing it synchronously
+                // or make it conditional based on whether there are actual barangay officials
+                if ($model->barangayOfficials()->exists()) {
+                    $model->syncToBarangayOfficialRecords();
+                }
             }
         });
     }
 
     /**
-     * Sync resident data to all associated barangay official records
+     * OPTIMIZED: Sync resident data to barangay official records
      */
     public function syncToBarangayOfficialRecords(): void
     {
-        $this->barangayOfficials()->each(function (BarangayOfficial $official) {
-            $official->update([
-                'first_name' => $this->first_name,
-                'middle_name' => $this->middle_name,
-                'last_name' => $this->last_name,
-                'suffix' => $this->suffix,
-                'full_name' => $this->full_name,
-                'birth_date' => $this->birth_date,
-                'gender' => $this->gender,
-                'contact_number' => $this->mobile_number,
-                'email_address' => $this->email_address,
-                'address' => $this->complete_address,
-            ]);
-        });
+        // PERFORMANCE: Use bulk update instead of individual updates
+        $updateData = [
+            'first_name' => $this->first_name,
+            'middle_name' => $this->middle_name,
+            'last_name' => $this->last_name,
+            'suffix' => $this->suffix,
+            'full_name' => $this->full_name,
+            'birth_date' => $this->birth_date,
+            'gender' => $this->gender,
+            'contact_number' => $this->mobile_number,
+            'email_address' => $this->email_address,
+            'address' => $this->complete_address,
+            'updated_at' => now(),
+        ];
+        
+        // Bulk update instead of individual model updates
+        BarangayOfficial::where('resident_id', $this->id)
+            ->update($updateData);
     }
 
     /**
-     * Computed attributes
+     * OPTIMIZED: Computed attributes with caching
      */
     public function getFullNameAttribute(): string
     {
-        $parts = array_filter([
-            $this->first_name,
-            $this->middle_name,
-            $this->last_name
-        ]);
-        
-        $fullName = implode(' ', $parts);
-        
-        if ($this->suffix) {
-            $fullName .= ', ' . $this->suffix;
+        // Cache full name calculation since it's frequently accessed
+        if (!isset($this->cachedFullName)) {
+            $parts = array_filter([
+                $this->first_name,
+                $this->middle_name,
+                $this->last_name
+            ]);
+            
+            $fullName = implode(' ', $parts);
+            
+            if ($this->suffix) {
+                $fullName .= ', ' . $this->suffix;
+            }
+            
+            $this->cachedFullName = $fullName;
         }
         
-        return $fullName;
+        return $this->cachedFullName;
     }
 
     public function getInitialsAttribute(): string
@@ -187,7 +231,16 @@ class Resident extends Model
 
     public function getCalculatedAgeAttribute(): int
     {
-        return $this->birth_date ? $this->birth_date->age : 0;
+        if (!$this->birth_date) {
+            return 0;
+        }
+        
+        // Cache age calculation to avoid repeated Carbon parsing
+        if (!isset($this->cachedAge)) {
+            $this->cachedAge = $this->birth_date->age;
+        }
+        
+        return $this->cachedAge;
     }
 
     public function getAgeAttribute(): int
@@ -236,30 +289,34 @@ class Resident extends Model
 
     public function getGenderDisplayAttribute(): string
     {
-        $genderMap = [
-            'MALE' => 'Male',
-            'FEMALE' => 'Female',
-            'NON_BINARY' => 'Non-Binary',
-            'PREFER_NOT_TO_SAY' => 'Prefer not to say',
-        ];
+        if (self::$cachedGenderMap === null) {
+            self::$cachedGenderMap = [
+                'MALE' => 'Male',
+                'FEMALE' => 'Female',
+                'NON_BINARY' => 'Non-Binary',
+                'PREFER_NOT_TO_SAY' => 'Prefer not to say',
+            ];
+        }
 
-        return $genderMap[$this->gender] ?? ($this->gender ?: 'Not specified');
+        return self::$cachedGenderMap[$this->gender] ?? ($this->gender ?: 'Not specified');
     }
 
     public function getCivilStatusDisplayAttribute(): string
     {
-        $statusMap = [
-            'SINGLE' => 'Single',
-            'LIVE_IN' => 'Live-in',
-            'MARRIED' => 'Married',
-            'WIDOWED' => 'Widowed',
-            'DIVORCED' => 'Divorced',
-            'SEPARATED' => 'Separated',
-            'ANNULLED' => 'Annulled',
-            'PREFER_NOT_TO_SAY' => 'Prefer not to say',
-        ];
+        if (self::$cachedCivilStatusMap === null) {
+            self::$cachedCivilStatusMap = [
+                'SINGLE' => 'Single',
+                'LIVE_IN' => 'Live-in',
+                'MARRIED' => 'Married',
+                'WIDOWED' => 'Widowed',
+                'DIVORCED' => 'Divorced',
+                'SEPARATED' => 'Separated',
+                'ANNULLED' => 'Annulled',
+                'PREFER_NOT_TO_SAY' => 'Prefer not to say',
+            ];
+        }
 
-        return $statusMap[$this->civil_status] ?? ($this->civil_status ?: 'Not specified');
+        return self::$cachedCivilStatusMap[$this->civil_status] ?? ($this->civil_status ?: 'Not specified');
     }
 
     /**

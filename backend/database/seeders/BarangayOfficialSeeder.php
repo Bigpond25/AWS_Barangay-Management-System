@@ -6,7 +6,9 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Resident;
 use App\Models\BarangayOfficial;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class BarangayOfficialSeeder extends Seeder
 {
@@ -198,9 +200,63 @@ class BarangayOfficialSeeder extends Seeder
             // Create resident first
             $resident = Resident::create($officialData['resident_data']);
             
-            // Create barangay official linked to the resident
+            // Create or find user for this official
+            $userRole = $this->getUserRoleForPosition($officialData['position']);
+            $username = $this->generateUsername($resident->first_name, $resident->last_name, $officialData['position']);
+            
+            // Check if user already exists by email, username, or role/position combination
+            $user = User::where('email', $resident->email_address)
+                       ->orWhere('username', $username)
+                       ->orWhere(function($query) use ($userRole, $officialData) {
+                           $query->where('role', $userRole);
+                           // For specific positions, check if position already exists
+                           if (in_array($officialData['position'], ['BARANGAY_CAPTAIN', 'BARANGAY_SECRETARY', 'BARANGAY_TREASURER', 'SK_CHAIRPERSON'])) {
+                               $query->where('position', $this->getPositionTitle($officialData['position']));
+                           }
+                       })
+                       ->first();
+            
+            if (!$user) {
+                // Make sure username is unique
+                $originalUsername = $username;
+                $counter = 1;
+                while (User::where('username', $username)->exists()) {
+                    $username = $originalUsername . $counter;
+                    $counter++;
+                }
+                
+                // Make sure employee_id is unique by checking what's already in use
+                $employeeId = $this->generateUniqueEmployeeId($officialData['position']);
+                
+                $user = User::create([
+                    'username' => $username,
+                    'email' => $resident->email_address,
+                    'password' => Hash::make($this->generateDefaultPassword($userRole)),
+                    'first_name' => $resident->first_name,
+                    'last_name' => $resident->last_name,
+                    'middle_name' => $resident->middle_name,
+                    'phone' => $resident->mobile_number,
+                    'role' => $userRole,
+                    'department' => $this->getDepartmentForPosition($officialData['position']),
+                    'position' => $this->getPositionTitle($officialData['position']),
+                    'employee_id' => $employeeId,
+                    'resident_id' => $resident->id,
+                    'is_active' => true,
+                    'is_verified' => true,
+                    'email_verified_at' => now(),
+                    'notes' => 'Created for barangay official seeding',
+                ]);
+            } else {
+                // Update existing user with resident_id if not set
+                if (!$user->resident_id) {
+                    $user->update(['resident_id' => $resident->id]);
+                }
+            }
+            
+            // Create barangay official linked to both resident and user
             BarangayOfficial::create([
                 'resident_id' => $resident->id,
+                'user_id' => $user->id,
                 'first_name' => $resident->first_name,
                 'last_name' => $resident->last_name,
                 'middle_name' => $resident->middle_name,
@@ -221,9 +277,134 @@ class BarangayOfficialSeeder extends Seeder
                 'oath_taking_date' => Carbon::parse($officialData['term_start']),
             ]);
             
-            $this->command->info("Created barangay official: {$resident->first_name} {$resident->last_name} ({$officialData['position']})");
+            $this->command->info("Created barangay official: {$resident->first_name} {$resident->last_name} ({$officialData['position']}) with user account (username: {$user->username})");
         }
         
         $this->command->info('Barangay officials seeded successfully!');
+    }
+    
+    /**
+     * Map position to user role
+     */
+    private function getUserRoleForPosition(string $position): string
+    {
+        return match($position) {
+            'BARANGAY_CAPTAIN' => 'BARANGAY_CAPTAIN',
+            'BARANGAY_SECRETARY' => 'BARANGAY_SECRETARY',
+            'BARANGAY_TREASURER' => 'BARANGAY_TREASURER',
+            'KAGAWAD' => 'BARANGAY_COUNCILOR',
+            'SK_CHAIRPERSON' => 'BARANGAY_COUNCILOR', // SK Chairperson is treated as councilor
+            default => 'BARANGAY_COUNCILOR'
+        };
+    }
+    
+    /**
+     * Generate username from name and position
+     */
+    private function generateUsername(string $firstName, string $lastName, string $position): string
+    {
+        $prefix = match($position) {
+            'BARANGAY_CAPTAIN' => 'captain',
+            'BARANGAY_SECRETARY' => 'secretary',
+            'BARANGAY_TREASURER' => 'treasurer',
+            'SK_CHAIRPERSON' => 'sk',
+            default => 'kagawad'
+        };
+        
+        return strtolower($prefix . '.' . $lastName);
+    }
+    
+    /**
+     * Generate default password for role
+     */
+    private function generateDefaultPassword(string $role): string
+    {
+        return match($role) {
+            'BARANGAY_CAPTAIN' => 'Captain123!',
+            'BARANGAY_SECRETARY' => 'Secretary123!',
+            'BARANGAY_TREASURER' => 'Treasurer123!',
+            'BARANGAY_COUNCILOR' => 'Councilor123!',
+            default => 'Official123!'
+        };
+    }
+    
+    /**
+     * Get department for position
+     */
+    private function getDepartmentForPosition(string $position): string
+    {
+        return match($position) {
+            'BARANGAY_TREASURER' => 'FINANCE_TREASURY',
+            'SK_CHAIRPERSON' => 'YOUTH_SPORTS_DEVELOPMENT',
+            default => 'ADMINISTRATION'
+        };
+    }
+    
+    /**
+     * Get position title for display
+     */
+    private function getPositionTitle(string $position): string
+    {
+        return match($position) {
+            'BARANGAY_CAPTAIN' => 'Barangay Captain',
+            'BARANGAY_SECRETARY' => 'Barangay Secretary',
+            'BARANGAY_TREASURER' => 'Barangay Treasurer',
+            'KAGAWAD' => 'Barangay Councilor',
+            'SK_CHAIRPERSON' => 'SK Chairperson',
+            default => 'Barangay Official'
+        };
+    }
+    
+    /**
+     * Generate employee ID for position
+     */
+    private function generateEmployeeId(string $position): string
+    {
+        static $counters = [];
+        
+        $prefix = match($position) {
+            'BARANGAY_CAPTAIN' => 'BC',
+            'BARANGAY_SECRETARY' => 'BS',
+            'BARANGAY_TREASURER' => 'BT',
+            'KAGAWAD' => 'BK',
+            'SK_CHAIRPERSON' => 'SK',
+            default => 'BO'
+        };
+        
+        if (!isset($counters[$prefix])) {
+            $counters[$prefix] = 1;
+        } else {
+            $counters[$prefix]++;
+        }
+        
+        return $prefix . '-' . str_pad($counters[$prefix], 3, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * Generate unique employee ID that doesn't conflict with existing users
+     */
+    private function generateUniqueEmployeeId(string $position): string
+    {
+        $prefix = match($position) {
+            'BARANGAY_CAPTAIN' => 'BC',
+            'BARANGAY_SECRETARY' => 'BS',
+            'BARANGAY_TREASURER' => 'BT',
+            'KAGAWAD' => 'BK',
+            'SK_CHAIRPERSON' => 'SK',
+            default => 'BO'
+        };
+        
+        // Find the highest existing number for this prefix
+        $existingIds = User::where('employee_id', 'like', $prefix . '-%')
+                          ->pluck('employee_id')
+                          ->map(function($id) use ($prefix) {
+                              $parts = explode('-', $id);
+                              return isset($parts[1]) ? intval($parts[1]) : 0;
+                          })
+                          ->max();
+        
+        $nextNumber = ($existingIds ?? 0) + 1;
+        
+        return $prefix . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }

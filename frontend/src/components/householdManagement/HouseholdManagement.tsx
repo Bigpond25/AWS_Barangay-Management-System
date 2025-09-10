@@ -226,46 +226,9 @@ const HouseholdManagement: React.FC = () => {
             <h1 className="text-2xl font-bold text-darktext">
               {t('households.title')}
             </h1>
-          </div>
-          
-          {/* Performance Dashboard */}
-          <div className="flex items-center space-x-4 text-sm">
-            <div className="bg-white rounded-lg px-3 py-2 shadow-sm border">
-              <div className="flex items-center space-x-2">
-                <div className={`w-2 h-2 rounded-full ${
-                  infiniteLoading || isFetchingNextPage ? 'bg-blue-400 animate-pulse' : 
-                  isFiltering ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'
-                }`} />
-                <span className="text-gray-600">
-                  {infiniteLoading ? 'Loading...' : 
-                   isFetchingNextPage ? 'Loading more...' :
-                   isFiltering ? 'Filtering...' : 'Ready'}
-                </span>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-lg px-3 py-2 shadow-sm border">
-              <span className="text-gray-600">
-                Loaded: {totalLoaded} / {totalAvailable}
-              </span>
-            </div>
-            
-            {selectedHouseholds.size > 0 && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-blue-600 font-medium">
-                    {selectedHouseholds.size} selected
-                  </span>
-                  <button
-                    onClick={handleBulkDelete}
-                    disabled={deleteHousehold.isPending}
-                    className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 disabled:opacity-50"
-                  >
-                    {deleteHousehold.isPending ? 'Deleting...' : 'Delete'}
-                  </button>
-                </div>
-              </div>
-            )}
+            <p className="text-gray-600 mt-1">
+              Manage all household registrations, view member details, and maintain household relationships within the barangay
+            </p>
           </div>
         </div>
       </div>

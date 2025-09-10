@@ -235,29 +235,8 @@ const ResidentManagement: React.FC = () => {
               {t('residents.title')}
             </h1>
             <p className="text-gray-600 mt-1">
-              Enhanced with optimistic updates and debounced search
+              Manage resident records, household information, and community member data for the barangay
             </p>
-          </div>
-          
-          {/* Performance Indicators */}
-          <div className="flex items-center space-x-4 text-sm">
-            <div className="flex items-center space-x-2">
-              <div className={`w-2 h-2 rounded-full ${isFetching ? 'bg-blue-400 animate-pulse' : 'bg-green-400'}`} />
-              <span className="text-gray-600">
-                {isFetching ? 'Syncing...' : 'Up to date'}
-              </span>
-            </div>
-            {selectedResidents.size > 0 && (
-              <div className="flex items-center space-x-2">
-                <span className="text-blue-600 font-medium">{selectedResidents.size} selected</span>
-                <button
-                  onClick={handleBulkDelete}
-                  className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -307,11 +286,11 @@ const ResidentManagement: React.FC = () => {
                   <>
                     Found {residents.length} residents
                     {searchTerm !== debouncedSearchTerm && (
-                      <span className="text-blue-600 ml-1">(filtering...)</span>
+                      <span className="text-blue-600 ml-1">(filtering in real-time...)</span>
                     )}
                   </>
                 ) : (
-                  `Total: ${pagination.total} residents`
+                  `Showing ${residents.length} of ${pagination.total} residents`
                 )}
               </span>
               {isFetching && (
