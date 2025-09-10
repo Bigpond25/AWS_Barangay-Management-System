@@ -30,6 +30,7 @@ import { useNotifications } from '@/components/_global/NotificationSystem';
 import { useBarangayOfficials } from '@/services/officials/useBarangayOfficials';
 import Breadcrumb from '../_global/Breadcrumb';
 import { formatDate } from '@/utils/dateUtils';
+import { formatDocumentType } from '@/utils/documentTypeUtils';
 import type { Document, DocumentStatus } from '@/services/documents/documents.types';
 import DocumentStatistics from './_components/DocumentStatistics';
 
@@ -116,7 +117,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
 
   const documentTypes = [
     { value: 'BARANGAY_CLEARANCE_INSTALLATION', label: 'Barangay Clearance (Installation)' },
-    { value: 'BARANGAY_CLEARANCE', label: 'Barangay Clearance (Liquor)' },
+    { value: 'BARANGAY_CLEARANCE', label: 'Barangay Clearance' },
     { value: 'CASH_BOND', label: 'Cash Bond' },
     { value: 'SUMMON', label: 'Summon' },
     { value: 'BUSINESS_PERMIT', label: 'Business Permit' },
@@ -216,10 +217,6 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
     }
   };
 
-  const formatDocumentType = (type: string) => {
-    const docType = documentTypes.find(dt => dt.value === type);
-    return docType ? docType?.label : type?.replace(/_/g, ' ');
-  };
 
   // Map backend status values to frontend config keys
   const getStatusConfigKey = (status: string): string => {
@@ -686,9 +683,6 @@ const ProcessDocumentModal: React.FC<{
     await onProcess(String(document.id), action, data);
   };
 
-  const formatDocumentType = (type: string) => {
-    return type?.replace(/_/g, ' ')?.replace(/\b\w/g, l => l.toUpperCase());
-  };
 
   return (
     <div className="fixed inset-0 bg-[rgba(0,0,0,0.2)] bg-opacity-50 flex items-center justify-center p-4 z-50">
