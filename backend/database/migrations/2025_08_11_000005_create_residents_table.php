@@ -16,9 +16,7 @@ return new class extends Migration
             
             // Basic Information
             $table->string('first_name');
-            $table->string('first_name_hash')->nullable()->index();
             $table->string('last_name');
-            $table->string('last_name_hash')->nullable()->index();
             $table->string('middle_name')->nullable();
             $table->string('suffix')->nullable();
             $table->date('birth_date');
@@ -40,10 +38,8 @@ return new class extends Migration
             
             // Contact Information
             $table->string('mobile_number')->nullable();
-            $table->string('mobile_number_hash')->nullable()->index();
             $table->string('landline_number')->nullable();
             $table->string('email_address')->nullable();
-            $table->string('email_address_hash')->nullable()->index();
             
             // Address Information
             $table->string('region')->nullable();
@@ -123,6 +119,34 @@ return new class extends Migration
             $table->index(['barangay', 'status']);
             $table->index(['photo_migrated_to_supabase']);
             $table->index(['photo_storage_provider']);
+            // Search optimization indexes
+            $table->index(['first_name', 'last_name', 'status'], 'idx_residents_name_status');
+            $table->index(['mobile_number', 'status'], 'idx_residents_mobile_status');
+            $table->index(['email_address', 'status'], 'idx_residents_email_status');
+            
+            // Statistics optimization indexes
+            $table->index(['status', 'gender'], 'idx_residents_status_gender');
+            $table->index(['status', 'employment_status'], 'idx_residents_status_employment');
+            $table->index(['status', 'civil_status'], 'idx_residents_status_civil');
+            $table->index(['status', 'voter_status'], 'idx_residents_status_voter');
+            
+            // Age calculation optimization
+            $table->index(['birth_date', 'status'], 'idx_residents_birth_status');
+            
+            // Enhanced search indexes for text fields
+            $table->index('mobile_number', 'idx_residents_mobile_search');
+            $table->index('email_address', 'idx_residents_email_search');
+            $table->index('complete_address', 'idx_residents_address_search');
+            
+            // Composite indexes for common query patterns
+            $table->index(['birth_date', 'senior_citizen', 'status'], 'idx_residents_age_classification');
+            $table->index(['first_name', 'last_name', 'status'], 'idx_residents_household_search');
+            
+            // Employment and voting status combinations
+            $table->index(['employment_status', 'voter_status'], 'idx_residents_employment_voter');
+            
+            // Special classifications for reporting
+            $table->index(['four_ps_beneficiary', 'indigenous_people', 'status'], 'idx_residents_special_programs');
         });
     }
 

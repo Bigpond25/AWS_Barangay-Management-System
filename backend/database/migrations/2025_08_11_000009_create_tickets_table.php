@@ -28,21 +28,21 @@ return new class extends Migration
             $table->string('complete_address')->nullable();
             
             // Ticket Classification
-            $table->enum('type', ['APPOINTMENT', 'BLOTTER', 'COMPLAINT', 'SUGGESTION']);
+            $table->enum('category', ['APPOINTMENT', 'BLOTTER', 'COMPLAINT', 'SUGGESTION']);
             $table->enum('status', ['OPEN', 'IN_PROGRESS', 'PENDING', 'RESOLVED', 'CLOSED'])->default('OPEN');
-            
+
             // Audit fields
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->timestamps();
-            
+
             // Foreign keys
             $table->foreign('resident_id')->references('id')->on('residents')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
-            
+
             // Indexes
-            $table->index('type');
+            $table->index('category');
             $table->index('status');
             $table->index('priority');
             $table->index('resident_id');

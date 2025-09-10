@@ -208,12 +208,6 @@ const DocumentQueue: React.FC<DocumentQueueProps> = ({ onNavigate: _onNavigate }
               </div>
             </div>
             
-            <div className="bg-white rounded-lg px-3 py-2 shadow-sm border">
-              <span className="text-gray-600">
-                Loaded: {totalLoaded} / {totalAvailable}
-              </span>
-            </div>
-            
             <button
               onClick={handleRefresh}
               className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200"

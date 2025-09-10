@@ -32,9 +32,13 @@ return new class extends Migration
             $table->unique(['household_id', 'resident_id']);
             
             // Indexes
-            $table->index('household_id');
             $table->index('resident_id');
             $table->index('relationship');
+            
+            // Performance indexes
+            $table->index(['resident_id', 'household_id'], 'idx_household_members_resident_household');
+            $table->index(['household_id', 'relationship'], 'idx_household_members_household_relationship');
+            $table->index(['relationship'], 'idx_household_members_relationship');
         });
     }
 

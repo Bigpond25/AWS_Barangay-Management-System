@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Support\Facades\Cache;
 
 class Document extends Model implements Auditable
 {
@@ -17,6 +18,14 @@ class Document extends Model implements Auditable
     protected $auditModel = ActivityLog::class;
     protected $keyType = 'string';
     public $incrementing = false;
+
+    /**
+     * Cached schema data for performance
+     */
+    private static $cachedDocumentTypes = null;
+    private static $cachedPriorityOptions = null;
+    private static $cachedStatusOptions = null;
+    private static $cachedPaymentStatusOptions = null;
 
     /**
      * Cached fillable fields from schema
@@ -55,30 +64,38 @@ class Document extends Model implements Auditable
     ];
 
     /**
-     * Computed attributes
+     * Computed attributes with caching
      */
     public function getDocumentTypeDisplayAttribute(): string
     {
-        $types = DocumentSchema::getDocumentTypes();
-        return $types[$this->type] ?? $this->type;
+        if (self::$cachedDocumentTypes === null) {
+            self::$cachedDocumentTypes = DocumentSchema::getDocumentTypes();
+        }
+        return self::$cachedDocumentTypes[$this->type] ?? $this->type;
     }
 
     public function getPriorityDisplayAttribute(): string
     {
-        $priorities = DocumentSchema::getPriorityOptions();
-        return $priorities[$this->priority] ?? ucfirst($this->priority);
+        if (self::$cachedPriorityOptions === null) {
+            self::$cachedPriorityOptions = DocumentSchema::getPriorityOptions();
+        }
+        return self::$cachedPriorityOptions[$this->priority] ?? ucfirst($this->priority);
     }
 
     public function getStatusDisplayAttribute(): string
     {
-        $statuses = DocumentSchema::getStatusOptions();
-        return $statuses[$this->status] ?? ucfirst($this->status);
+        if (self::$cachedStatusOptions === null) {
+            self::$cachedStatusOptions = DocumentSchema::getStatusOptions();
+        }
+        return self::$cachedStatusOptions[$this->status] ?? ucfirst($this->status);
     }
 
     public function getPaymentStatusDisplayAttribute(): string
     {
-        $paymentStatuses = DocumentSchema::getPaymentStatusOptions();
-        return $paymentStatuses[$this->payment_status] ?? ucfirst($this->payment_status);
+        if (self::$cachedPaymentStatusOptions === null) {
+            self::$cachedPaymentStatusOptions = DocumentSchema::getPaymentStatusOptions();
+        }
+        return self::$cachedPaymentStatusOptions[$this->payment_status] ?? ucfirst($this->payment_status);
     }
 
     public function getIsExpiredAttribute(): bool
@@ -97,12 +114,12 @@ class Document extends Model implements Auditable
 
     public function getProcessingDaysAttribute(): int
     {
-        if (!$this->request_date) {
+        if (!$this->submitted_at) {
             return 0;
         }
 
-        $endDate = $this->released_date ?? now();
-        return $this->request_date->diffInDays($endDate);
+        $endDate = $this->released_at ?? now();
+        return $this->submitted_at->diffInDays($endDate);
     }
 
     public function getIsOverdueAttribute(): bool
@@ -324,7 +341,7 @@ class Document extends Model implements Auditable
             }
         });
 
-        // Update processed_date when status changes to processing
+        // Update processed_at when status changes to processing
         static::updating(function ($document) {
             if ($document->isDirty('status')) {
                 switch ($document->status) {
@@ -349,7 +366,7 @@ class Document extends Model implements Auditable
     }
 
     /**
-     * Generate document number based on document type
+     * Generate document number based on document type (OPTIMIZED)
      */
     protected static function generateDocumentNumber(string $documentType): string
     {
@@ -366,7 +383,7 @@ class Document extends Model implements Auditable
             'SENIOR_CITIZEN_ID' => 'SCI',
             'PWD_ID' => 'PWD',
             'BARANGAY_ID' => 'BID',
-            'RETIREMENT_CESSATION_DISSOLUTION' => 'RCD', // Add this line
+            'RETIREMENT_CESSATION_DISSOLUTION' => 'RCD',
             'NOTICE_OF_HEARING' => 'NOH',
             default => 'DOC',
         }; 
@@ -374,35 +391,44 @@ class Document extends Model implements Auditable
         $year = now()->year;
         $month = now()->format('m');
 
-        // Get next sequence number for this document type and month
-        $lastDocument = static::where('type', $documentType)
-            ->whereYear('submitted_at', $year)
-            ->whereMonth('submitted_at', $month)
-            ->orderBy('id', 'desc')
-            ->first();
+        // OPTIMIZED: Use cache for sequence numbers to reduce database queries
+        $cacheKey = "doc_sequence_{$documentType}_{$year}_{$month}";
+        
+        $sequence = Cache::remember($cacheKey, 3600, function () use ($documentType, $year, $month) {
+            // OPTIMIZED: Use proper ordering by timestamp instead of UUID
+            $lastDocument = static::where('type', $documentType)
+                ->whereYear('submitted_at', $year)
+                ->whereMonth('submitted_at', $month)
+                ->orderBy('submitted_at', 'desc')
+                ->first();
 
-        $sequence = 1;
-        if ($lastDocument && $lastDocument->document_number) {
-            // Extract sequence from last document number
-            $parts = explode('-', $lastDocument->document_number);
-            if (count($parts) >= 4) {
-                $sequence = (int) end($parts) + 1;
+            if ($lastDocument && $lastDocument->document_number) {
+                // Extract sequence from last document number
+                $parts = explode('-', $lastDocument->document_number);
+                if (count($parts) >= 4) {
+                    return (int) end($parts);
+                }
             }
-        }
+            return 0;
+        });
+
+        // Increment and update cache
+        $sequence++;
+        Cache::put($cacheKey, $sequence, 3600);
 
         return sprintf('%s-%d-%s-%04d', $prefix, $year, $month, $sequence);
     }
 
     /**
-     * Generate unique serial number
+     * Generate unique serial number (OPTIMIZED)
      */
     protected static function generateSerialNumber(): string
     {
-        do {
-            $serialNumber = 'SN-' . now()->format('Y') . '-' . strtoupper(Str::random(8));
-        } while (static::where('serial_number', $serialNumber)->exists());
-
-        return $serialNumber;
+        // OPTIMIZED: Use microtime for better uniqueness and performance
+        $timestamp = str_replace('.', '', microtime(true));
+        $random = strtoupper(Str::random(4));
+        
+        return 'SN-' . now()->format('Y') . '-' . substr($timestamp, -6) . $random;
     }
 
     // OwenIt Auditing

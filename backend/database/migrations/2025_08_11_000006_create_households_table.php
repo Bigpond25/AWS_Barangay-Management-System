@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('street_sitio');
             $table->string('barangay');
             $table->text('complete_address');
-            $table->string('complete_address_hash')->nullable()->index();
+            // removed complete_address_hash (was dropped in a later migration)
             
             // Economic Information
             $table->enum('monthly_income', [
@@ -57,7 +57,7 @@ return new class extends Migration
             $table->uuid('updated_by')->nullable();
             $table->timestamps();
             
-            // Indexes
+            // Indexes (including performance indexes)
             $table->index('barangay');
             $table->index('household_type');
             $table->index('monthly_income');
@@ -68,6 +68,17 @@ return new class extends Migration
             $table->index('indigent_family');
             $table->index('has_senior_citizen');
             $table->index('has_pwd_member');
+            $table->index(['household_number'], 'idx_households_number');
+            $table->index(['complete_address'], 'idx_households_address');
+            $table->index(['household_type'], 'idx_households_type');
+            $table->index(['monthly_income'], 'idx_households_income');
+            $table->index(['house_type'], 'idx_households_house_type');
+            $table->index(['ownership_status'], 'idx_households_ownership');
+            $table->index(['four_ps_beneficiary'], 'idx_households_4ps');
+            $table->index(['indigent_family'], 'idx_households_indigent');
+            $table->index(['has_senior_citizen'], 'idx_households_senior');
+            $table->index(['has_pwd_member'], 'idx_households_pwd');
+            $table->index(['has_electricity', 'has_water_supply', 'has_internet_access'], 'idx_households_utilities');
         });
     }
 
