@@ -20,7 +20,7 @@ return new class extends Migration
                 'BUSINESS_PERMIT', 'COMMUNITY_TAX_CERTIFICATE', 'BIRTH_CERTIFICATE_REQUEST',
                 'DEATH_CERTIFICATE_REQUEST', 'MARRIAGE_CERTIFICATE_REQUEST', 'FIRST_TIME_JOB_SEEKER',
                 'SENIOR_CITIZEN_ID', 'PWD_ID', 'TRAVEL_PERMIT', 'BUILDING_PERMIT',
-                'ELECTRICAL_PERMIT', 'PLUMBING_PERMIT', 'COMPLAINT_CERTIFICATE', 'NOTICE_OF_HEARING', 'RETIREMENT_CESSATION_DISSOLUTION', 'OTHER'
+                'ELECTRICAL_PERMIT', 'PLUMBING_PERMIT', 'COMPLAINT_CERTIFICATE', 'NOTICE_OF_HEARING', 'RETIREMENT_CESSATION_DISSOLUTION', 'SUMMON', 'CASH_BOND', 'BARANGAY_CLEARANCE_INSTALLATION', 'OTHER'
             ]);
             
             // Applicant Information
@@ -63,6 +63,25 @@ return new class extends Migration
             $table->integer('family_size')->nullable();
             $table->string('residency_period')->nullable();
             $table->text('previous_address')->nullable();
+            $table->integer('case_number')->nullable();
+            $table->enum('case_title', ['SUM_OF_MONEY', 'EVICTION', 'PROPERTY_DISPUTE', 'NOISE_COMPLAINT', 'BOUNDARY_DISPUTE', 'DEFAMATION', 'PHYSICAL_INJURY', 'DAMAGE_TO_PROPERTY', 'BREACH_OF_CONTRACT,', 'OTHER'])->default('EVICTION');
+            $table->date('hearing_date')->nullable();
+            $table->timestamp('hearing_time')->nullable();
+            $table->enum('hearing_type', ['MEDIATION', 'CONCILIATION', 'ARBITRATION', 'SETTLEMENT_CONFERENCE', 'FAILURE_TO_APPEAR'])->default('MEDIATION');
+            $table->string('complainant_name')->nullable();
+            $table->text('complainant_address')->nullable();
+            $table->string('respondent_name')->nullable();
+            $table->text('respondent_address')->nullable();
+            $table->text('case_description')->nullable();
+            $table->text('previous_address')->nullable();
+            $table->enum('ownership_type', ['SOLE_PROPRIETORSHIP', 'PARTNERSHIP', 'CORPORATION', 'COOPERATIVE', 'ASSOCIATION', 'OTHER'])->default('SOLE_PROPRIETORSHIP');
+            $table->date('retirement_date')->nullable();
+            $table->string('business_category')->nullable();
+            $table->string('received_from')->nullable();
+            $table->decimal('bond_amount')->nullable();
+            $table->string('representing_entity')->nullable();
+            $table->text('acknowledgement_address')->nullable();
+            
             
             // Processing Notes
             $table->text('requirements_submitted')->nullable();
