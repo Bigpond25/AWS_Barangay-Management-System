@@ -32,7 +32,8 @@ class Document extends Model implements Auditable
         'remarks', 'certifying_official', 'file_path', 'file_bucket', 'file_storage_path',
         'file_storage_provider', 'file_migrated_to_supabase', 'processed_by', 'approved_by',
         'released_by', 'created_by', 'updated_by', 'received_from', 'representing_entity',
-        'acknowledgement_address', 'bond_amount', 'expiry_date'
+        'acknowledgement_address', 'bond_amount', 'expiry_date', 'sign_wordings', 
+        'sign_material', 'sign_size'
     ];
 
     /**
@@ -49,7 +50,8 @@ class Document extends Model implements Auditable
         'family_monthly_income' => 'decimal:2',
         'bond_amount' => 'decimal:2',
         'family_size' => 'integer',
-        'file_migrated_to_supabase' => 'boolean'
+        'file_migrated_to_supabase' => 'boolean',
+        'requirements_submitted' => 'array'
     ];
 
     /**
@@ -281,7 +283,7 @@ class Document extends Model implements Auditable
 
     public function canBeApproved(): bool
     {
-        return $this->status === 'PROCESSING';
+        return in_array($this->status, ['PENDING', 'PROCESSING']);
     }
 
     public function canBeReleased(): bool
@@ -326,19 +328,19 @@ class Document extends Model implements Auditable
         static::updating(function ($document) {
             if ($document->isDirty('status')) {
                 switch ($document->status) {
-                    case 'processing':
-                        if (!$document->processed_date) {
-                            $document->processed_date = now();
+                    case 'PROCESSING':
+                        if (!$document->processed_at) {
+                            $document->processed_at = now();
                         }
                         break;
-                    case 'approved':
-                        if (!$document->approved_date) {
-                            $document->approved_date = now();
+                    case 'APPROVED':
+                        if (!$document->approved_at) {
+                            $document->approved_at = now();
                         }
                         break;
-                    case 'released':
-                        if (!$document->released_date) {
-                            $document->released_date = now();
+                    case 'RELEASED':
+                        if (!$document->released_at) {
+                            $document->released_at = now();
                         }
                         break;
                 }

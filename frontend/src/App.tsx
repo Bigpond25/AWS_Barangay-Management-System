@@ -21,6 +21,7 @@ import CertificateOfResidencyPrint from "./components/processDocument/Certificat
 import CertificateOfIndigencyPrint from "./components/processDocument/CertificateOfIndigencyPrint";
 import BusinessPermitPrint from "./components/processDocument/BusinessPermitPrint";
 import BusinessSignClearancePrint from "./components/processDocument/BusinessSignClearancePrint";
+import BusinessSignClearanceColoredPrint from "./components/processDocument/BusinessSignClearanceColoredPrint";
 import NoticeOfHearingPrint from "./components/processDocument/NoticeOfHearingPrint";
 import HouseholdManagement from "./components/householdManagement/HouseholdManagement";
 import AddNewHousehold from "./components/householdManagement/AddNewHousehold";
@@ -593,6 +594,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute requireAuth={true}>
         <BusinessSignClearancePrint />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/process-document/business-sign-clearance/:documentId/colored-print",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        <BusinessSignClearanceColoredPrint />
       </ProtectedRoute>
     ),
   },

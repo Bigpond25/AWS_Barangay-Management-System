@@ -532,10 +532,10 @@ class DocumentController extends Controller
                 'certifying_official' => 'nullable|string|max:255'
             ]);
 
-            if (!in_array($document->status, ['PENDING', 'PROCESSING'])) {
+            if (!$document->canBeApproved()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Document cannot be approved from current status'
+                    'message' => 'Document cannot be approved from current status: ' . $document->status . '. Document must be in PENDING or PROCESSING status.'
                 ], 422);
             }
 

@@ -1,5 +1,5 @@
 // ============================================================================
-// processDocument/BusinessSignClearancePrint.tsx - Business Sign Clearance Print
+// processDocument/BusinessSignClearanceColoredPrint.tsx - Business Sign Clearance Colored Print
 // ============================================================================
 
 import React from 'react';
@@ -11,7 +11,7 @@ import { useDocument } from '@/services/documents/useDocuments';
 import { formatDocumentType } from '@/utils/documentTypeUtils';
 import type { Document } from '@/services/documents/documents.types';
 
-const BusinessSignClearancePrint: React.FC = () => {
+const BusinessSignClearanceColoredPrint: React.FC = () => {
   const { documentId } = useParams<{ documentId: string }>();
   const navigate = useNavigate();
   
@@ -108,6 +108,13 @@ const BusinessSignClearancePrint: React.FC = () => {
   return (
     <>
       <style>{`
+        /* Force color printing for all elements */
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+        
         /* Print specifications for Letter size (8.5 x 11 inches) */
         @media print {
           @page {
@@ -126,6 +133,8 @@ const BusinessSignClearancePrint: React.FC = () => {
             line-height: 1.2 !important;
             color: black !important;
             background: white !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           
           .no-print {
@@ -144,9 +153,6 @@ const BusinessSignClearancePrint: React.FC = () => {
           
           * {
             visibility: visible !important;
-            color: black !important;
-            background: white !important;
-            box-shadow: none !important;
             text-shadow: none !important;
           }
           
@@ -157,15 +163,19 @@ const BusinessSignClearancePrint: React.FC = () => {
           }
           
           .permit-number {
-            background: transparent !important;
+            background: #ffff00 !important;
             color: black !important;
             border: 1px solid black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           
           .description-value {
-            background: transparent !important;
+            background: #90EE90 !important;
             color: black !important;
             border: 1px solid black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
         }
         
@@ -206,7 +216,7 @@ const BusinessSignClearancePrint: React.FC = () => {
         }
         
         .permit-number {
-          background: transparent;
+          background: #ffff00;
           color: black;
           padding: 4px 12px;
           font-weight: bold;
@@ -306,7 +316,7 @@ const BusinessSignClearancePrint: React.FC = () => {
         }
         
         .description-value {
-          background: transparent;
+          background: #90EE90;
           font-weight: bold;
           border: 1px solid black;
         }
@@ -433,21 +443,23 @@ const BusinessSignClearancePrint: React.FC = () => {
       `}</style>
 
       <div className="min-h-screen bg-gray-50 print:bg-white">
+        {/* Print Instructions */}
+        <div className="fixed top-4 left-4 bg-blue-100 border border-blue-300 rounded-lg p-3 print:hidden no-print max-w-sm">
+          <p className="text-sm text-blue-800 font-medium mb-1">📌 Color Printing Tip</p>
+          <p className="text-xs text-blue-700">
+            To print with colors, enable "Print backgrounds" or "More settings → Options → Background graphics" in your browser's print dialog.
+          </p>
+        </div>
+
         {/* Print Controls */}
         <div className="fixed top-4 right-4 flex space-x-2 print:hidden no-print">
           <button
             onClick={handlePrint}
             className="bg-smblue-400 text-white px-4 py-2 rounded-lg hover:bg-smblue-500 transition-colors flex items-center space-x-2"
+            title="Enable 'Print backgrounds' in your browser's print settings to see colors"
           >
             <FiPrinter className="w-5 h-5" />
-            <span>Print Clearance</span>
-          </button>
-          <button
-            onClick={() => navigate(`/process-document/business-sign-clearance/${documentId}/colored-print`)}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-2"
-          >
-            <FiPrinter className="w-5 h-5" />
-            <span>Print Colored</span>
+            <span>Print Colored Version</span>
           </button>
           <button
             onClick={handleClose}
@@ -560,4 +572,4 @@ const BusinessSignClearancePrint: React.FC = () => {
   );
 };
 
-export default BusinessSignClearancePrint;
+export default BusinessSignClearanceColoredPrint;
