@@ -46,6 +46,10 @@ class DocumentSchema
             'clearance_purpose' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'clearance_type' => ['type' => 'string', 'max' => 255, 'nullable' => true],
 
+            // Document Specific Fields (Retirement Cessation Dissolution)
+            'date_approved' => ['type' => 'date', 'nullable' => true],
+            'last_compliance' => ['type' => 'date', 'nullable' => true],
+
             // Document Specific Fields (Business Permit)
             'business_name' => ['type' => 'string', 'max' => 255, 'nullable' => true],
             'business_type' => ['type' => 'string', 'max' => 255, 'nullable' => true],

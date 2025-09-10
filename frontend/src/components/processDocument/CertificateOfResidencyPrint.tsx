@@ -158,7 +158,20 @@ const CertificateOfResidencyPrint: React.FC = () => {
 
   // Generate document numbers
   const orNumber = document.document_number || `OR-${(document.id || 0).toString().padStart(6, '0')}`;
-  const recordNumber = document.id?.toString().padStart(4, '0') || '0000';
+  const getRecordNumber = (document: any): string => {
+  // First try to extract numbers from serial_number
+  if (document.serial_number) {
+    const numericPart = document.serial_number.replace(/\D/g, '');
+    if (numericPart) {
+      return numericPart.padStart(4, '0');
+    }
+  }
+  
+  // Fallback to document ID
+  return (document.id || 1).toString().padStart(4, '0');
+};
+
+const recordNumber = getRecordNumber(document);
 
   // Contact information and document data
   const contactNumber = document?.applicant_contact || resident?.mobile_number || '';
@@ -223,12 +236,67 @@ const CertificateOfResidencyPrint: React.FC = () => {
           }
           
           .document-container {
-            max-width: 21.59cm;
-            margin: 0 auto;
+            /* Simulate Letter size paper */
+            width: 8.5in;
+            min-height: 11in;
+            margin: 20px auto;
             background: white;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            padding: 20px;
-            min-height: 600px;
+            
+            /* Apply the same margins as print */
+            padding-top: 3.3cm;     /* Top margin for letterhead space */
+            padding-left: 5.2cm;    /* Left margin for binding */
+            padding-right: 2.54cm;  /* Right margin */
+            padding-bottom: 2.54cm; /* Bottom margin */
+            
+            /* Visual paper simulation */
+            position: relative;
+            border: 1px solid #ddd;
+          }
+          
+          /* Optional: Visual margin guides */
+          .document-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5.2cm;
+            height: 100%;
+            border-right: 1px dashed #ccc;
+            background: repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 10px,
+              rgba(0,0,0,0.02) 10px,
+              rgba(0,0,0,0.02) 20px
+            );
+            pointer-events: none;
+            z-index: 1;
+          }
+          
+          .document-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3.3cm;
+            border-bottom: 1px dashed #ccc;
+            background: repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 10px,
+              rgba(0,0,0,0.02) 10px,
+              rgba(0,0,0,0.02) 20px
+            );
+            pointer-events: none;
+            z-index: 1;
+          }
+          
+          /* Ensure content appears above margin indicators */
+          .document-container > * {
+            position: relative;
+            z-index: 2;
           }
         }
         
@@ -481,15 +549,11 @@ const CertificateOfResidencyPrint: React.FC = () => {
           margin-bottom: 8px;
         }
         
-        .qr-placeholder {
+        .qr-code {
           width: 60px;
           height: 60px;
-          border: 1px solid #000;
           margin: 0 auto;
-          background-color: #000;
-          line-height: 60px;
-          font-size: 6pt;
-          color: white;
+          display: block;
         }
         
         .disclaimer {
@@ -632,7 +696,7 @@ const CertificateOfResidencyPrint: React.FC = () => {
                     className="photo-placeholder" 
                     style={{ display: photoUrl ? 'none' : 'inline-block' }}
                   >
-                    PHOTO
+                    
                   </div>
                   <div className="photo-label">PHOTO</div>
                 </div>
@@ -697,10 +761,14 @@ const CertificateOfResidencyPrint: React.FC = () => {
             </div>
             
             <div className="official-signature">
-              <div className="official-name">{certifyingOfficial.toUpperCase()}</div>
-              <div className="official-title">Punong Barangay</div>
-              <div className="qr-placeholder">QR CODE</div>
-            </div>
+            <div className="official-name">{certifyingOfficial.toUpperCase()}</div>
+            <div className="official-title">Punong Barangay</div>
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg"
+              alt="QR Code"
+              className="qr-code"
+            />
+          </div>
           </div>
 
           <div className="disclaimer">

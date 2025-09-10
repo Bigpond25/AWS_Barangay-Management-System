@@ -42,7 +42,9 @@ class Document extends Model implements Auditable
         'file_storage_provider', 'file_migrated_to_supabase', 'processed_by', 'approved_by',
         'released_by', 'created_by', 'updated_by', 'received_from', 'representing_entity',
         'acknowledgement_address', 'bond_amount', 'expiry_date', 'sign_wordings', 
-        'sign_material', 'sign_size'
+        'sign_material', 'sign_size', 'case_number', 'hearing_date', 'hearing_time',
+        'hearing_type', 'complainant_name', 'complainant_address', 'respondent_name',
+        'respondent_address', 'case_description', 'date_approved', 'last_compliance', 'retirement_date'
     ];
 
     /**
