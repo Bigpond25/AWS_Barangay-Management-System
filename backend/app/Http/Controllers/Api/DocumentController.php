@@ -21,8 +21,12 @@ class DocumentController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $startTime = microtime(true);
+        \Log::info('DocumentController::index started', ['timestamp' => $startTime]);
+        
         try {
             // OPTIMIZED: Start with selective fields and optimized relationships
+            $step1 = microtime(true);
             $query = Document::select([
                 'id', 'type', 'status', 'priority', 'payment_status',
                 'document_number', 'serial_number', 'applicant_name',
@@ -30,18 +34,24 @@ class DocumentController extends Controller
                 'released_at', 'needed_date', 'processing_fee', 'purpose',
                 // Cash bond fields
                 'received_from', 'representing_entity', 'acknowledgement_address', 'bond_amount',
+                // CRITICAL: Include foreign keys for relationships
+                'processed_by', 'approved_by', 'released_by', 'created_by', 'updated_by',
                 'created_at', 'updated_at'
             ]);
+            \Log::info('Query initialized', ['elapsed' => microtime(true) - $step1]);
 
             // OPTIMIZED: Only load necessary relationship fields
+            $step2 = microtime(true);
             $query->with([
                 'resident:id,first_name,last_name,middle_name,suffix,complete_address,mobile_number,email_address',
                 'processedByUser:id,first_name,last_name,role,position',
                 'approvedByUser:id,first_name,last_name,role,position',
                 'releasedByUser:id,first_name,last_name,role,position'
             ]);
+            \Log::info('Relationships added', ['elapsed' => microtime(true) - $step2]);
 
             // Existing filters
+            $step3 = microtime(true);
             if ($request->filled('type')) {
                 $query->where('type', $request->type);
             }
@@ -87,8 +97,10 @@ class DocumentController extends Controller
             if ($request->filled('bond_amount')) {
                 $query->where('bond_amount', $request->bond_amount);
             }
+            \Log::info('Filters applied', ['elapsed' => microtime(true) - $step3]);
 
             // OPTIMIZED: Search functionality using LEFT JOIN instead of EXISTS subquery
+            $step4 = microtime(true);
             if ($request->filled('search')) {
                 $searchTerm = $request->search;
                 
@@ -107,17 +119,23 @@ class DocumentController extends Controller
                       ->whereNull('residents.deleted_at') // Exclude soft-deleted residents
                       ->select('documents.*'); // Only select document columns to avoid conflicts
             }
+            \Log::info('Search applied', ['elapsed' => microtime(true) - $step4]);
 
             // Apply sorting
+            $step5 = microtime(true);
             $sortBy = $request->get('sort_by', 'submitted_at');
             $sortOrder = $request->get('sort_order', 'desc');
             $query->orderBy($sortBy, $sortOrder);
+            \Log::info('Sorting applied', ['elapsed' => microtime(true) - $step5]);
 
             // Pagination
+            $step6 = microtime(true);
             $perPage = $request->get('per_page', 15);
             $documents = $query->paginate($perPage);
+            \Log::info('Pagination executed', ['elapsed' => microtime(true) - $step6]);
 
-            return response()->json([
+            $step7 = microtime(true);
+            $response = response()->json([
                 'success' => true,
                 'data' => $documents->items(),
                 'meta' => [
@@ -130,8 +148,21 @@ class DocumentController extends Controller
                 ],
                 'message' => 'Documents retrieved successfully'
             ]);
+            \Log::info('Response built', ['elapsed' => microtime(true) - $step7]);
+            
+            $totalTime = microtime(true) - $startTime;
+            \Log::info('DocumentController::index completed', ['total_time' => $totalTime]);
+            
+            return $response;
 
         } catch (\Exception $e) {
+            $totalTime = microtime(true) - $startTime;
+            \Log::error('DocumentController::index failed', [
+                'total_time' => $totalTime,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve documents: ' . $e->getMessage()
