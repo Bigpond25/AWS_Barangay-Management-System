@@ -55,6 +55,8 @@ const RetirementForm: React.FC<RetirementFormProps> = ({ onNavigate }) => {
       ownership_type: '',
       retirement_date: '',
       business_type: '',
+      date_approved: '',
+      last_compliance: '',
       requirements_submitted: ['Business Permit', 'Valid ID', 'Business Registration'],
       notes: '',
       remarks: '',
@@ -428,6 +430,23 @@ const onSubmit = handleSubmit(async (formData) => {
               type="date"
               required
             />
+
+            <DocumentFormField
+              name="date_approved"
+              label="Date Approved (DA)"
+              type="date"
+              placeholder="Date when retirement/cessation was approved"
+              required
+            />
+
+            {/* Last Compliance Field */}
+            <DocumentFormField
+              name="last_compliance"
+              label="Last Compliance (LC)" 
+              type="date"
+              placeholder="Date of last business compliance/permit"
+              required
+            />
           </div>
         </div>
 
@@ -464,8 +483,18 @@ const onSubmit = handleSubmit(async (formData) => {
                   {isLoadingOfficials ? 'Loading officials...' : 'Select official'}
                 </option>
                 {officials.map((official) => {
-                  const fullName = `${official.prefix} ${official.first_name} ${official.middle_name ? official.middle_name + ' ' : ''}${official.last_name}${official.suffix ? ' ' + official.suffix : ''}`.trim();
+                  // Safely construct the full name, handling undefined values
+                  const nameParts = [
+                    official.prefix,
+                    official.first_name,
+                    official.middle_name,
+                    official.last_name,
+                    official.suffix
+                  ].filter(Boolean); // This removes any undefined, null, or empty string values
+                  
+                  const fullName = nameParts.join(' ');
                   const positionText = official.position.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+                  
                   return (
                     <option key={official.id} value={fullName}>
                       {fullName} ({positionText})

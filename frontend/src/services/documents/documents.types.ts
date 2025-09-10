@@ -2,7 +2,7 @@
 // services/documents/documents.types.ts - Zod schemas and type definitions
 // ============================================================================
 
-import { z } from 'zod';
+import { date, z } from 'zod';
 
 // Enum schemas following the guidelines
 export const DocumentTypeSchema = z.enum([
@@ -113,6 +113,8 @@ export const DocumentFormDataSchema = z.object({
   ownership_type: z.string().nullable().optional(),
   retirement_date: z.string().nullable().optional(),
   business_category: z.string().nullable().optional(),
+  date_approved: z.string().nullable().optional(),
+  last_compliance: z.string().nullable().optional(),
   
   // Processing Information
   requirements_submitted: z.array(z.string()).nullable().optional(),
@@ -340,6 +342,8 @@ export const transformDocumentToFormData = (document: Document | null): Document
       case_description: '',
       ownership_type: '',
       retirement_date: '',
+      date_approved: '',
+      last_compliance: '',
       business_category: '',
       requirements_submitted: [],
       notes: '',
@@ -393,6 +397,12 @@ export const transformDocumentToFormData = (document: Document | null): Document
     ownership_type: document.ownership_type || '',
     retirement_date: document.retirement_date 
       ? new Date(document.retirement_date).toISOString().slice(0, 10) 
+      : '',
+    date_approved: document.date_approved 
+      ? new Date(document.date_approved).toISOString().slice(0, 10) 
+      : '',
+    last_compliance: document.last_compliance
+      ? new Date(document.last_compliance).toISOString().slice(0, 10)
       : '',
     business_category: document.business_category || '',
   };

@@ -98,6 +98,8 @@ return new class extends Migration
             ])->nullable();
             $table->date('retirement_date')->nullable();
             $table->string('business_category')->nullable();
+            $table->date('date_approved')->nullable();
+            $table->date('last_compliance')->nullable();
 
             // Processing Notes
             $table->text('requirements_submitted')->nullable();

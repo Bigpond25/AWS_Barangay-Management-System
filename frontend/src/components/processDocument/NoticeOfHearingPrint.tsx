@@ -174,16 +174,34 @@ const NoticeOfHearingPrint: React.FC = () => {
             max-height: calc(27.94cm - 3.3cm - 2.54cm) !important;
           }
           
+          /* Apply dark red to respondent info */
+          .respondent-name {
+            color: #8B0000 !important;
+          }
+          
+          .to-name {
+            color: #8B0000 !important;
+          }
+          
+          .to-address {
+            color: #8B0000 !important;
+          }
+          
+          /* General print styles - but don't override specific colors */
           * {
             visibility: visible !important;
-            color: black !important;
             background: white !important;
             box-shadow: none !important;
             text-shadow: none !important;
           }
+          
+          /* Keep text black unless specifically colored */
+          *:not(.respondent-name):not(.to-name):not(.to-address) {
+            color: black !important;
+          }
         }
         
-        /* Screen styles */
+        /* Screen styles with proper print preview margins */
         @media screen {
           body {
             font-family: 'Times New Roman', Times, serif;
@@ -191,17 +209,67 @@ const NoticeOfHearingPrint: React.FC = () => {
           }
           
           .document-container {
-            max-width: 21.59cm;
-            margin: 0 auto;
+            /* Simulate Letter size paper */
+            width: 8.5in;
+            min-height: 11in;
+            margin: 20px auto;
             background: white;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            margin-left: calc(5.2cm + 20px);
-            margin-top: calc(3.3cm + 20px);
-            padding-right: 2.54cm;
-            padding-bottom: 2.54cm;
-            border-left: 3px dashed #ccc;
-            border-top: 3px dashed #ccc;
-            min-height: calc(27.94cm - 3.3cm - 2.54cm);
+            
+            /* Apply the same margins as print */
+            padding-top: 3.3cm;     /* Top margin for letterhead space */
+            padding-left: 5.2cm;    /* Left margin for binding */
+            padding-right: 2.54cm;  /* Right margin */
+            padding-bottom: 2.54cm; /* Bottom margin */
+            
+            /* Visual paper simulation */
+            position: relative;
+            border: 1px solid #ddd;
+          }
+          
+          /* Optional: Visual margin guides */
+          .document-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5.2cm;
+            height: 100%;
+            border-right: 1px dashed #ccc;
+            background: repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 10px,
+              rgba(0,0,0,0.02) 10px,
+              rgba(0,0,0,0.02) 20px
+            );
+            pointer-events: none;
+            z-index: 1;
+          }
+          
+          .document-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3.3cm;
+            border-bottom: 1px dashed #ccc;
+            background: repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 10px,
+              rgba(0,0,0,0.02) 10px,
+              rgba(0,0,0,0.02) 20px
+            );
+            pointer-events: none;
+            z-index: 1;
+          }
+          
+          /* Ensure content appears above margin indicators */
+          .document-container > * {
+            position: relative;
+            z-index: 2;
           }
         }
         
@@ -218,30 +286,32 @@ const NoticeOfHearingPrint: React.FC = () => {
           top: 0;
           width: 80px;
           height: 80px;
-          background-color: #4CAF50;
-          border: 2px solid #000;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 8pt;
-          color: white;
-          font-weight: bold;
         }
-        
+
+        .logo-left img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+
         .logo-right {
           position: absolute;
           right: 0;
           top: 0;
           width: 80px;
           height: 80px;
-          background-color: #2196F3;
-          border: 2px solid #000;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 8pt;
-          color: white;
-          font-weight: bold;
+        }
+
+        .logo-right img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
         }
         
         .header-text {
@@ -317,6 +387,7 @@ const NoticeOfHearingPrint: React.FC = () => {
           font-size: 10pt;
           font-weight: bold;
           margin-bottom: 3px;
+          color: #8B0000 !important; /* Dark red */
         }
         
         .respondent-label {
@@ -348,13 +419,14 @@ const NoticeOfHearingPrint: React.FC = () => {
         .to-name {
           font-size: 10pt;
           font-weight: bold;
-          color: #8B4513;
+          color: #8B0000 !important; /* Dark red */
           margin-bottom: 2px;
         }
         
         .to-address {
           font-size: 10pt;
           margin-bottom: 2px;
+          color: #8B0000 !important; /* Dark red */
         }
         
         .notice-title {
@@ -481,8 +553,18 @@ const NoticeOfHearingPrint: React.FC = () => {
           
           {/* Document Header */}
           <div className="document-header">
-            <div className="logo-left">BARANGAY<br />LOGO</div>
-            <div className="logo-right">QUEZON<br />CITY<br />LOGO</div>
+            <div className="logo-left">
+              <img 
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2IxZkju6BycokIeGAZrKRrGm5tj-VNnzr9w&s"
+                alt="Barangay Logo"
+              />
+            </div>
+            <div className="logo-right">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Quezon_City_Council_seal.jpg"
+                alt="Quezon City Logo"
+              />
+            </div>
             
             <div className="header-text">
               <div className="republic-text">REPUBLIC OF THE PHILIPPINES</div>

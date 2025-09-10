@@ -61,6 +61,7 @@ import BarangayClearanceInstallationForm from "./components/processDocument/Bara
 import CashBondForm from "./components/processDocument/CashBondForm";
 import RetirementForm from "./components/processDocument/RetirementForm";
 import RetirementPrint from "./components/processDocument/RetirementPrint";
+import RetirementColoredPrint from "./components/processDocument/RetirementColoredPrint";
 
 import CashBondPrint from "./components/processDocument/CashBondPrint";
 import SummonPrint from "./components/processDocument/SummonPrint";
@@ -619,6 +620,15 @@ const router = createBrowserRouter([
     element: (  
       <ProtectedRoute requireAuth={true}>
         <RetirementPrint />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/print/retirement-cessation-dissolution/:documentId/colored-print",
+    element: (  
+      <ProtectedRoute requireAuth={true}>
+        <RetirementColoredPrint />
       </ProtectedRoute>
     ),
   },

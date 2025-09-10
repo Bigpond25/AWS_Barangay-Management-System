@@ -1,5 +1,5 @@
 // ============================================================================
-// processDocument/RetirementPrint.tsx - Retirement/Cessation/Dissolution Certificate Print (Plain Version)
+// processDocument/RetirementColoredPrint.tsx - Retirement/Cessation/Dissolution Certificate Print (Colored Version)
 // ============================================================================
 
 import React from 'react';
@@ -11,7 +11,7 @@ import { useDocument } from '@/services/documents/useDocuments';
 import { useResident } from '@/services/residents/useResidents';
 import type { Document } from '@/services/documents/documents.types';
 
-const RetirementPrint: React.FC = () => {
+const RetirementColoredPrint: React.FC = () => {
   const { documentId } = useParams<{ documentId: string }>();
   const navigate = useNavigate();
   
@@ -171,6 +171,13 @@ const RetirementPrint: React.FC = () => {
   return (
     <>
       <style>{`
+        /* Force color printing for all elements */
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+        
         /* Print specifications for Letter size (8.5 x 11 inches) */
         @media print {
           @page {
@@ -189,6 +196,8 @@ const RetirementPrint: React.FC = () => {
             line-height: 1.2 !important;
             color: black !important;
             background: white !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           
           .no-print {
@@ -206,10 +215,63 @@ const RetirementPrint: React.FC = () => {
           
           * {
             visibility: visible !important;
-            color: black !important;
-            background: white !important;
-            box-shadow: none !important;
             text-shadow: none !important;
+          }
+          
+          .field-box {
+            background: #f0f8e0 !important;
+            color: black !important;
+            border: 1px solid black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          .address-field {
+            background: #f0f8e0 !important;
+            color: black !important;
+            border: 1px solid black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          .owner-field {
+            background: #f0f8e0 !important;
+            color: black !important;
+            border: 1px solid black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          .small-box {
+            background: #f0f8e0 !important;
+            color: black !important;
+            border: 1px solid black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          
+          .record-field {
+            background: #f0f8e0 !important;
+            color: black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }   
+
+          .date-field {
+            background: #f0f8e0 !important;
+            color: #d32f2f !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+         
+          
+          .remarks-box {
+            background: #f9f9f9 !important;
+            color: black !important;
+            border: 1px solid black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
         }
         
@@ -318,7 +380,7 @@ const RetirementPrint: React.FC = () => {
         .field-box {
           border: 1px solid #000;
           padding: 4px 8px;
-          background-color: transparent;
+          background-color: #f0f8e0;
           min-height: 20px;
           font-weight: bold;
           margin-bottom: 8px;
@@ -327,7 +389,7 @@ const RetirementPrint: React.FC = () => {
         .address-field {
           border: 1px solid #000;
           padding: 4px 8px;
-          background-color: transparent;
+          background-color: #f0f8e0;
           min-height: 20px;
           font-weight: bold;
           margin-bottom: 8px;
@@ -336,7 +398,7 @@ const RetirementPrint: React.FC = () => {
         .owner-field {
           border: 1px solid #000;
           padding: 4px 8px;
-          background-color: transparent;
+          background-color: #f0f8e0;
           min-height: 20px;
           font-weight: bold;
           margin-bottom: 15px;
@@ -374,19 +436,19 @@ const RetirementPrint: React.FC = () => {
         .small-box {
           border: 1px solid #000;
           padding: 3px 6px;
-          background-color: transparent;
+          background-color: #f0f8e0;
           min-height: 16px;
           font-weight: bold;
           text-align: center;
         }
         
         .record-field {
-          background-color: transparent;
+          background-color: #e0e0e0;
         }
         
         .date-field {
-          background-color: transparent;
-          color: black;
+          background-color: #f0f8e0;
+          color: #d32f2f;
         }
         
         .purpose-text {
@@ -426,7 +488,7 @@ const RetirementPrint: React.FC = () => {
         .remarks-box {
           border: 1px solid #000;
           height: 80px;
-          background-color: transparent;
+          background-color: #f9f9f9;
           padding: 4px;
           font-size: 8pt;
         }
@@ -476,30 +538,39 @@ const RetirementPrint: React.FC = () => {
       `}</style>
       
       <div className="min-h-screen bg-gray-50 print:bg-white">
+        {/* Print Instructions */}
+        <div className="fixed top-4 left-4 bg-blue-100 border border-blue-300 rounded-lg p-3 print:hidden no-print max-w-sm">
+          <p className="text-sm text-blue-800 font-medium mb-1">🎨 Color Printing Tip</p>
+          <p className="text-xs text-blue-700">
+            To print with colors, enable "Print backgrounds" or "More settings → Options → Background graphics" in your browser's print dialog.
+          </p>
+        </div>
+
         {/* Print Controls - Hidden when printing */}
         <div className="no-print print:hidden fixed top-4 right-4 z-10 space-x-2">
-          <button
-            onClick={handlePrint}
-            className="bg-smblue-400 text-white px-6 py-3 rounded-lg hover:bg-smblue-500 shadow-lg font-medium transition-colors flex items-center space-x-2"
-          >
-            <FiPrinter className="w-4 h-4" />
-            <span>Print Plain</span>
-          </button>
-          <button
-            onClick={() => navigate(`/print/retirement-cessation-dissolution/${documentId}/colored-print`)}
-            className="bg-purple-500 text-white px-6 py-3 rounded-lg my-5 hover:bg-purple-600 shadow-lg font-medium transition-colors flex items-center space-x-2"
-          >
-            <FiPrinter className="w-4 h-4" />
-            <span>Print Colored</span>
-          </button>
-          <button
-            onClick={handleClose}
-            className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 shadow-lg transition-colors flex items-center space-x-2"
-          >
-            <FiX className="w-4 h-4" />
-            <span>Close</span>
-          </button>
-        </div>
+                  <button
+                   onClick={() => navigate(`/print/retirement-cessation-dissolution/${documentId}`)}
+                    
+                    className="bg-smblue-400 text-white px-6 py-3 rounded-lg hover:bg-smblue-500 shadow-lg font-medium transition-colors flex items-center space-x-2"
+                  >
+                    <FiPrinter className="w-4 h-4" />
+                    <span>Print Plain</span>
+                  </button>
+                  <button
+                    onClick={handlePrint}
+                    className="bg-purple-500 text-white px-6 py-3 rounded-lg my-5 hover:bg-purple-600 shadow-lg font-medium transition-colors flex items-center space-x-2"
+                  >
+                    <FiPrinter className="w-4 h-4" />
+                    <span>Print Colored</span>
+                  </button>
+                  <button
+                    onClick={handleClose}
+                    className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 shadow-lg transition-colors flex items-center space-x-2"
+                  >
+                    <FiX className="w-4 h-4" />
+                    <span>Close</span>
+                  </button>
+                </div>
 
         {/* Certificate Content */}
         <div className="document-container">
@@ -557,7 +628,7 @@ const RetirementPrint: React.FC = () => {
               <div className="small-field-group">
                 <div className="small-field">
                   <div className="small-label">Record No.</div>
-                  <div className="small-box record-field">{recordNumber}</div>
+                  <div className="small-box">{recordNumber}</div>
                 </div>
               </div>
               <div className="small-field-group">
@@ -623,4 +694,4 @@ const RetirementPrint: React.FC = () => {
   );
 };
 
-export default RetirementPrint;
+export default RetirementColoredPrint;
