@@ -142,6 +142,8 @@ export const DocumentSchema = DocumentFormDataSchema.extend({
   
   // Additional tracking
   expiry_date: z.string().nullable().optional(),
+  date_approved: z.string().nullable().optional(),
+  last_compliance: z.string().nullable().optional(),
   
   // Timestamps (Laravel standard)
   created_at: z.string(),
