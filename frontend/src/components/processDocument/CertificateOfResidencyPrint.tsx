@@ -5,7 +5,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiPrinter, FiX, FiAlertCircle } from 'react-icons/fi';
-
+import { buildImageUrl, getPlaceholderImageUrl } from '@/utils/imageUtils';
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { useDocument } from '@/services/documents/useDocuments';
 import { useResident } from '@/services/residents/useResidents';
@@ -178,7 +178,7 @@ const recordNumber = getRecordNumber(document);
   const email = document?.applicant_email || resident?.email_address || '';
 
   // Photo URL - from resident data
-  const photoUrl = resident?.profile_photo_url || '';
+  const photoUrl = resident?.profile_photo_url ? buildImageUrl(resident.profile_photo_url) : '';
 
   // Extract residency period info from document
   const residencyPeriod = document?.residency_period || 'PERMANENT';
@@ -677,29 +677,29 @@ const recordNumber = getRecordNumber(document);
             <div className="photo-contact-right">
               <div className="three-column-layout">
                 <div className="photo-column">
-                  {photoUrl ? (
-                    <img 
-                      src={photoUrl} 
-                      alt="Resident Photo" 
-                      className="photo-image"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const placeholder = target.nextElementSibling as HTMLElement;
-                        if (placeholder) {
-                          placeholder.style.display = 'inline-block';
-                        }
-                      }}
-                    />
-                  ) : null}
-                  <div 
-                    className="photo-placeholder" 
-                    style={{ display: photoUrl ? 'none' : 'inline-block' }}
-                  >
-                    
-                  </div>
-                  <div className="photo-label">PHOTO</div>
-                </div>
+  {photoUrl ? (
+    <img 
+      src={photoUrl} 
+      alt="Resident Photo" 
+      className="photo-image"
+      onError={(e) => {
+        const target = e.target as HTMLImageElement;
+        target.src = getPlaceholderImageUrl(150, 'No Photo');
+        target.onerror = null; // Prevent infinite loop
+      }}
+    />
+  ) : (
+    <div className="photo-placeholder">
+      {/* You could also use a placeholder image here */}
+      <img 
+        src={getPlaceholderImageUrl(150, 'No Photo')} 
+        alt="No Photo" 
+        className="photo-image"
+      />
+    </div>
+  )}
+  <div className="photo-label">PHOTO</div>
+</div>
                 
                 <div className="contact-signature-column">
                   <div className="contact-fields">

@@ -23,7 +23,8 @@ import {
   FiChevronDown
 } from 'react-icons/fi';
 import { useEffect } from 'react';
-
+import { buildImageUrl, getPlaceholderImageUrl } from '@/utils/imageUtils';
+import { useResident } from '@/services/residents/useResidents';
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
 import { useDocumentQueue, SORTABLE_FIELDS } from './_hooks/useDocumentQueue';
 import { useNotifications } from '@/components/_global/NotificationSystem';
@@ -37,7 +38,58 @@ import DocumentStatistics from './_components/DocumentStatistics';
 interface ProcessDocumentProps {
   onNavigate?: (page: string) => void;
 }
+interface ResidentPhotoProps {
+  residentId: string;
+  residentName: string;
+  size?: 'sm' | 'md' | 'lg';
+}
 
+const ResidentPhoto: React.FC<ResidentPhotoProps> = ({ 
+  residentId, 
+  residentName, 
+  size = 'md' 
+}) => {
+  const { data: resident, isLoading } = useResident(residentId, !!residentId);
+  
+  const sizeClasses = {
+    sm: 'h-8 w-8',
+    md: 'h-10 w-10',
+    lg: 'h-12 w-12'
+  };
+  
+  const iconSizes = {
+    sm: 'h-4 w-4',
+    md: 'h-5 w-5', 
+    lg: 'h-6 w-6'
+  };
+
+  if (isLoading) {
+    return (
+      <div className={`${sizeClasses[size]} rounded-full bg-gray-200 animate-pulse`} />
+    );
+  }
+
+  if (resident?.profile_photo_url) {
+    return (
+      <img
+        src={buildImageUrl(resident.profile_photo_url)}
+        alt={residentName}
+        className={`${sizeClasses[size]} rounded-full object-cover border border-gray-200`}
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          target.src = getPlaceholderImageUrl(40, 'No Photo');
+          target.onerror = null;
+        }}
+      />
+    );
+  }
+
+  return (
+    <div className={`${sizeClasses[size]} rounded-full bg-smblue-100 flex items-center justify-center border border-gray-200`}>
+      <FiUser className={`${iconSizes[size]} text-smblue-400`} />
+    </div>
+  );
+};
 interface SortableHeaderProps {
   field: string;
   label: string;
@@ -466,20 +518,22 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
                 <tr key={document.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-smblue-100 flex items-center justify-center">
-                          <FiUser className="h-5 w-5 text-smblue-400" />
-                        </div>
+                    <div className="flex-shrink-0">
+                      <ResidentPhoto 
+                        residentId={document.resident_id} 
+                        residentName={document.applicant_name}
+                        size="md"
+                      />
+                    </div>
+                    <div className="ml-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {document.applicant_name}
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {document.applicant_name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {document.applicant_contact || 'No contact'}
-                        </div>
+                      <div className="text-sm text-gray-500">
+                        {document.applicant_contact || 'No contact'}
                       </div>
                     </div>
+                  </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
