@@ -172,6 +172,7 @@ const NoticeOfHearingPrint: React.FC = () => {
             page-break-inside: avoid !important;
             height: auto !important;
             max-height: calc(27.94cm - 3.3cm - 2.54cm) !important;
+            padding-right: 80px !important;
           }
           
           /* Apply dark red to respondent info */
