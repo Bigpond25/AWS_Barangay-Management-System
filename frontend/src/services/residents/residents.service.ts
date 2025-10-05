@@ -196,7 +196,7 @@ export class ResidentsService extends BaseApiService {
     const paginatedSchema = PaginatedResponseSchema(ResidentSchema);
     
     const response = await this.request(
-      `/residents?search=${encodeURIComponent(searchTerm)}&per_page=${limit}`,
+      `/residents?search=${encodeURIComponent(searchTerm)}&per_page=${limit}&status=ACTIVE`,
       paginatedSchema,
       { method: 'GET' }
     );
