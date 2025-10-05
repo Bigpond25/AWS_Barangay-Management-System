@@ -24,7 +24,7 @@ class AppointmentController extends Controller
         try {
             // Find appointment without eager loading the ticket relationship
             $appointment = Appointment::with(['ticket'])
-                ->where('base_ticket_id', $id)
+                ->where('ticket_id', $id)
                 ->first();
 
             if (!$appointment) {
@@ -119,12 +119,13 @@ class AppointmentController extends Controller
             $ticket = Ticket::create([
                 ...$request->input('ticket'),
                 'type' => 'APPOINTMENT',
-                'status' => 'OPEN'
+                'status' => 'OPEN',
+                'category' => 'APPOINTMENT'
             ]);
 
             // Create appointment
             $appointment = Appointment::create([
-                'base_ticket_id' => $ticket->id,
+                'ticket_id' => $ticket->id,
                 ...$request->input('appointment')
             ]);
 
@@ -347,7 +348,7 @@ class AppointmentController extends Controller
             // For calendar view, return all results without pagination
             if ($request->has('month') || $request->has('year')) {
                 $appointments = $query->get();
-                
+
                 // Transform the data to match the frontend ViewAppointment schema
                 $transformedAppointments = $appointments->map(function ($appointment) {
                     return [

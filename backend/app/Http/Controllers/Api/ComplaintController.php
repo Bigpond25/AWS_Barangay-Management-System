@@ -63,7 +63,7 @@ class ComplaintController extends Controller
             'ticket.requester_name' => 'nullable|string|max:255',
             'ticket.resident_id' => 'nullable|uuid',
             'ticket.resident_search' => 'nullable|string',
-            'ticket.contact_number' => 'nullable|string|size:16',
+            'ticket.contact_number' => 'nullable|string',
             'ticket.email_address' => 'nullable|email|max:255',
             'ticket.complete_address' => 'nullable|string|max:255',
             'ticket.type' => 'required|in:COMPLAINT',
@@ -89,14 +89,15 @@ class ComplaintController extends Controller
             $ticket = Ticket::create([
                 ...$request->input('ticket'),
                 'type' => 'COMPLAINT',
-                'status' => 'OPEN'
+                'status' => 'OPEN',
+                'category' => 'COMPLAINT',
             ]);
 
             // Create complaint
             $complaintData = $request->input('complaint');
             $complaint = Complaint::create([
-                'base_ticket_id' => $ticket->id,
-                'c_category' => $complaintData['c_category'],
+                'ticket_id' => $ticket->id,
+                'category' => $complaintData['c_category'],
                 'department' => $complaintData['department'],
                 'location' => $complaintData['location'] ?? null,
             ]);
