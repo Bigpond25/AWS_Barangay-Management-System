@@ -1,0 +1,45 @@
+
+
+:root {
+  --el-color-primary: #4887B7 !important;   /* Navy Blue */
+  // --el-color-success: #2e7d6b !important;   /* Teal Green */
+  // --el-color-warning: #f59e0b !important;   /* Amber */
+  // --el-color-danger: #b91c1c !important;    /* Brick Red */
+  // --el-color-info: #64748b !important;      /* Slate Gray */
+  // --el-bg-color: #f9f6ef !important;        /* Ivory */
+  // --el-accent-color: #d4af37 !important;    /* Gold Accent */
+}
+
+/* Optional Dark Mode */
+html.dark {
+  --el-color-primary: #4887B7 !important;   /* Brighter Blue for contrast */
+  // --el-color-success: #34d399 !important;   /* Lighter Teal */
+  // --el-color-warning: #fbbf24 !important;   /* Bright Amber */
+  // --el-color-danger: #ef4444 !important;    /* Bright Red */
+  // --el-color-info: #94a3b8 !important;      /* Lighter Slate */
+  // --el-bg-color: #1e1e1e !important;        /* Dark background */
+  // --el-accent-color: #facc15 !important;    /* Gold-like Yellow */
+  
+}
+
+/* Apply background & text colors */
+// body {
+//   background-color: var(--el-color-background);
+//   color: var(--el-color-text-primary);
+//   transition: background-color 0.3s ease, color 0.3s ease;
+// }
+
+/* Surface example for cards, headers, etc. */
+// .surface {
+//   background-color: var(--color-surface);
+//   color: var(--color-text-primary);
+//   box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+//   border-radius: 8px;
+//   padding: 1rem;
+// }
+
+// .el-button--primary:hover,
+// .el-button--primary:focus {
+//   background-color: #155f68 !important;
+//   border-color: #155f68 !important;
+// }

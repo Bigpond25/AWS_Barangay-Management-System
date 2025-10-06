@@ -1,0 +1,52 @@
+{
+  "app": {
+    "title": "Barangay Portal",
+    "barangay": "Brgy. West Triangle",
+    "welcome": "Information Management System",
+    "copyright": "© 2025 Brgy. West Triangle. All rights reserved."
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "createAccount": "Create new account",
+    "forgotPassword": "Forgot Password",
+    "rememberMe": "Remember me",
+    "emailOrUsername": "Email or Username",
+    "enterEmailOrUsername": "Enter your email or username",
+    "loggingInWithEmail": "Logging in with email",
+    "loggingInWithUsername": "Logging in with username",
+    "password": "Password",
+    "enterPassword": "Enter your password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "or": "or"
+  },
+  "errors": {
+    "loginFailed": "Login Failed",
+    "emailOrUsernameRequired": "Email or username is required",
+    "passwordRequired": "Password is required",
+    "network": "Unable to connect to the server. Please check your internet connection and try again.",
+    "unauthorized": "Invalid email/username or password. Please check your credentials and try again.",
+    "deactivated": "Your account has been deactivated. Please contact the administrator.",
+    "validation": "Please check your email/username and password format.",
+    "generic": "Login failed. Please try again."
+  },
+  "help": {
+    "trouble": "Having trouble signing in? Contact your administrator for assistance."
+  },
+
+  "menu": {
+    "dashboard": "Dashboard",
+    "documents": "Documents",
+    "helpdesk": "Help Desk",
+    "profile": "My Profile"
+  },
+  "user": {
+    "myProfile": "My Profile",
+    "settings": "Settings",
+    "signOut": "Sign Out"
+  },
+  "notifications": {
+    "label": "Notifications"
+  }
+}
