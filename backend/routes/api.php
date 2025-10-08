@@ -35,6 +35,19 @@ use App\Http\Controllers\Api\StorageController;
 |
 */
 
+// Document Management
+Route::prefix('documents')->middleware('permission:view-documents')->group(function () {
+    Route::get('/', [DocumentController::class, 'index']);
+    Route::post('/', [DocumentController::class, 'store'])->middleware('permission:create-documents');
+    // ... other routes ...
+    Route::post('/{id}/release', [DocumentController::class, 'release'])->middleware('permission:release-documents');
+    Route::post('/{id}/cancel', [DocumentController::class, 'cancel'])->middleware('permission:edit-documents');
+    
+    // ✅ Add this new one for uploads
+    Route::post('/{id}/upload', [DocumentController::class, 'upload'])->middleware('permission:edit-documents');
+});
+
+
 // Public routes
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);

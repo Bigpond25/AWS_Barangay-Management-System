@@ -38,8 +38,10 @@ export const ResidentTableRow: React.FC<ResidentTableRowProps> = ({
     return categories.length > 0 ? categories.join(', ') : t('residents.categories.regular');
   };
   
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  const getStatusColor = (status?: string): string => {
+    if (!status) return 'bg-green-100 text-green-800'; // Default to active
+    
+    switch (status.toUpperCase()) {
       case 'ACTIVE':
         return 'bg-green-100 text-green-800';
       case 'INACTIVE':
@@ -53,8 +55,21 @@ export const ResidentTableRow: React.FC<ResidentTableRowProps> = ({
     }
   };
 
-  const getStatusText = (status: string) => {
-    return t(`residents.status.${status.toLowerCase()}`, status);
+  const getStatusText = (status?: string): string => {
+    if (!status) return 'Active'; // Default to Active
+    
+    switch (status.toUpperCase()) {
+      case 'ACTIVE':
+        return 'Active';
+      case 'INACTIVE':
+        return 'Inactive';
+      case 'DECEASED':
+        return 'Deceased';
+      case 'TRANSFERRED':
+        return 'Transferred';
+      default:
+        return status;
+    }
   };
 
   const fullName = `${resident.first_name} ${resident.middle_name ? resident.middle_name + ' ' : ''}${resident.last_name}${resident.suffix ? ', ' + resident.suffix : ''}`;

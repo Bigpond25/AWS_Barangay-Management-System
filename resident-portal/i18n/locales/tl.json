@@ -1,0 +1,52 @@
+{
+  "app": {
+    "title": "Barangay Portal",
+    "barangay": "Brgy. West Triangle",
+    "welcome": "Information Management System",
+    "copyright": "© 2025 Brgy. West Triangle. All rights reserved."
+  },
+  "auth": {
+    "signIn": "Mag-sign In",
+    "signingIn": "Nagla-login...",
+    "createAccount": "Gumawa ng bagong account",
+    "forgotPassword": "Nakalimutan ang Password",
+    "rememberMe": "Tandaan ako",
+    "emailOrUsername": "Email o Username",
+    "enterEmailOrUsername": "Ilagay ang iyong email o username",
+    "loggingInWithEmail": "Nagla-login gamit ang email",
+    "loggingInWithUsername": "Nagla-login gamit ang username",
+    "password": "Password",
+    "enterPassword": "Ilagay ang iyong password",
+    "showPassword": "Ipakita ang password",
+    "hidePassword": "Itago ang password",
+    "or": "o"
+  },
+  "errors": {
+    "loginFailed": "Nabigo ang pag-login",
+    "emailOrUsernameRequired": "Kinakailangan ang email o username",
+    "passwordRequired": "Kinakailangan ang password",
+    "network": "Hindi makakonekta sa server. Pakisuri ang iyong koneksyon sa internet at subukan muli.",
+    "unauthorized": "Di-wastong email/username o password. Pakisuri ang iyong credentials at subukan muli.",
+    "deactivated": "Na-deactivate ang iyong account. Mangyaring makipag-ugnayan sa administrator.",
+    "validation": "Pakisuri ang format ng iyong email/username at password.",
+    "generic": "Nabigo ang pag-login. Pakisubukan muli."
+  },
+  "help": {
+    "trouble": "Nahihirapan mag-login? Makipag-ugnayan sa iyong administrator para sa tulong."
+  },
+
+  "menu": {
+    "dashboard": "Dashboard",
+    "documents": "Mga Dokumento",
+    "helpdesk": "Help Desk",
+    "profile": "Aking Profile"
+  },
+  "user": {
+    "myProfile": "Aking Profile",
+    "settings": "Mga Setting",
+    "signOut": "Mag-logout"
+  },
+  "notifications": {
+    "label": "Mga Notipikasyon"
+  }
+}

@@ -12,5 +12,6 @@
     "intelephense.environment.phpVersion": "8.2",
     "files.associations": {
         "*.php": "php"
-    }
+    },
+    "postman.settings.dotenv-detection-notification-visibility": false
 }

@@ -52,8 +52,8 @@ return new class extends Migration
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('released_at')->nullable();
             $table->date('expiry_date')->nullable();
-            $table->date('date_approved')->nullable();
-            $table->date('last_compliance')->nullable();
+            // $table->date('date_approved')->nullable();
+            // $table->date('last_compliance')->nullable();
 
             // Document-specific fields
             $table->string('clearance_purpose')->nullable();
@@ -98,8 +98,8 @@ return new class extends Migration
             ])->nullable();
             $table->date('retirement_date')->nullable();
             $table->string('business_category')->nullable();
-            $table->date('date_approved')->nullable();
-            $table->date('last_compliance')->nullable();
+            // $table->date('date_approved')->nullable();
+            // $table->date('last_compliance')->nullable();
 
             // Processing Notes
             $table->text('requirements_submitted')->nullable();

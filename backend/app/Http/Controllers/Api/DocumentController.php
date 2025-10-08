@@ -794,6 +794,33 @@ class DocumentController extends Controller
         }
     }
 
+
+    public function upload(Request $request, $id)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // max 10MB
+        ]);
+
+        $document = \App\Models\Document::findOrFail($id);
+
+        // Store file in /storage/app/public/documents
+        $path = $request->file('file')->store('documents', 'public');
+
+        // Generate public URL (assuming 'storage' is linked via php artisan storage:link)
+        $url = asset('storage/' . $path);
+
+        // Save URL in DB
+        $document->uploaded_file_url = $url;
+        $document->save();
+
+        return response()->json([
+            'success' => true,
+            'uploaded_file_url' => $url,
+        ], 200);
+    }
+
+
+
     /**
      * Get processing history.
      */

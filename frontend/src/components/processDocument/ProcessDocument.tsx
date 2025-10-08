@@ -1,28 +1,23 @@
-// ============================================================================
-// processDocument/ProcessDocument.tsx - Modern document processing center
-// ============================================================================
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  FiSearch, 
-  FiFilter, 
-  FiPrinter, 
-  FiEye, 
-  FiClipboard, 
-  FiCheck, 
-  FiX, 
-  FiClock, 
-  FiUser, 
-  FiCalendar, 
-  FiFileText, 
+import {
+  FiSearch,
+  FiFilter,
+  FiPrinter,
+  FiEye,
+  FiClipboard,
+  FiCheck,
+  FiX,
+  FiClock,
+  FiUser,
+  FiCalendar,
+  FiFileText,
   FiAlertCircle,
   FiRefreshCw,
   FiEdit3,
   FiChevronUp,
   FiChevronDown
 } from 'react-icons/fi';
-import { useEffect } from 'react';
 import { buildImageUrl, getPlaceholderImageUrl } from '@/utils/imageUtils';
 import { useResident } from '@/services/residents/useResidents';
 import { LoadingSpinner } from '../__shared/LoadingSpinner';
@@ -38,35 +33,34 @@ import DocumentStatistics from './_components/DocumentStatistics';
 interface ProcessDocumentProps {
   onNavigate?: (page: string) => void;
 }
+
 interface ResidentPhotoProps {
   residentId: string;
   residentName: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
-const ResidentPhoto: React.FC<ResidentPhotoProps> = ({ 
-  residentId, 
-  residentName, 
-  size = 'md' 
+const ResidentPhoto: React.FC<ResidentPhotoProps> = ({
+  residentId,
+  residentName,
+  size = 'md'
 }) => {
   const { data: resident, isLoading } = useResident(residentId, !!residentId);
-  
+
   const sizeClasses = {
     sm: 'h-8 w-8',
     md: 'h-10 w-10',
     lg: 'h-12 w-12'
   };
-  
+
   const iconSizes = {
     sm: 'h-4 w-4',
-    md: 'h-5 w-5', 
+    md: 'h-5 w-5',
     lg: 'h-6 w-6'
   };
 
   if (isLoading) {
-    return (
-      <div className={`${sizeClasses[size]} rounded-full bg-gray-200 animate-pulse`} />
-    );
+    return <div className={`${sizeClasses[size]} rounded-full bg-gray-200 animate-pulse`} />;
   }
 
   if (resident?.profile_photo_url) {
@@ -90,6 +84,7 @@ const ResidentPhoto: React.FC<ResidentPhotoProps> = ({
     </div>
   );
 };
+
 interface SortableHeaderProps {
   field: string;
   label: string;
@@ -98,34 +93,34 @@ interface SortableHeaderProps {
   onSort: (field: string) => void;
 }
 
-const SortableHeader: React.FC<SortableHeaderProps> = ({ 
-  field, 
-  label, 
-  currentSort, 
-  currentOrder, 
-  onSort 
+const SortableHeader: React.FC<SortableHeaderProps> = ({
+  field,
+  label,
+  currentSort,
+  currentOrder,
+  onSort
 }) => {
   const isActive = currentSort === field;
-  
+
   return (
-    <th 
+    <th
       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
       onClick={() => onSort(field)}
     >
       <div className="flex items-center space-x-1">
         <span>{label}</span>
         <div className="flex flex-col">
-          <FiChevronUp 
+          <FiChevronUp
             className={`w-3 h-3 ${
-              isActive && currentOrder === 'asc' 
-                ? 'text-smblue-400' 
+              isActive && currentOrder === 'asc'
+                ? 'text-smblue-400'
                 : 'text-gray-300'
             }`}
           />
-          <FiChevronDown 
+          <FiChevronDown
             className={`w-3 h-3 -mt-1 ${
-              isActive && currentOrder === 'desc' 
-                ? 'text-smblue-400' 
+              isActive && currentOrder === 'desc'
+                ? 'text-smblue-400'
                 : 'text-gray-300'
             }`}
           />
@@ -139,7 +134,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
   const navigate = useNavigate();
   const { showNotification } = useNotifications();
   const [isLoaded, setIsLoaded] = useState(false);
-  
+
   const {
     documents,
     statistics,
@@ -159,7 +154,13 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [showProcessModal, setShowProcessModal] = useState(false);
 
-  // Animation trigger on component mount
+  // New state for upload
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadingDoc, setUploadingDoc] = useState<Document | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Animation trigger on mount
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
@@ -178,40 +179,16 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
     { value: 'CERTIFICATE_OF_RESIDENCY', label: 'Certificate of Residency' }
   ];
 
-  const statusConfig = {
-    PENDING: {
-      color: 'bg-yellow-100 text-yellow-800',
-      icon: FiClock,
-      label: 'Pending'
-    },
-    PROCESSING: {
-      color: 'bg-blue-100 text-blue-800',
-      icon: FiEye,
-      label: 'Processing'
-    },
-    APPROVED: {
-      color: 'bg-green-100 text-green-800',
-      icon: FiCheck,
-      label: 'Approved'
-    },
-    RELEASED: {
-      color: 'bg-gray-100 text-gray-800',
-      icon: FiFileText,
-      label: 'Released'
-    },
-    REJECTED: {
-      color: 'bg-red-100 text-red-800',
-      icon: FiX,
-      label: 'Rejected'
-    },
-    CANCELLED: {
-      color: 'bg-gray-100 text-gray-800',
-      icon: FiX,
-      label: 'Cancelled'
-    }
+  const statusConfig: Record<string, any> = {
+    PENDING: { color: 'bg-yellow-100 text-yellow-800', icon: FiClock, label: 'Pending' },
+    PROCESSING: { color: 'bg-blue-100 text-blue-800', icon: FiEye, label: 'Processing' },
+    APPROVED: { color: 'bg-green-100 text-green-800', icon: FiCheck, label: 'Approved' },
+    RELEASED: { color: 'bg-gray-100 text-gray-800', icon: FiFileText, label: 'Released' },
+    REJECTED: { color: 'bg-red-100 text-red-800', icon: FiX, label: 'Rejected' },
+    CANCELLED: { color: 'bg-gray-100 text-gray-800', icon: FiX, label: 'Cancelled' }
   };
 
-  const priorityConfig = {
+  const priorityConfig: Record<string, any> = {
     LOW: { color: 'text-gray-500', label: 'Low' },
     NORMAL: { color: 'text-blue-500', label: 'Normal' },
     HIGH: { color: 'text-orange-500', label: 'High' },
@@ -247,13 +224,12 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
   };
 
   const handlePrintDocument = (document: Document) => {
-    // Map document types to correct print routes
     const printRouteMap: Record<string, string> = {
       'BARANGAY_CLEARANCE_INSTALLATION': 'barangay-clearance-installation',
       'BARANGAY_CLEARANCE': 'barangay-clearance',
       'CASH_BOND': 'cash-bond',
       'SUMMON': 'summon',
-      'CERTIFICATE_OF_RESIDENCY': 'certificate-residency', 
+      'CERTIFICATE_OF_RESIDENCY': 'certificate-residency',
       'CERTIFICATE_OF_INDIGENCY': 'certificate-indigency',
       'BUSINESS_PERMIT': 'business-permit',
       'BUSINESS_SIGN_CLEARANCE': 'business-sign-clearance',
@@ -269,48 +245,36 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
     }
   };
 
-
-  // Map backend status values to frontend config keys
   const getStatusConfigKey = (status: string): string => {
-    const lowerStatus = status.toLowerCase();
-    switch (lowerStatus) {
-      case 'pending':
-        return 'PENDING';
+    const lower = status.toLowerCase();
+    switch (lower) {
+      case 'pending': return 'PENDING';
       case 'processing':
-      case 'under_review': // Legacy support
-        return 'PROCESSING';
-      case 'approved':
-        return 'APPROVED';
-      case 'released':
-        return 'RELEASED';
-      case 'rejected':
-        return 'REJECTED';
-      case 'cancelled':
-        return 'CANCELLED';
-      default:
-        // If it's already uppercase, return as is
-        return status.toUpperCase();
+      case 'under_review': return 'PROCESSING';
+      case 'approved': return 'APPROVED';
+      case 'released': return 'RELEASED';
+      case 'rejected': return 'REJECTED';
+      case 'cancelled': return 'CANCELLED';
+      default: return status.toUpperCase();
     }
   };
 
   const getStatusIcon = (status: string) => {
-    const configKey = getStatusConfigKey(status);
-    const config = statusConfig[configKey as keyof typeof statusConfig];
-    if (!config) return null;
-    const IconComponent = config.icon;
-    return <IconComponent className="w-4 h-4" />;
+    const key = getStatusConfigKey(status);
+    const cfg = statusConfig[key];
+    if (!cfg) return null;
+    const IconComp = cfg.icon;
+    return <IconComp className="w-4 h-4" />;
   };
 
   const getPriorityColor = (priority: string) => {
-    return priorityConfig[priority as keyof typeof priorityConfig]?.color || 'text-gray-500';
+    return priorityConfig[priority]?.color || 'text-gray-500';
   };
-
   const getPriorityLabel = (priority: string) => {
-    return priorityConfig[priority as keyof typeof priorityConfig]?.label || priority;
+    return priorityConfig[priority]?.label || priority;
   };
 
-  // Use backend pagination instead of client-side pagination
-  const currentDocuments = documents; // No client-side slicing since backend handles pagination
+  const currentDocuments = documents;
 
   if (isLoading) {
     return (
@@ -342,20 +306,30 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
     );
   }
 
+  // Handler when upload button clicked
+  const handleUploadClick = (document: Document) => {
+    setUploadingDoc(document);
+    setShowUploadModal(true);
+  };
+
+  const closeUploadModal = () => {
+    setShowUploadModal(false);
+    setUploadingDoc(null);
+    setSelectedFile(null);
+  };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Breadcrumb */}
       <Breadcrumb isLoaded={isLoaded} />
 
-      {/* Header */}
       <div className={`mb-6 transition-all duration-700 ease-out ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}>
         <div className="flex items-center justify-between">
           <div>
-        <h1 className="text-2xl font-bold text-darktext">Document Processing Center</h1>
-        <p className="text-gray-600 mt-1">Manage and process barangay documents and certificates</p>
-      </div>
+            <h1 className="text-2xl font-bold text-darktext">Document Processing Center</h1>
+            <p className="text-gray-600 mt-1">Manage and process barangay documents and certificates</p>
+          </div>
           <div className="flex items-center space-x-3">
             <button
               onClick={() => refetch()}
@@ -369,24 +343,21 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Document Statistics */}
-      <DocumentStatistics 
+      <DocumentStatistics
         statusCounts={statusCounts}
         isLoading={isLoading}
         isLoaded={isLoaded}
       />
 
-      {/* Enhanced Search and Filters */}
       <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6 transition-all duration-700 ease-out ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`} style={{ transitionDelay: '400ms' }}>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex flex-col sm:flex-row gap-4 flex-1">
-            {/* Search */}
             <div className="relative flex-1">
               <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
+              <input
+                type="text"
                 placeholder="Search by applicant name, document number, or purpose..."
                 value={filters.searchTerm}
                 onChange={(e) => updateFilters({ searchTerm: e.target.value, page: 1 })}
@@ -394,7 +365,6 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
               />
             </div>
 
-            {/* Status Filter */}
             <div className="relative">
               <FiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <select
@@ -413,12 +383,11 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
               </select>
             </div>
 
-            {/* Document Type Filter */}
             <div className="relative">
               <FiClipboard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <select
                 value={filters.documentType || 'ALL'}
-                onChange={(e) => updateFilters({ 
+                onChange={(e) => updateFilters({
                   documentType: e.target.value === 'ALL' ? undefined : e.target.value as any,
                   page: 1
                 })}
@@ -451,7 +420,6 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Documents Table with Sortable Headers */}
       <div className={`bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all duration-700 ease-out ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`} style={{ transitionDelay: '500ms' }}>
@@ -518,22 +486,22 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
                 <tr key={document.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <ResidentPhoto 
-                        residentId={document.resident_id} 
-                        residentName={document.applicant_name}
-                        size="md"
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {document.applicant_name}
+                      <div className="flex-shrink-0">
+                        <ResidentPhoto
+                          residentId={document.resident_id}
+                          residentName={document.applicant_name}
+                          size="md"
+                        />
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {document.applicant_contact || 'No contact'}
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {document.applicant_name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {document.applicant_contact || 'No contact'}
+                        </div>
                       </div>
                     </div>
-                  </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
@@ -546,9 +514,9 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig[getStatusConfigKey(document.status) as keyof typeof statusConfig]?.color}`}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusConfig[getStatusConfigKey(document.status)]?.color}`}>
                       {getStatusIcon(document.status)}
-                      <span className="ml-1">{statusConfig[getStatusConfigKey(document.status) as keyof typeof statusConfig]?.label}</span>
+                      <span className="ml-1">{statusConfig[getStatusConfigKey(document.status)]?.label}</span>
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -577,6 +545,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
                       >
                         <FiEdit3 className="w-4 h-4" />
                       </button>
+
                       {document.status.toLowerCase() === 'approved' && (
                         <button
                           onClick={() => handlePrintDocument(document)}
@@ -586,6 +555,7 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
                           <FiPrinter className="w-4 h-4" />
                         </button>
                       )}
+
                       <button
                         onClick={() => navigate(`/process-document/view/${String(document.id)}`)}
                         className="text-gray-600 hover:text-gray-800 transition-colors p-1 rounded"
@@ -593,6 +563,29 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
                       >
                         <FiEye className="w-4 h-4" />
                       </button>
+
+                      {/* Upload existing document */}
+                      <button
+                        onClick={() => handleUploadClick(document)}
+                        className="text-blue-500 hover:text-blue-700 transition-colors p-1 rounded"
+                        title="Upload Document"
+                      >
+                        <FiFileText className="w-4 h-4" />
+                      </button>
+
+                      {/* View uploaded document button if present */}
+                      {document.uploaded_file_url && (
+                        <button
+                          onClick={() => {
+                            window.open(document.uploaded_file_url, '_blank');
+                          }}
+                          className="text-indigo-600 hover:text-indigo-800 transition-colors p-1 rounded"
+                          title="View Uploaded Document"
+                        >
+                          <FiEye className="w-4 h-4" />
+                        </button>
+                      )}
+
                     </div>
                   </td>
                 </tr>
@@ -602,7 +595,6 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Backend Pagination */}
       {pagination && pagination.last_page > 1 && (
         <div className={`bg-white px-4 py-3 border-t border-gray-200 sm:px-6 transition-all duration-700 ease-out ${
           isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -660,7 +652,6 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* Empty State */}
       {documents.length === 0 && (
         <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center transition-all duration-700 ease-out ${
           isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -676,7 +667,6 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* Process Document Modal */}
       {showProcessModal && selectedDocument && (
         <ProcessDocumentModal
           document={selectedDocument}
@@ -689,20 +679,97 @@ const ProcessDocument: React.FC<ProcessDocumentProps> = ({ onNavigate }) => {
         />
       )}
 
-      {/* Loading Overlay */}
       {isProcessing && (
-        <div className="fixed inset-0  bg-[rgba(0,0,0,0.2)] flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.2)] flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 flex items-center space-x-3">
             <LoadingSpinner size="md" />
             <span className="text-gray-700">Processing document...</span>
           </div>
         </div>
       )}
+
+      {/** Upload Modal */}
+      {showUploadModal && uploadingDoc && (
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.2)] flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Upload Existing Document
+            </h3>
+
+            <p className="text-sm text-gray-600 mb-4">
+              <strong>{uploadingDoc.applicant_name}</strong> — {formatDocumentType(uploadingDoc.type)}
+            </p>
+
+            <input
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+              onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+              className="mb-4 w-full border border-gray-300 rounded-lg p-2"
+            />
+
+            <div className="flex justify-end space-x-3">
+              <button
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                onClick={closeUploadModal}
+                disabled={isUploading}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-smblue-400 text-white rounded-lg hover:bg-smblue-300 disabled:opacity-50"
+                disabled={!selectedFile || isUploading}
+                onClick={async () => {
+                  if (!selectedFile || !uploadingDoc) return;
+                  setIsUploading(true);
+                  try {
+                    const formData = new FormData();
+                    formData.append('file', selectedFile);
+
+                    const resp = await fetch(`/api/documents/${uploadingDoc.id}/upload`, {
+                      method: 'POST',
+                      body: formData,
+                      headers: {
+                        // If you use auth token, include it here
+                        // 'Authorization': `Bearer ${token}`,
+                      },
+                    });
+
+                    if (!resp.ok) {
+                      throw new Error('Upload failed');
+                    }
+
+                    const result = await resp.json();
+                    showNotification({
+                      type: 'success',
+                      message: 'Document uploaded successfully.'
+                    });
+                    // Refresh the list so the uploaded_file_url is fetched
+                    await refetch();
+
+                    closeUploadModal();
+                  } catch (err) {
+                    console.error('Upload error', err);
+                    showNotification({
+                      type: 'error',
+                      message: 'Failed to upload document.'
+                    });
+                  } finally {
+                    setIsUploading(false);
+                  }
+                }}
+              >
+                {isUploading ? 'Uploading...' : 'Upload'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
 
-// Modern Process Document Modal Component
+// ProcessDocumentModal remains the same as your existing implementation
 const ProcessDocumentModal: React.FC<{
   document: Document;
   onClose: () => void;
@@ -717,26 +784,22 @@ const ProcessDocumentModal: React.FC<{
   const [notes, setNotes] = useState('');
   const [certifyingOfficial, setCertifyingOfficial] = useState('');
 
-  // Fetch active barangay officials for the certifying official dropdown
   const { data: officialsData, isLoading: isLoadingOfficials } = useBarangayOfficials({
     status: 'ACTIVE',
     current_term: true,
-    per_page: 100 // Get all active officials
+    per_page: 100
   });
 
   const officials = officialsData?.data || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     const data = {
       notes: notes.trim() || undefined,
       certifying_official: certifyingOfficial.trim() || undefined,
     };
-
     await onProcess(String(document.id), action, data);
   };
-
 
   return (
     <div className="fixed inset-0 bg-[rgba(0,0,0,0.2)] bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -744,27 +807,15 @@ const ProcessDocumentModal: React.FC<{
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Process Document Request
         </h3>
-        
         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600 mb-1">
-            <strong>Resident:</strong> {document.applicant_name}
-          </p>
-          <p className="text-sm text-gray-600 mb-1">
-            <strong>Document:</strong> {formatDocumentType(document.type)}
-          </p>
-          <p className="text-sm text-gray-600 mb-1">
-            <strong>Purpose:</strong> {document.purpose}
-          </p>
-          <p className="text-sm text-gray-600">
-            <strong>Fee:</strong> {document.processing_fee === 0 ? 'FREE' : `₱${document.processing_fee}`}
-          </p>
-              </div>
-
+          <p className="text-sm text-gray-600 mb-1"><strong>Resident:</strong> {document.applicant_name}</p>
+          <p className="text-sm text-gray-600 mb-1"><strong>Document:</strong> {formatDocumentType(document.type)}</p>
+          <p className="text-sm text-gray-600 mb-1"><strong>Purpose:</strong> {document.purpose}</p>
+          <p className="text-sm text-gray-600"><strong>Fee:</strong> {document.processing_fee === 0 ? 'FREE' : `₱${document.processing_fee}`}</p>
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Action
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Action</label>
             <select
               value={action}
               onChange={(e) => setAction(e.target.value as 'approve' | 'reject' | 'release')}
@@ -776,13 +827,10 @@ const ProcessDocumentModal: React.FC<{
               <option value="reject">Reject</option>
               <option value="release">Release</option>
             </select>
-              </div>
-
+          </div>
           {action === 'approve' && (
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Certifying Official
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Certifying Official</label>
               <select
                 value={certifyingOfficial}
                 onChange={(e) => setCertifyingOfficial(e.target.value)}
@@ -794,8 +842,11 @@ const ProcessDocumentModal: React.FC<{
                   {isLoadingOfficials ? 'Loading officials...' : 'Select certifying official'}
                 </option>
                 {officials.map((official) => {
-                  const fullName = `${official.prefix ?? ""} ${official.first_name} ${official.middle_name ? official.middle_name + ' ' : ''}${official.last_name}${official.suffix ? ' ' + official.suffix : ''}`.trim();
-                  const positionText = official.position.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+                  const fullName = `${official.prefix ?? ''} ${official.first_name} ${
+                    official.middle_name ? official.middle_name + ' ' : ''
+                  }${official.last_name}${official.suffix ? ' ' + official.suffix : ''}`.trim();
+                  const positionText = official.position.replace(/_/g, ' ').toLowerCase()
+                    .replace(/\b\w/g, l => l.toUpperCase());
                   return (
                     <option key={official.id} value={fullName}>
                       {fullName} ({positionText})
@@ -805,7 +856,6 @@ const ProcessDocumentModal: React.FC<{
               </select>
             </div>
           )}
-
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Notes {action === 'reject' ? '(Required)' : '(Optional)'}
@@ -820,9 +870,8 @@ const ProcessDocumentModal: React.FC<{
               required={action === 'reject'}
             />
           </div>
-
           <div className="flex justify-end space-x-3">
-              <button
+            <button
               type="button"
               onClick={onClose}
               disabled={isProcessing}
@@ -842,8 +891,8 @@ const ProcessDocumentModal: React.FC<{
             </button>
           </div>
         </form>
-          </div>
-        </div>
+      </div>
+    </div>
   );
 };
 
