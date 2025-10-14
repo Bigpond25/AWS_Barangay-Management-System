@@ -247,6 +247,12 @@ const AgendaManagementPage: React.FC = () => {
                       <span>{agenda.location}</span>
                     </div>
                   )}
+                  {agenda.creator && (
+                    <div className="flex items-center gap-1">
+                      <Users className="w-4 h-4" />
+                      <span>Created by: {agenda?.creator?.full_name}</span>
+                    </div>
+                  )}
                 </div>
               </div>
               

@@ -77,7 +77,7 @@ const UserManagement: React.FC = () => {
       
       // Check if it's a network error (backend not running)
       if ((err instanceof Error ? err.message : 'Unknown error')?.includes('fetch') || (err instanceof Error ? err.message : 'Unknown error')?.includes('Failed to fetch')) {
-        setError('Cannot connect to server. Please make sure the backend is running on http://127.0.0.1:8000');
+        setError('Cannot connect to server. Please make sure the backend is running on http://127.0.0.1:8001');
       } else {
         setError((err instanceof Error ? err.message : 'Unknown error') || 'Failed to fetch users');
       }
@@ -397,6 +397,7 @@ const UserManagement: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -455,6 +456,9 @@ const UserManagement: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never logged in'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {user?.created_by?.full_name ?? 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">

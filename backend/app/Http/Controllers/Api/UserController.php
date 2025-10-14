@@ -30,7 +30,7 @@ class UserController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $query = User::query();
+            $query = User::query()->with(['createdBy']);
 
             // Apply filters
             if ($request->has('role')) {
@@ -66,13 +66,13 @@ class UserController extends Controller
             // Sorting
             $sortBy = $request->get('sort_by', 'created_at');
             $sortOrder = $request->get('sort_order', 'desc');
-            
+
             // Validate sort fields
             $allowedSortFields = ['first_name', 'last_name', 'email', 'username', 'role', 'department', 'created_at', 'last_login_at'];
             if (!in_array($sortBy, $allowedSortFields)) {
                 $sortBy = 'created_at';
             }
-            
+
             $query->orderBy($sortBy, $sortOrder);
 
             // Pagination
@@ -112,15 +112,15 @@ class UserController extends Controller
             // Get validation rules from schema
             $rules = UserSchema::getCreateValidationRules();
             $rules['confirm_password'] = 'required|same:password';
-            
+
             $validatedData = $request->validate($rules);
-            
+
             // Remove confirm_password from data to be saved
             unset($validatedData['confirm_password']);
-            
+
             // Hash the password
             $validatedData['password'] = Hash::make($validatedData['password']);
-            
+
             // Set created_by if authenticated
             if (Auth::check()) {
                 $validatedData['created_by'] = Auth::id();
@@ -203,7 +203,7 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             if (!$user) {
                 return response()->json([
                     'status' => 'error',
@@ -237,7 +237,7 @@ class UserController extends Controller
 
             // Get validation rules from schema for updates
             $rules = UserSchema::getUpdateValidationRules();
-            
+
             // Handle unique validation for current user
             if (isset($rules['username'])) {
                 $rules['username'] = str_replace('{id}', $id, $rules['username']);
@@ -245,19 +245,19 @@ class UserController extends Controller
             if (isset($rules['email'])) {
                 $rules['email'] = str_replace('{id}', $id, $rules['email']);
             }
-            
+
             // Add password confirmation if password is being updated
             if ($request->has('password') && $request->password) {
                 $rules['confirm_password'] = 'required|same:password';
             }
 
             $validatedData = $request->validate($rules);
-            
+
             // Remove confirm_password from data to be saved
             if (isset($validatedData['confirm_password'])) {
                 unset($validatedData['confirm_password']);
             }
-            
+
             // Hash password if provided
             if (isset($validatedData['password']) && $validatedData['password']) {
                 $validatedData['password'] = Hash::make($validatedData['password']);
@@ -316,7 +316,7 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             if (!$user) {
                 return response()->json([
                     'status' => 'error',
@@ -343,7 +343,7 @@ class UserController extends Controller
             DB::beginTransaction();
 
             $user = User::findOrFail($id);
-            
+
             // Prevent deletion of current user
             if (Auth::check() && Auth::id() == $id) {
                 return response()->json([
@@ -460,7 +460,7 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             if (!$user) {
                 return response()->json([
                     'status' => 'error',
@@ -628,7 +628,7 @@ class UserController extends Controller
             $activeUsers = User::where('is_active', true)->count();
             $inactiveUsers = User::where('is_active', false)->count();
             $pendingVerification = User::where('is_verified', false)->count();
-            
+
             // Users by role
             $byRole = User::select('role')
                 ->selectRaw('count(*) as count')

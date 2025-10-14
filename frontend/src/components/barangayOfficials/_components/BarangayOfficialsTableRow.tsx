@@ -58,6 +58,9 @@ export const BarangayOfficialsTableRow: React.FC<BarangayOfficialsTableRowProps>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {official.committee_assignment}
             </td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {official.user?.created_by?.full_name ?? 'N/A'}
+            </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div className="flex items-center space-x-2">
                     <button

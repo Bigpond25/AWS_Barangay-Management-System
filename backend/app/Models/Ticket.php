@@ -25,7 +25,9 @@ class Ticket extends Model
         'resident_id',
         'assigned_to',
         'resolved_at',
-        'resolution_notes'
+        'resolution_notes',
+        'created_by',
+        'updated_by'
     ];
 
     protected $casts = [
@@ -57,6 +59,16 @@ class Ticket extends Model
     public function scopeByStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+
+    public function createdByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     // Boot method to generate ticket number

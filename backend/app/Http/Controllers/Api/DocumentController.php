@@ -23,7 +23,7 @@ class DocumentController extends Controller
     {
         $startTime = microtime(true);
         \Log::info('DocumentController::index started', ['timestamp' => $startTime]);
-        
+
         try {
             // OPTIMIZED: Start with selective fields and optimized relationships
             $step1 = microtime(true);
@@ -46,7 +46,8 @@ class DocumentController extends Controller
                 'resident:id,first_name,last_name,middle_name,suffix,complete_address,mobile_number,email_address',
                 'processedByUser:id,first_name,last_name,role,position',
                 'approvedByUser:id,first_name,last_name,role,position',
-                'releasedByUser:id,first_name,last_name,role,position'
+                'releasedByUser:id,first_name,last_name,role,position',
+                'createdByUser'
             ]);
             \Log::info('Relationships added', ['elapsed' => microtime(true) - $step2]);
 
@@ -103,7 +104,7 @@ class DocumentController extends Controller
             $step4 = microtime(true);
             if ($request->filled('search')) {
                 $searchTerm = $request->search;
-                
+
                 // For search queries, use LEFT JOIN to avoid expensive EXISTS subqueries
                 $query->leftJoin('residents', 'documents.resident_id', '=', 'residents.id')
                       ->where(function ($q) use ($searchTerm) {
@@ -149,10 +150,10 @@ class DocumentController extends Controller
                 'message' => 'Documents retrieved successfully'
             ]);
             \Log::info('Response built', ['elapsed' => microtime(true) - $step7]);
-            
+
             $totalTime = microtime(true) - $startTime;
             \Log::info('DocumentController::index completed', ['total_time' => $totalTime]);
-            
+
             return $response;
 
         } catch (\Exception $e) {
@@ -162,7 +163,7 @@ class DocumentController extends Controller
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve documents: ' . $e->getMessage()
@@ -178,6 +179,10 @@ class DocumentController extends Controller
         try {
             $validationRules = DocumentSchema::getCreateValidationRules();
             $validated = $request->validate($validationRules);
+
+            $validated = array_merge($validated, [
+                'created_by' => Auth::user() ? Auth::user()->id : null,
+            ]);
 
             // Mass create includes cash-bond fields if present in validation rules & $fillable
             $document = Document::create($validated);

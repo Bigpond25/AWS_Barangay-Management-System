@@ -37,7 +37,7 @@ class TicketController extends Controller
             ], 422);
         }
 
-        $query = Ticket::query();
+        $query = Ticket::query()->with('createdByUser');
 
         // Apply filters
         if ($request->has('category') && $request->category !== '') {

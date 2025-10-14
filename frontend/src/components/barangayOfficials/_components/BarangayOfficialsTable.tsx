@@ -26,6 +26,7 @@ export const BarangayOfficialsTable: React.FC<BarangayOfficialsTableProps> = ({ 
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('barangayOfficials.table.headers.term')}</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('barangayOfficials.table.headers.status')}</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('barangayOfficials.table.headers.committee')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('barangayOfficials.table.headers.created_by')}</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('barangayOfficials.table.headers.actions')}</th>
                 </tr>
             </thead>
@@ -54,6 +55,9 @@ export const BarangayOfficialsTable: React.FC<BarangayOfficialsTableProps> = ({ 
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                         <div className="h-6 bg-gray-200 rounded-full w-16"></div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                         <div className="h-4 bg-gray-200 rounded w-16"></div>

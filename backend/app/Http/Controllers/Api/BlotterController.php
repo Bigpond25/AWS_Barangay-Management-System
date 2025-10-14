@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Blotter;
-use App\Models\OtherPersonInvolved;
-use App\Models\SupportingDocument;
 use App\Models\Ticket;
-use App\Contracts\StorageInterface;
-use Illuminate\Http\JsonResponse;
+use App\Models\Blotter;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Http\JsonResponse;
+use App\Models\SupportingDocument;
 use Illuminate\Support\Facades\DB;
+use App\Contracts\StorageInterface;
+use App\Models\OtherPersonInvolved;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class BlotterController extends Controller
 {
@@ -150,8 +152,11 @@ class BlotterController extends Controller
                 'type' => 'BLOTTER',
                 'status' => 'OPEN',
                 'description' => $request->input('ticket.description'),
-                'category' => 'BLOTTER'
+                'category' => 'BLOTTER',
+                'created_by' => Auth::user() ? Auth::user()->id : null,
             ]);
+
+            Log::info($ticket);
 
             // Create blotter
             $blotterData = $request->input('blotter');

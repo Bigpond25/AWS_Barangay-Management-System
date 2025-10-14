@@ -91,6 +91,9 @@ const HouseholdRow: React.FC<HouseholdRowProps> = ({
          {t('households.status.active')}
        </span>
      </td>
+     <td className="px-6 py-4 whitespace-nowrap">
+      {household?.created_by?.full_name ?? 'N/A'}
+      </td>
      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
        <HouseholdActions
          household={household}
