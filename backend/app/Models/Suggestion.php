@@ -14,8 +14,11 @@ class Suggestion extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'base_ticket_id',
-        's_category',
+        'ticket_id',
+        'category',
+        'expected_benefits',
+        'implementation_ideas',
+        'resources_needed',
         'expected_benefits',
         'implementation_ideas',
         'resources_needed',
@@ -47,6 +50,6 @@ class Suggestion extends Model
 
     public function ticket()
     {
-        return $this->belongsTo(Ticket::class, 'base_ticket_id');
+        return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 }

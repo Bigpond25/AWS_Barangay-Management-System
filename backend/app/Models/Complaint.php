@@ -20,7 +20,14 @@ class Complaint extends Model implements Auditable
     protected $keyType = 'string';
     public $incrementing = false;
 
+    /**
+     * ? Purpose of base_ticket_id and c_category?
+     * ? Is it different from ticket_id and category?
+     * ? if not, remove base_ticket_id and c_category
+     */
     protected $fillable = [
+        'ticket_id',
+        'category',
         'base_ticket_id',
         'c_category',
         'department',
@@ -100,6 +107,6 @@ class Complaint extends Model implements Auditable
 
     public function ticket()
     {
-        return $this->belongsTo(Ticket::class, 'base_ticket_id');
+        return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 }

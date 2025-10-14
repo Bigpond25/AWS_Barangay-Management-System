@@ -97,7 +97,7 @@ import { PaginationNavigation } from "./PaginationNavigation";
                               ticket.type
                             )}`}
                           >
-                            {ticket.type
+                            {ticket.type && ticket.type
                                 .split("_")
                                 .map(
                                 (word) =>
@@ -111,7 +111,7 @@ import { PaginationNavigation } from "./PaginationNavigation";
                               ticket.priority
                             )}`}
                           >
-                            {ticket.priority
+                            {ticket.priority && ticket.priority
                                 .split("_")
                                 .map(
                                 (word) =>
@@ -165,7 +165,7 @@ import { PaginationNavigation } from "./PaginationNavigation";
                               // onClick={() => setEditingStatus(ticket.id)}
                               title="Click to change status"
                             >
-                              {ticket.status
+                              {ticket?.status && ticket.status
                                 .split("_")
                                 .map(
                                 (word) =>

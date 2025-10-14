@@ -63,7 +63,7 @@ class SuggestionController extends Controller
             'ticket.requester_name' => 'nullable|string|max:255',
             'ticket.resident_id' => 'nullable|uuid',
             'ticket.resident_search' => 'nullable|string',
-            'ticket.contact_number' => 'nullable|string|size:16',
+            'ticket.contact_number' => 'nullable|string',
             'ticket.email_address' => 'nullable|email|max:255',
             'ticket.complete_address' => 'nullable|string|max:255',
             'ticket.type' => 'required|in:SUGGESTION',
@@ -90,14 +90,15 @@ class SuggestionController extends Controller
             $ticket = Ticket::create([
                 ...$request->input('ticket'),
                 'type' => 'SUGGESTION',
-                'status' => 'OPEN'
+                'status' => 'OPEN',
+                'category' => 'SUGGESTION'
             ]);
 
             // Create suggestion
             $suggestionData = $request->input('suggestion');
             $suggestion = Suggestion::create([
-                'base_ticket_id' => $ticket->id,
-                's_category' => $suggestionData['s_category'],
+                'ticket_id' => $ticket->id,
+                'category' => $suggestionData['s_category'],
                 'expected_benefits' => $suggestionData['expected_benefits'] ?? null,
                 'implementation_ideas' => $suggestionData['implementation_ideas'] ?? null,
                 'resources_needed' => $suggestionData['resources_needed'] ?? null,
