@@ -127,6 +127,10 @@ export const UserSchema = UserFormDataSchema.extend({
   updated_at: z.string(),
   created_by: z.number().nullable().optional(),
   updated_by: z.number().nullable().optional(),
+  created_by: z.object({
+    id: z.number(),
+    full_name: z.string(),
+  }).nullable().optional(),
 });
 
 // Query parameters schema

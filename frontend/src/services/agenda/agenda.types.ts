@@ -80,6 +80,7 @@ export const AgendaSchema = AgendaFormDataSchema.extend({
     id: z.number(),
     name: z.string(),
     role: z.string(),
+    full_name: z.string(),
   }).nullable().optional(),
   
   updater: z.object({

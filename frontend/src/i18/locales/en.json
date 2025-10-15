@@ -297,6 +297,7 @@
         "term": "Term",
         "status": "Status",
         "committee": "Committee",
+        "created_by": "Created By",
         "actions": "Actions"
       },
       "noResultsSearch": "No official found matching \"{{searchTerm}}\"",
@@ -591,6 +592,7 @@
         "address": "Address",
         "members": "Members",
         "type": "Type",
+        "createdBy": "Created By",
         "classifications": "Classifications"
       },
       "noHouseholdsFound": "No households found. Try adjusting your search or add a new household.",
@@ -1213,6 +1215,7 @@
         "address": "Address",
         "category": "Category",
         "status": "Status",
+        "created_by": "Created By",
         "actions": "Actions"
       },
       "noResultsSearch": "No residents found matching \"{{searchTerm}}\"",

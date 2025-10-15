@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Complaint;
 use App\Models\Ticket;
-use Illuminate\Http\JsonResponse;
+use App\Models\Complaint;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ComplaintController extends Controller
 {
@@ -91,6 +92,7 @@ class ComplaintController extends Controller
                 'type' => 'COMPLAINT',
                 'status' => 'OPEN',
                 'category' => 'COMPLAINT',
+                'created_by' => Auth::user() ? Auth::user()->id : null,
             ]);
 
             // Create complaint

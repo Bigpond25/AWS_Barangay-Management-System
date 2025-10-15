@@ -44,7 +44,7 @@ Route::prefix('auth')->group(function () {
 });
 
 // Public Help Desk Routes (these remain public for citizen access)
-Route::prefix('help-desk')->group(function () {
+Route::middleware('auth:sanctum')->prefix('help-desk')->group(function () {
     // Public appointments
     Route::prefix('appointments')->group(function () {
         Route::get('/view/{id}', [AppointmentController::class, 'view']);
@@ -247,7 +247,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [TicketController::class, 'index']);
         Route::get('/statistics', [TicketController::class, 'statistics'])->middleware('permission:view-reports');
         Route::delete('/{id}', [TicketController::class, 'destroy'])->middleware('permission:delete-complaints');
-        
+
         // Administrative appointments - allow dashboard access with basic auth
         Route::get('/appointments', [AppointmentController::class, 'index'])->withoutMiddleware('permission:view-complaints');
     });
@@ -339,14 +339,14 @@ Route::middleware('auth:sanctum')->group(function () {
         // Public consent routes (for consent recording)
         Route::post('/', [ConsentController::class, 'recordConsent'])->name('record');
         Route::get('/types', [ConsentController::class, 'getConsentTypes'])->name('types');
-        
+
         // Protected consent routes
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/check', [ConsentController::class, 'checkConsent'])->name('check');
             Route::put('/{consentId}/withdraw', [ConsentController::class, 'withdrawConsent'])->name('withdraw');
             Route::get('/user/{userId?}', [ConsentController::class, 'getUserConsents'])->name('user');
             Route::get('/active/{userId?}', [ConsentController::class, 'getActiveConsents'])->name('active');
-            
+
             // Admin only routes
             Route::middleware('permission:manage-consents')->group(function () {
                 Route::get('/all', [ConsentController::class, 'getAllConsents'])->name('all');

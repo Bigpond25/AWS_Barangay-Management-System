@@ -182,6 +182,10 @@ import { PaginationNavigation } from "./PaginationNavigation";
                             {ticket.requester_name || "Anonymous"}
                           </div>
                           <div className="flex items-center gap-1">
+                            <span className="font-medium">Created by:</span>
+                            {ticket.created_by_user?.full_name || "N/A"}
+                          </div>
+                          <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
                             {new Date(ticket.created_at).toLocaleString('en-US', {
                                 year: 'numeric',

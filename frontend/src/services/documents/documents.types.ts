@@ -190,6 +190,11 @@ export const DocumentSchema = DocumentFormDataSchema.extend({
     role: z.string(),
     position: z.string().nullable().optional(),
   }).nullable().optional(),
+
+  created_by_user: z.object({
+    id: z.string().uuid(),
+    full_name: z.string(),
+  }).nullable().optional(),
 });
 
 // Query parameters schema  

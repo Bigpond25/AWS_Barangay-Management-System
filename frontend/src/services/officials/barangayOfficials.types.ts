@@ -200,6 +200,11 @@ export const BarangayOfficialFormDataSchema = z.object({
 
 export const BarangayOfficialSchema = BarangayOfficialBaseSchema.extend({
   id: z.string().uuid(),
+  user: z.object({
+    created_by: z.object({
+      full_name: z.string().optional(),
+    }).optional(),
+  }).optional(),
   
   // Computed attributes (can be added if needed)
   // full_name: z.string().optional(),

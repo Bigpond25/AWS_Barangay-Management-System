@@ -245,6 +245,13 @@ export const ResidentSchema = ResidentFormDataSchema.extend({
   total_documents: z.number().optional(),
   total_tickets: z.number().optional(),
   total_appointments: z.number().optional(),
+
+  created_by: z.object({
+    id: z.string().uuid(),
+    full_name: z.string(),
+    email: z.string(),
+    role: z.string(),
+  }).optional(),
 });
 
 // Updated ResidentParamsSchema without household_id

@@ -132,7 +132,7 @@ export const HouseholdFormDataSchema = z.object({
 // Main Household schema
 export const HouseholdSchema = HouseholdFormDataSchema.extend({
   id: z.string().uuid(),
-  created_by: z.string().uuid().nullable().optional(),
+  // created_by: z.string().uuid().nullable().optional(),
   updated_by: z.string().uuid().nullable().optional(),
   created_at: z.string(),
   updated_at: z.string(),
@@ -140,6 +140,15 @@ export const HouseholdSchema = HouseholdFormDataSchema.extend({
   // Relationships
   head_resident: HeadResidentSchema.nullable().optional(),
   members: z.array(HouseholdMemberSchema).nullable().optional(),
+  created_by: z.object({
+    id: z.string().uuid(),
+    full_name: z.string(),
+    email: z.string().email(),
+    role: z.string(),
+    status: z.string(),
+    created_at: z.string(),
+    updated_at: z.string(),
+  }).nullable().optional(),
 });
 
 // Query parameters schema

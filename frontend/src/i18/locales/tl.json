@@ -296,6 +296,7 @@
         "contact": "Pakikipag-ugnayan",
         "term": "Termino",
         "status": "Katayuan",
+        "created_by": "Ginawa ni",
         "committee": "Komite",
         "actions": "Mga Aksyon"
       },
@@ -591,6 +592,7 @@
         "address": "Address",
         "members": "Mga Miyembro",
         "type": "Uri",
+        "createdBy": "Ginawa Ni",
         "classifications": "Mga Klasipikasyon"
       },
       "noHouseholdsFound": "Walang nahanap na sambahayan. Subukang i-adjust ang inyong paghahanap o magdagdag ng bagong sambahayan.",

@@ -48,6 +48,10 @@ export const BaseTicketSchema = z.object({
     status: StatusSchema,
     created_at: z.date(),
     updated_at: z.date(),
+    created_by_user: z.object({
+        id: z.string().uuid(),
+        full_name: z.string(),
+    }).optional(),
 })
 
 export const PaginationSchema = z.object({

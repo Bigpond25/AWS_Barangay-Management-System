@@ -97,6 +97,9 @@ const HouseholdTable: React.FC<HouseholdTableProps> = ({
                  {t('households.table.headers.status')}
                </th>
                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                 {t('households.table.headers.createdBy')}
+               </th>
+               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                  {t('households.table.headers.actions')}
                </th>
              </tr>

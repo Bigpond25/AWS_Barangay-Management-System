@@ -16,7 +16,7 @@ class BarangayOfficialController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = BarangayOfficial::query();
+        $query = BarangayOfficial::query()->with(['user.createdBy']);
 
         // Apply filters
         if ($request->has('position')) {
@@ -66,23 +66,23 @@ class BarangayOfficialController extends Controller
     {
         // Transform frontend data format if needed
         $requestData = $this->transformFrontendToBackend($request->all());
-        
+
         $validator = Validator::make($requestData, [
             'prefix' => 'nullable|string|in:Mr.,Ms.,Mrs.,Dr.,Hon.',
             'resident_id' => 'required|string|uuid|exists:residents,id',
             'user_id' => 'required|string|uuid|exists:users,id',
-            
+
             // Position Information
             'position' => 'required|in:BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,KAGAWAD,SK_CHAIRPERSON,SK_KAGAWAD,BARANGAY_CLERK,BARANGAY_TANOD',
             'committee_assignments' => 'nullable|array',
             'committee_assignments.*' => 'in:Health,Education,Public Safety,Environment,Peace and Order,Sports and Recreation,Women and Family,Senior Citizens',
-            
+
             // Term Information
             'term_start' => 'required|date',
             'term_end' => 'required|date|after:term_start',
             'term_number' => 'nullable|integer',
             'is_current_term' => 'nullable|boolean',
-            
+
             // Status
             'status' => 'nullable|in:ACTIVE,INACTIVE,SUSPENDED,RESIGNED,TERMINATED,DECEASED',
         ]);
@@ -157,23 +157,23 @@ class BarangayOfficialController extends Controller
     {
         // Transform frontend data format if needed
         $requestData = $this->transformFrontendToBackend($request->all());
-        
+
         $validator = Validator::make($requestData, [
             'prefix' => 'nullable|string|in:Mr.,Ms.,Mrs.,Dr.,Hon.',
             'resident_id' => 'sometimes|string|uuid|exists:residents,id',
             'user_id' => 'sometimes|string|uuid|exists:users,id',
-            
+
             // Position Information
             'position' => 'sometimes|in:BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,KAGAWAD,SK_CHAIRPERSON,SK_KAGAWAD,BARANGAY_CLERK,BARANGAY_TANOD',
             'committee_assignments' => 'nullable|array',
             'committee_assignments.*' => 'in:Health,Education,Public Safety,Environment,Peace and Order,Sports and Recreation,Women and Family,Senior Citizens',
-            
+
             // Term Information
             'term_start' => 'sometimes|date',
             'term_end' => 'sometimes|date|after:term_start',
             'term_number' => 'nullable|integer|min:1',
             'is_current_term' => 'nullable|boolean',
-            
+
             // Status
             'status' => 'sometimes|in:ACTIVE,INACTIVE,SUSPENDED,RESIGNED,TERMINATED,DECEASED',
         ]);
@@ -192,7 +192,7 @@ class BarangayOfficialController extends Controller
         if (isset($validated['user_id'])) {
             $user = User::find($validated['user_id']);
             $residentId = $validated['resident_id'] ?? $barangayOfficial->resident_id;
-            
+
             if ($user && $user->resident_id && $user->resident_id !== $residentId) {
                 return response()->json([
                     'success' => false,
@@ -245,7 +245,7 @@ class BarangayOfficialController extends Controller
         }
 
         $residentId = $request->residentId;
-        
+
         // Count how many times this resident is registered as an official
         $count = BarangayOfficial::where('resident_id', $residentId)->count();
 
@@ -508,7 +508,7 @@ class BarangayOfficialController extends Controller
     private function transformFrontendToBackend(array $data): array
     {
         $transformed = [];
-        
+
         // Map frontend field names to backend field names
         $fieldMapping = [
             'residentId' => 'resident_id',
@@ -519,18 +519,18 @@ class BarangayOfficialController extends Controller
             'termNumber' => 'term_number',
             'isCurrentTerm' => 'is_current_term',
         ];
-        
+
         // Transform field names
         foreach ($data as $key => $value) {
             $backendKey = $fieldMapping[$key] ?? $key;
             $transformed[$backendKey] = $value;
         }
-        
+
         // Set defaults
         if (!isset($transformed['status'])) {
             $transformed['status'] = 'ACTIVE';
         }
-        
+
         return $transformed;
     }
 }

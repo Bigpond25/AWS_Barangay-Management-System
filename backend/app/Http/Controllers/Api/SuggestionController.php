@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Suggestion;
 use App\Models\Ticket;
-use Illuminate\Http\JsonResponse;
+use App\Models\Suggestion;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class SuggestionController extends Controller
 {
@@ -91,7 +92,8 @@ class SuggestionController extends Controller
                 ...$request->input('ticket'),
                 'type' => 'SUGGESTION',
                 'status' => 'OPEN',
-                'category' => 'SUGGESTION'
+                'category' => 'SUGGESTION',
+                'created_by' => Auth::user() ? Auth::user()->id : null,
             ]);
 
             // Create suggestion

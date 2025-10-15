@@ -24,7 +24,7 @@ class User extends Authenticatable
      * Get fillable fields from schema
      */
     protected $fillable;
-    
+
     /**
      * Get casts from schema
      */
@@ -77,7 +77,7 @@ class User extends Authenticatable
                 'password' => 'hashed',
             ]
         );
-        
+
         parent::__construct($attributes);
     }
 
@@ -87,13 +87,13 @@ class User extends Authenticatable
     protected static function boot()
     {
         parent::boot();
-        
+
         // Auto-set created_by and updated_by
         static::creating(function ($model) {
             if (Auth::check() && !$model->created_by) {
                 $model->created_by = Auth::id();
             }
-            
+
             // Auto-verify super admin and admin users
             if (in_array($model->role, ['SUPER_ADMIN', 'ADMIN'])) {
                 $model->is_verified = true;
@@ -104,7 +104,7 @@ class User extends Authenticatable
             if (Auth::check() && !$model->updated_by) {
                 $model->updated_by = Auth::id();
             }
-            
+
             // Update last login when logging in
             if ($model->isDirty('last_login_at')) {
                 $model->timestamps = false;
@@ -127,7 +127,7 @@ class User extends Authenticatable
             $this->middle_name,
             $this->last_name
         ]);
-        
+
         return implode(' ', $parts) ?: 'Unknown User';
     }
 
@@ -135,7 +135,7 @@ class User extends Authenticatable
     {
         $firstInitial = $this->first_name ? strtoupper(substr($this->first_name, 0, 1)) : '';
         $lastInitial = $this->last_name ? strtoupper(substr($this->last_name, 0, 1)) : '';
-        
+
         return $firstInitial . $lastInitial;
     }
 
@@ -424,13 +424,13 @@ class User extends Authenticatable
 
         $currentUserLevel = $roleHierarchy[$this->role] ?? 0;
         $targetUserLevel = $roleHierarchy[$targetUser->role] ?? 0;
-        
+
         // Super admin can edit anyone
         if ($this->role === 'SUPER_ADMIN') return true;
-        
+
         // Users can edit themselves (basic info only)
         if ($this->id === $targetUser->id) return true;
-        
+
         // Higher level users can edit lower level users
         return $currentUserLevel > $targetUserLevel;
     }
@@ -439,15 +439,15 @@ class User extends Authenticatable
     {
         // Only super admin and admin can delete users
         if (!in_array($this->role, ['SUPER_ADMIN', 'ADMIN'])) return false;
-        
+
         // Cannot delete yourself
         if ($this->id === $targetUser->id) return false;
-        
+
         // Super admin can delete anyone except other super admins
         if ($this->role === 'SUPER_ADMIN') {
             return $targetUser->role !== 'SUPER_ADMIN';
         }
-        
+
         // Admin can only delete users below admin level
         $adminLevelRoles = ['SUPER_ADMIN', 'ADMIN'];
         return !in_array($targetUser->role, $adminLevelRoles);
@@ -499,7 +499,7 @@ class User extends Authenticatable
     public function toArray()
     {
         $array = parent::toArray();
-        
+
         // Add computed attributes
         $array['full_name'] = $this->full_name;
         $array['initials'] = $this->initials;
