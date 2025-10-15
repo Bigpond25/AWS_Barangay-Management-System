@@ -210,6 +210,9 @@ const BarangayClearancePrint: React.FC = () => {
           font-weight: bold;
           font-size: 14pt;
           border: 2px solid black;
+          background-color: #FF8C00 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
         
         .certificate-body {
@@ -232,6 +235,9 @@ const BarangayClearancePrint: React.FC = () => {
           margin: 6px 0;
           display: inline-block;
           width: 80%;
+          background-color: #D2B48C !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
         
         .business-text {
@@ -248,6 +254,9 @@ const BarangayClearancePrint: React.FC = () => {
           margin: 6px 0;
           display: inline-block;
           width: 80%;
+          background-color: #D2B48C !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
         
         .location-text {
@@ -264,6 +273,9 @@ const BarangayClearancePrint: React.FC = () => {
           margin: 6px 0;
           display: inline-block;
           width: 80%;
+          background-color: #D2B48C !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
         
         .ordinance-text {

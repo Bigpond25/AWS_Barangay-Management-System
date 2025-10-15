@@ -53,11 +53,7 @@ class Appointment extends Model implements Auditable
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        // Basic Information
-        'appointment_number',
-        'full_name',
-        'email',
-        'phone',
+        'ticket_id',
         'department',
         'purpose',
         
@@ -309,7 +305,7 @@ class Appointment extends Model implements Auditable
      */
     public function ticket(): BelongsTo
     {
-        return $this->belongsTo(Ticket::class, 'base_ticket_id');
+        return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 
     /**
@@ -356,6 +352,7 @@ class Appointment extends Model implements Auditable
     {
         return $query->where('department', $department);
     }
+<<<<<<< HEAD
 
     /**
      * Scope to filter by status
@@ -498,3 +495,6 @@ class Appointment extends Model implements Auditable
         return $this;
     }
 }
+=======
+}
+>>>>>>> dev

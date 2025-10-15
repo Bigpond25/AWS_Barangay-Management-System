@@ -147,7 +147,7 @@ const BarangayClearanceInstallationPrint: React.FC = () => {
           }
           
           .field-highlight {
-            background-color: #f9f9f9 !important;
+            background-color: #ffffcc !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }

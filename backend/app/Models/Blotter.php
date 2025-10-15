@@ -14,15 +14,17 @@ class Blotter extends Model
     public $incrementing = false;
 
     protected $fillable = [
+        'ticket_id',
         'base_ticket_id',
         'type_of_incident',
-        'date_of_incident',
-        'time_of_incident',
-        'location_of_incident',
+        'incident_date',
+        'incident_time',
+        'incident_location',
+        'incident_narrative'
     ];
 
     protected $casts = [
-        'date_of_incident' => 'date',
+        'incident_date' => 'date',
     ];
 
     protected static function boot()
@@ -38,7 +40,7 @@ class Blotter extends Model
 
     public function ticket()
     {
-        return $this->belongsTo(Ticket::class, 'base_ticket_id');
+        return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 
     public function otherPeopleInvolved()

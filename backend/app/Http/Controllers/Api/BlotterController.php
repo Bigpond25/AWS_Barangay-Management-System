@@ -74,7 +74,7 @@ class BlotterController extends Controller
             'ticket.requester_name' => 'required|string|max:255',
             'ticket.resident_id' => 'nullable|uuid',
             'ticket.resident_search' => 'nullable|string',
-            'ticket.contact_number' => 'required|string|size:16',
+            'ticket.contact_number' => 'required|string',
             'ticket.email_address' => 'nullable|email|max:255',
             'ticket.complete_address' => 'required|string|max:255',
             'ticket.type' => 'required|in:BLOTTER',
@@ -148,17 +148,20 @@ class BlotterController extends Controller
             $ticket = Ticket::create([
                 ...$request->input('ticket'),
                 'type' => 'BLOTTER',
-                'status' => 'OPEN'
+                'status' => 'OPEN',
+                'description' => $request->input('ticket.description'),
+                'category' => 'BLOTTER'
             ]);
 
             // Create blotter
             $blotterData = $request->input('blotter');
             $blotter = Blotter::create([
-                'base_ticket_id' => $ticket->id,
+                'ticket_id' => $ticket->id,
                 'type_of_incident' => $blotterData['type_of_incident'],
-                'date_of_incident' => $blotterData['date_of_incident'],
-                'time_of_incident' => $blotterData['time_of_incident'],
-                'location_of_incident' => $blotterData['location_of_incident'],
+                'incident_date' => $blotterData['date_of_incident'],
+                'incident_time' => $blotterData['time_of_incident'],
+                'incident_location' => $blotterData['location_of_incident'],
+                'incident_narrative' =>  $request->input('ticket.description')
             ]);
 
             // Create other people involved records
@@ -418,7 +421,7 @@ class BlotterController extends Controller
             $file = $request->file('photo');
             $extension = $file->getClientOriginalExtension();
             $filename = Str::uuid() . '.' . $extension;
-            
+
             $result = $this->storageService->uploadFile(
                 $file,
                 'supporting-documents',

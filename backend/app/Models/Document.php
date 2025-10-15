@@ -30,86 +30,21 @@ class Document extends Model implements Auditable
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        // Basic Document Information
-        'type',
-        'resident_id',
-        'applicant_name',
-        'purpose',
-        'applicant_address',
-        'applicant_contact',
-        'applicant_email',
-        'priority',
-        'needed_date',
-        'processing_fee',
-        'status',
-        'payment_status',
-        'document_number',
-        'serial_number',
-        'submitted_at',
-        'processed_at',
-        'approved_at',
-        'released_at',
-        
-        // Document Specific Fields
-        'clearance_purpose',
-        'clearance_type',
-        'date_approved',
-        'last_compliance',
-        'business_name',
-        'business_type',
-        'business_address',
-        'business_owner',
-        'business_category',
-        'indigency_reason',
-        'monthly_income',
-        'family_monthly_income',
-        'family_size',
-        'residency_period',
-        'previous_address',
-        'ownership_type',
-        'retirement_date',
-        'sign_wordings',
-        'sign_material',
-        'sign_size',
-        'case_number',
-        'case_title',
-        'case_description',
-        'complainant_name',
-        'complainant_address',
-        'respondent_name',
-        'respondent_address',
-        'hearing_date',
-        'hearing_time',
-        'hearing_type',
-        'received_from',
-        'bond_amount',
-        'representing_entity',
-        'acknowledgement_address',
-        'barangay_case',
-        'summon_date',
-        'summon_time',
-        'summon_address',
-        'to',
-        'for',
-        
-        // Processing Information
-        'requirements_submitted',
-        'notes',
-        'remarks',
-        'certifying_official',
-        'processed_by',
-        'approved_by',
-        'released_by',
-        'created_by',
-        'updated_by',
-        'expiry_date',
-        
-        // Legacy fields
-        'file_path',
-        'file_bucket',
-        'file_storage_path',
-        'file_storage_provider',
-        'file_migrated_to_supabase',
+        'type', 'resident_id', 'applicant_name', 'purpose', 'applicant_address',
+        'applicant_contact', 'applicant_email', 'priority', 'needed_date', 'processing_fee',
+        'status', 'payment_status', 'document_number', 'serial_number', 'submitted_at',
+        'processed_at', 'approved_at', 'released_at', 'clearance_purpose', 'clearance_type',
+        'business_name', 'business_type', 'business_address', 'business_owner',
+        'business_category', 'indigency_reason', 'family_monthly_income', 'family_size',
+        'residency_period', 'previous_address', 'requirements_submitted', 'notes',
+        'remarks', 'certifying_official', 'file_path', 'file_bucket', 'file_storage_path',
+        'file_storage_provider', 'file_migrated_to_supabase', 'processed_by', 'approved_by',
+        'released_by', 'created_by', 'updated_by', 'received_from', 'representing_entity',
+        'acknowledgement_address', 'bond_amount', 'expiry_date', 'sign_wordings',
+        'sign_material', 'sign_size', 'case_number', 'hearing_date', 'hearing_time',
+        'hearing_type', 'complainant_name', 'complainant_address', 'respondent_name',
+        'respondent_address', 'case_description', 'date_approved', 'last_compliance', 'retirement_date',
+        'summon_date', 'summon_time', 'summon_address', 'barangay_case', 'for', 'to'
     ];
 
     /**
@@ -118,7 +53,7 @@ class Document extends Model implements Auditable
     protected $casts = [
         'needed_date' => 'datetime',
         'submitted_at' => 'datetime',
-        'processed_at' => 'datetime', 
+        'processed_at' => 'datetime',
         'approved_at' => 'datetime',
         'released_at' => 'datetime',
         'expiry_date' => 'datetime',
@@ -667,14 +602,14 @@ class Document extends Model implements Auditable
             'RETIREMENT_CESSATION_DISSOLUTION' => 'RCD',
             'NOTICE_OF_HEARING' => 'NOH',
             default => 'DOC',
-        }; 
+        };
 
         $year = now()->year;
         $month = now()->format('m');
 
         // OPTIMIZED: Use cache for sequence numbers to reduce database queries
         $cacheKey = "doc_sequence_{$documentType}_{$year}_{$month}";
-        
+
         $sequence = Cache::remember($cacheKey, 3600, function () use ($documentType, $year, $month) {
             // OPTIMIZED: Use proper ordering by timestamp instead of UUID
             $lastDocument = static::where('type', $documentType)
@@ -708,7 +643,7 @@ class Document extends Model implements Auditable
         // OPTIMIZED: Use microtime for better uniqueness and performance
         $timestamp = str_replace('.', '', microtime(true));
         $random = strtoupper(Str::random(4));
-        
+
         return 'SN-' . now()->format('Y') . '-' . substr($timestamp, -6) . $random;
     }
 

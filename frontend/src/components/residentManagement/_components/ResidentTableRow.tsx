@@ -54,7 +54,8 @@ export const ResidentTableRow: React.FC<ResidentTableRowProps> = ({
   };
 
   const getStatusText = (status: string) => {
-    return t(`residents.status.${status.toLowerCase()}`, status);
+    const key = typeof status === 'string' ? status.toLowerCase() : 'unknown'; // fallback if status is missing
+    return t(`residents.status.${key}`, status);
   };
 
   const fullName = `${resident.first_name} ${resident.middle_name ? resident.middle_name + ' ' : ''}${resident.last_name}${resident.suffix ? ', ' + resident.suffix : ''}`;
