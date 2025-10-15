@@ -60,25 +60,24 @@ const Sidebar: React.FC<SidebarProps> = ({
   const sidebarRef = useRef<HTMLElement>(null);
   const menuItemRefs = useRef<Record<string, HTMLAnchorElement>>({});
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // Permission checking
   const { hasPermission, hasAnyRole } = usePermissionCheck();
 
   const menuItems: MenuItem[] = useMemo(() => [
     { id: "dashboard", label: "Dashboard", icon: FiHome },
-    { 
-      id: "residents", 
-      label: "Resident Management", 
+    {
+      id: "residents",
+      label: "Resident Management",
       icon: FiUsers,
       permission: "view-residents"
     },
-    { 
-      id: "household", 
-      label: "Household Management", 
+    {
+      id: "household",
+      label: "Household Management",
       icon: FiUsers,
       permission: "view-households"
     },
-    { id: "import", label: "Data Import", icon: FiUpload }, 
     {
       id: "process-document",
       label: "Process Document",
@@ -112,23 +111,33 @@ const Sidebar: React.FC<SidebarProps> = ({
         { id: "share-suggestions", label: "Share suggestions" },
       ],
     },
-    { id: "agenda", label: "Agenda Management", icon: FiCalendar },
+    // { id: "agenda", label: "Agenda Management", icon: FiCalendar },
     // { id: "projects", label: "Projects & Programs", icon: FiBriefcase },
-    { id: "officials", label: "Barangay Officials", icon: FiUserCheck },
     { id: "reports", label: "Reports", icon: FiBarChart },
-    { 
-      id: "users", 
-      label: "Manage Users", 
+    {
+      id: "users",
+      label: "Users",
       icon: FiUsers,
-      roles: ['SUPER_ADMIN', 'ADMIN']
+      roles: ['SUPER_ADMIN', 'ADMIN'],
+      hasSubmenu: true,
+      submenu: [
+        {
+          id: "permissions",
+          label: "Permissions",
+          icon: FiShield,
+          roles: ['SUPER_ADMIN', 'ADMIN']
+        },
+        { id: "officials", label: "Barangay Officials", icon: FiUserCheck },
+      ]
     },
-    { 
-      id: "permissions", 
-      label: "Permissions", 
-      icon: FiShield,
-      roles: ['SUPER_ADMIN', 'ADMIN']
+
+    {
+      id: "settings", label: "Settings", icon: FiSettings,
+      hasSubmenu: true,
+      submenu: [
+        { id: "import", label: "Data Import", icon: FiUpload }
+      ]
     },
-    { id: "settings", label: "Settings", icon: FiSettings },
   ], []);
 
   // Filter menu items based on permissions
@@ -138,12 +147,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       if (item.roles) {
         return hasAnyRole(item.roles);
       }
-      
+
       // If item has permission requirement, check permission
       if (item.permission) {
         return hasPermission(item.permission);
       }
-      
+
       // If no requirements, show the item
       return true;
     });
@@ -160,16 +169,16 @@ const Sidebar: React.FC<SidebarProps> = ({
     // Check if active item is a submenu item
     const activeSegments = activeItem.split('/');
     const parentId = activeSegments[0];
-    
-    const parent = menuItems.find(item => 
-      item.id === parentId && 
-      item.hasSubmenu && 
-      item.submenu?.some(sub => 
-        activeItem === `${parentId}/${sub.id}` || 
+
+    const parent = menuItems.find(item =>
+      item.id === parentId &&
+      item.hasSubmenu &&
+      item.submenu?.some(sub =>
+        activeItem === `${parentId}/${sub.id}` ||
         activeSegments[1] === sub.id
       )
     );
-    
+
     return parent?.id || null;
   }, [activeItem, menuItems]);
 
@@ -215,7 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   // Auto-expand parent menu based on active item
   useEffect(() => {
     const activeParent = getActiveParentMenu();
-    
+
     if (isMobile) {
       // On mobile, expand all menus with submenus
       const menusWithSubmenus = menuItems
@@ -285,7 +294,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const toggleSubmenu = (menuId: string) => {
     // Don't allow toggling on mobile - submenus always expanded
     if (isMobile) return;
-    
+
     if (!isExpanded) {
       // For collapsed sidebar, use hover behavior instead
       return;
@@ -384,7 +393,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       // Always show on mobile
       return true;
     }
-    
+
     if (isExpanded) {
       // Show if expanded in expanded sidebar
       return expandedMenus.includes(itemId);
@@ -397,24 +406,20 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       ref={sidebarRef}
-      className={`transition-all duration-200 ${
-        isExpanded ? "md:w-72 md:min-w-72" : "md:min-w-16 md:w-16"
-      } overflow-x-hidden overflow-y-auto ${
-        isExpanded ? "min-w-screen w-screen" : "min-w-0 w-0"
-      } bg-gray-50 border-r border-gray-200 min-h-screen`}
+      className={`transition-all duration-200 ${isExpanded ? "md:w-72 md:min-w-72" : "md:min-w-16 md:w-16"
+        } overflow-x-hidden overflow-y-auto ${isExpanded ? "min-w-screen w-screen" : "min-w-0 w-0"
+        } bg-gray-50 border-r border-gray-200 min-h-screen`}
     >
       <nav className="py-4">
         {/* Logo and Title */}
         <div
-          className={`transition-all duration-200 ${
-            !isMobile && !isExpanded ? "w-16" : "w-72"
-          } flex gap-3 space-x-3 px-3 py-4 overflow-x-hidden`}
+          className={`transition-all duration-200 ${!isMobile && !isExpanded ? "w-16" : "w-72"
+            } flex gap-3 space-x-3 px-3 py-4 overflow-x-hidden`}
         >
           <img
             src={sanMiguelLogo}
-            className={`transition-all duration-200 ${
-              !isMobile && !isExpanded ? "w-10 h-10" : "w-16 h-16"
-            } rounded-full m-0`}
+            className={`transition-all duration-200 ${!isMobile && !isExpanded ? "w-10 h-10" : "w-16 h-16"
+              } rounded-full m-0`}
             alt="West Triangle Barangay Logo"
           />
           <div className={`${!isMobile && !isExpanded ? "max-w-0" : ""}`}>
@@ -422,11 +427,10 @@ const Sidebar: React.FC<SidebarProps> = ({
               Brgy. West Triangle
             </h1>
             <p
-              className={`${
-                !isMobile && !isExpanded
+              className={`${!isMobile && !isExpanded
                   ? "whitespace-nowrap"
                   : "whitespace-normal"
-              } text-sm text-gray-500`}
+                } text-sm text-gray-500`}
             >
               Information Management System
             </p>
@@ -447,39 +451,33 @@ const Sidebar: React.FC<SidebarProps> = ({
               }}
               to={`/${item.id}`}
               onClick={(e) => handleMenuClick(e, item)}
-              className={`sidebar-link flex items-center px-[22px] min-h-12 transition-colors duration-200 cursor-pointer no-underline ${
-                isExpanded ? "md:w-72" : "md:w-full"
-              } w-screen overflow-x-hidden ${
-                activeItem.split('/')[0] === item.id ||
-                (item.hasSubmenu && isSubmenuActive(item.submenu || []))
-                  ? `active font-medium ${
-                      isExpanded ? "border-r-4" : "border-r-3"
-                    } border-smblue-400`
+              className={`sidebar-link flex items-center px-[22px] min-h-12 transition-colors duration-200 cursor-pointer no-underline ${isExpanded ? "md:w-72" : "md:w-full"
+                } w-screen overflow-x-hidden ${activeItem.split('/')[0] === item.id ||
+                  (item.hasSubmenu && isSubmenuActive(item.submenu || []))
+                  ? `active font-medium ${isExpanded ? "border-r-4" : "border-r-3"
+                  } border-smblue-400`
                   : ""
-              }`}
+                }`}
               title={!isMobile && !isExpanded ? item.label : ""}
             >
               <item.icon
-                className={`transition-all duration-200 w-5 h-5 ${
-                  isExpanded || isMobile ? "mr-3" : "mr-0"
-                }`}
+                className={`transition-all duration-200 w-5 h-5 ${isExpanded || isMobile ? "mr-3" : "mr-0"
+                  }`}
               />
               <span
-                className={`flex-1 text-left transition-all duration-200 ${
-                  !isMobile && !isExpanded
+                className={`flex-1 text-left transition-all duration-200 ${!isMobile && !isExpanded
                     ? "opacity-0 max-w-0 overflow-hidden whitespace-nowrap"
                     : "opacity-100"
-                }`}
+                  }`}
               >
                 {item.label}
               </span>
               {item.hasSubmenu && (
                 <div
-                  className={`transition-all duration-200 ${
-                    !isMobile && !isExpanded
+                  className={`transition-all duration-200 ${!isMobile && !isExpanded
                       ? "opacity-0 max-w-0 overflow-hidden"
                       : "opacity-100"
-                  }`}
+                    }`}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -498,35 +496,32 @@ const Sidebar: React.FC<SidebarProps> = ({
             {/* Submenu */}
             {item.hasSubmenu && (
               <div
-                className={`${
-                  !isMobile && !isExpanded
-                    ? `fixed bg-white p-3 rounded-2xl border border-gray-200 shadow-lg min-w-52 z-50 ${
-                        shouldShowSubmenu(item.id) ? 'block' : 'hidden'
-                      }`
+                className={`${!isMobile && !isExpanded
+                    ? `fixed bg-white p-3 rounded-2xl border border-gray-200 shadow-lg min-w-52 z-50 ${shouldShowSubmenu(item.id) ? 'block' : 'hidden'
+                    }`
                     : isMobile
-                    ? "ml-8 mt-1 relative transition-all duration-300 ease-in-out"
-                    : "ml-8 mt-1 relative transition-all duration-300 ease-in-out"
-                }`}
+                      ? "ml-8 mt-1 relative transition-all duration-300 ease-in-out"
+                      : "ml-8 mt-1 relative transition-all duration-300 ease-in-out"
+                  }`}
                 style={
                   !isMobile && !isExpanded
                     ? {
-                        top: submenuPositions[item.id]?.top ? `${submenuPositions[item.id].top}px` : 'auto',
-                        left: submenuPositions[item.id]?.left ? `${submenuPositions[item.id].left}px` : 'auto',
-                      }
+                      top: submenuPositions[item.id]?.top ? `${submenuPositions[item.id].top}px` : 'auto',
+                      left: submenuPositions[item.id]?.left ? `${submenuPositions[item.id].left}px` : 'auto',
+                    }
                     : {
-                        maxHeight: (isMobile || expandedMenus.includes(item.id)) ? '500px' : '0',
-                        opacity: (isMobile || expandedMenus.includes(item.id)) ? '1' : '0',
-                        overflow: 'hidden'
-                      }
+                      maxHeight: (isMobile || expandedMenus.includes(item.id)) ? '500px' : '0',
+                      opacity: (isMobile || expandedMenus.includes(item.id)) ? '1' : '0',
+                      overflow: 'hidden'
+                    }
                 }
                 onMouseEnter={handleSubmenuEnter}
                 onMouseLeave={handleSubmenuLeave}
               >
                 {/* Continuous vertical line */}
                 <div
-                  className={`${
-                    !isMobile && !isExpanded ? "hidden" : "block"
-                  } absolute left-2 top-0 bottom-0 w-px bg-gray-300`}
+                  className={`${!isMobile && !isExpanded ? "hidden" : "block"
+                    } absolute left-2 top-0 bottom-0 w-px bg-gray-300`}
                 ></div>
 
                 <div className="space-y-0">
@@ -535,13 +530,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <Link
                         to={`/${item.id}/${subItem.id}`}
                         onClick={(e) => handleSubmenuClick(e, item.id, subItem.id)}
-                        className={`flex items-center ${
-                          !isMobile && !isExpanded ? "px-3" : "pl-6 pr-4"
-                        } py-2 text-sm w-full text-left rounded-md transition-colors cursor-pointer relative ${
-                          activeItem.split('/')[1] === subItem.id
+                        className={`flex items-center ${!isMobile && !isExpanded ? "px-3" : "pl-6 pr-4"
+                          } py-2 text-sm w-full text-left rounded-md transition-colors cursor-pointer relative ${activeItem.split('/')[1] === subItem.id
                             ? "bg-[#D2DEE7] text-smblue-400 font-medium"
                             : "hover:bg-[#E6EBF0] hover:text-smblue-400"
-                        }`}
+                          }`}
                       >
                         {subItem.label}
                       </Link>

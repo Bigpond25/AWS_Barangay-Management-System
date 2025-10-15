@@ -378,34 +378,35 @@ export default function ReportsPage() {
           </section>
 
           {/* Population Distribution and Document Types - Real Data Only */}
-          <section className="min-h-[450px] w-full grid gap-4 grid-cols-1 @xl/main:grid-cols-2">
+          <section className="min-h-[450px] w-full grid gap-4 grid-cols-1">
             {/* Population Distribution by Street */}
-            <article className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white min-h-[450px]">
+            {/* Population Distribution by Street */}
+            {/* <article className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white min-h-[450px] col-span-1 @xl/main:col-span-2">
               <h3 className={`text-lg font-semibold text-darktext mb-6 border-l-4 border-smblue-400 pl-4 transition-all duration-700 ease-out ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`} style={{ transitionDelay: '450ms' }}>
-                Population Distribution by Street
+              Population Distribution by Street
               </h3>
 
               <ResponsiveBarGraph data={populationDistributionByStreetData} />
-            </article>
+            </article> */}
 
-            {/* Document Types Issued */}
+            {/* Document Types Issued - Full Width */}
             <article className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white min-h-[450px]">
               <h3 className={`text-lg font-semibold text-darktext mb-6 border-l-4 border-smblue-400 pl-4 transition-all duration-700 ease-out ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`} style={{ transitionDelay: '500ms' }}>
-                Document Types Issued
+              Document Types Issued
               </h3>
 
               <ResponsivePieChart data={documentsIssuedData} />
             </article>
           </section>
 
-          {/* Note: Most Requested Services section hidden - uses mock/fallback data when no real appointment data exists */}
-          {/* Uncomment when real appointment/service request data is available */}
-          {/*
-          <section className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white">
+            {/* Note: Most Requested Services section hidden - uses mock/fallback data when no real appointment data exists */}
+            {/* Uncomment when real appointment/service request data is available */}
+            {/*
+            <section className="flex flex-col shadow-sm rounded-2xl border border-gray-100 p-6 bg-white">
             <h3 className={`text-lg font-semibold text-darktext mb-6 border-l-4 border-smblue-400 pl-4 transition-all duration-700 ease-out ${
               isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`} style={{ transitionDelay: '550ms' }}>
@@ -413,8 +414,8 @@ export default function ReportsPage() {
             </h3>
 
             <ResponsiveServicesTable data={mostRequestedServicesData} />
-          </section>
-          */}
+            </section>
+            */}
         </>
       )}
 

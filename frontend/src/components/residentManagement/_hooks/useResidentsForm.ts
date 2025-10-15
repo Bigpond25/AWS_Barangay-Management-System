@@ -233,7 +233,7 @@ export function useResidentForm({ mode, residentId, onSuccess }: UseResidentForm
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await fetch('http://127.0.0.1:8000/api/upload', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/upload`, {
           method: 'POST',
           body: formData,
           headers: {

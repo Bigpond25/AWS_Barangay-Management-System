@@ -293,9 +293,6 @@ const ResidentManagement: React.FC = () => {
                   `Showing ${residents.length} of ${pagination.total} residents`
                 )}
               </span>
-              {isFetching && (
-                <span className="text-blue-600">Updating...</span>
-              )}
             </div>
             
             {searchTerm && (

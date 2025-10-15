@@ -10,12 +10,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use OwenIt\Auditing\Contracts\Auditable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Schemas\BarangayOfficialSchema;
 
 class BarangayOfficial extends Model implements Auditable
 {
     use HasFactory, HasUuids;
-
     use \OwenIt\Auditing\Auditable;
     
     protected $auditModel = ActivityLog::class;
@@ -52,29 +50,297 @@ class BarangayOfficial extends Model implements Auditable
     protected $keyType = 'string';
     public $incrementing = false;
 
-    // Use schema for fillable fields
-    protected $fillable;
-    protected $casts;
-
-    public function __construct(array $attributes = [])
-    {
-        // Load fillable fields and casts from schema before calling parent constructor
-        try {
-            $this->fillable = BarangayOfficialSchema::getFillableFields() ?? [];
-            $schemaCasts = BarangayOfficialSchema::getCasts() ?? [];
-            $this->casts = array_merge($schemaCasts, [
-                'id' => 'string',
-            ]);
-        } catch (\Exception $e) {
-            // Fallback in case schema is not available
-            $this->fillable = [];
-            $this->casts = ['id' => 'string'];
-        }
+    /**
+     * The attributes that are mass assignable.
+     */
+    protected $fillable = [
+        // Foreign Key Relationships
+        'resident_id',
+        'user_id',
         
-        parent::__construct($attributes);
+        // Personal Information
+        'prefix',
+        'first_name',
+        'last_name',
+        'middle_name',
+        'suffix',
+        'full_name',
+        'birth_date',
+        'gender',
+        
+        // Contact Information
+        'contact_number',
+        'email_address',
+        'address',
+        
+        // Official Position
+        'position',
+        'position_title',
+        'committee_assignments',
+        'committee_memberships',
+        
+        // Term Information
+        'term_start',
+        'term_end',
+        'term_number',
+        'is_current_term',
+        
+        // Election Information
+        'election_date',
+        'votes_received',
+        'is_elected',
+        'appointment_document',
+        
+        // Status
+        'status',
+        'status_date',
+        'status_reason',
+        
+        // Educational & Professional Background
+        'educational_background',
+        'work_experience',
+        'skills_expertise',
+        'trainings_attended',
+        'certifications',
+        
+        // Performance & Accomplishments
+        'major_accomplishments',
+        'projects_initiated',
+        'performance_notes',
+        'performance_rating',
+        
+        // Emergency Contact
+        'emergency_contact_name',
+        'emergency_contact_number',
+        'emergency_contact_relationship',
+        
+        // Social Media & Communication
+        'social_media_accounts',
+        
+        // Documents & Files
+        'documents',
+        'profile_photo',
+        'digital_signature',
+        
+        // Oath & Legal
+        'oath_taking_date',
+        'oath_taking_notes',
+        'legal_issues',
+        'ethical_violations',
+        
+        // Attendance & Participation
+        'session_attendance_rate',
+        'committee_participation',
+        'community_engagement',
+        
+        // Additional Information
+        'remarks',
+        'bio_summary',
+        'personal_mission',
+        
+        // System Fields
+        'created_by',
+        'updated_by',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'id' => 'string',
+        'birth_date' => 'date',
+        'term_start' => 'date',
+        'term_end' => 'date',
+        'term_number' => 'integer',
+        'is_current_term' => 'boolean',
+        'election_date' => 'date',
+        'votes_received' => 'integer',
+        'is_elected' => 'boolean',
+        'status_date' => 'date',
+        'performance_rating' => 'integer',
+        'committee_assignments' => 'array',
+        'committee_memberships' => 'array',
+        'trainings_attended' => 'array',
+        'certifications' => 'array',
+        'projects_initiated' => 'array',
+        'social_media_accounts' => 'array',
+        'documents' => 'array',
+        'oath_taking_date' => 'date',
+        'session_attendance_rate' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * Constants for prefix values
+     */
+    const PREFIX_MR = 'Mr.';
+    const PREFIX_MS = 'Ms.';
+    const PREFIX_MRS = 'Mrs.';
+    const PREFIX_DR = 'Dr.';
+    const PREFIX_HON = 'Hon.';
+
+    /**
+     * Constants for gender values
+     */
+    const GENDER_MALE = 'MALE';
+    const GENDER_FEMALE = 'FEMALE';
+
+    /**
+     * Constants for position values
+     */
+    const POSITION_BARANGAY_CAPTAIN = 'BARANGAY_CAPTAIN';
+    const POSITION_BARANGAY_SECRETARY = 'BARANGAY_SECRETARY';
+    const POSITION_BARANGAY_TREASURER = 'BARANGAY_TREASURER';
+    const POSITION_KAGAWAD = 'KAGAWAD';
+    const POSITION_SK_CHAIRPERSON = 'SK_CHAIRPERSON';
+    const POSITION_SK_KAGAWAD = 'SK_KAGAWAD';
+    const POSITION_BARANGAY_CLERK = 'BARANGAY_CLERK';
+    const POSITION_BARANGAY_TANOD = 'BARANGAY_TANOD';
+
+    /**
+     * Constants for status values
+     */
+    const STATUS_ACTIVE = 'ACTIVE';
+    const STATUS_INACTIVE = 'INACTIVE';
+    const STATUS_SUSPENDED = 'SUSPENDED';
+    const STATUS_RESIGNED = 'RESIGNED';
+    const STATUS_TERMINATED = 'TERMINATED';
+    const STATUS_DECEASED = 'DECEASED';
+
+    /**
+     * Get the validation rules for creating a new barangay official
+     */
+    public static function getCreateRules(): array
+    {
+        return [
+            'resident_id' => 'required|exists:residents,id',
+            'user_id' => 'required|exists:users,id',
+            'prefix' => 'nullable|in:Mr.,Ms.,Mrs.,Dr.,Hon.',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'suffix' => 'nullable|string|max:10',
+            'full_name' => 'nullable|string|max:500',
+            'birth_date' => 'required|date',
+            'gender' => 'required|in:MALE,FEMALE',
+            'contact_number' => 'nullable|string|max:20',
+            'email_address' => 'nullable|email|max:255',
+            'address' => 'nullable|string',
+            'position' => 'required|in:BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,KAGAWAD,SK_CHAIRPERSON,SK_KAGAWAD,BARANGAY_CLERK,BARANGAY_TANOD',
+            'position_title' => 'nullable|string|max:255',
+            'committee_assignments' => 'nullable|array',
+            'committee_memberships' => 'nullable|array',
+            'term_start' => 'required|date',
+            'term_end' => 'required|date',
+            'term_number' => 'nullable|integer|min:0',
+            'is_current_term' => 'nullable|boolean',
+            'election_date' => 'nullable|date',
+            'votes_received' => 'nullable|integer|min:0',
+            'is_elected' => 'nullable|boolean',
+            'appointment_document' => 'nullable|string|max:500',
+            'status' => 'nullable|in:ACTIVE,INACTIVE,SUSPENDED,RESIGNED,TERMINATED,DECEASED',
+            'status_date' => 'nullable|date',
+            'status_reason' => 'nullable|string',
+            'educational_background' => 'nullable|string',
+            'work_experience' => 'nullable|string',
+            'skills_expertise' => 'nullable|string',
+            'trainings_attended' => 'nullable|array',
+            'certifications' => 'nullable|array',
+            'major_accomplishments' => 'nullable|string',
+            'projects_initiated' => 'nullable|array',
+            'performance_notes' => 'nullable|string',
+            'performance_rating' => 'nullable|integer|min:1|max:5',
+            'emergency_contact_name' => 'nullable|string|max:255',
+            'emergency_contact_number' => 'nullable|string|max:20',
+            'emergency_contact_relationship' => 'nullable|string|max:100',
+            'social_media_accounts' => 'nullable|array',
+            'documents' => 'nullable|array',
+            'profile_photo' => 'nullable|string|max:500',
+            'digital_signature' => 'nullable|string|max:500',
+            'oath_taking_date' => 'nullable|date',
+            'oath_taking_notes' => 'nullable|string',
+            'legal_issues' => 'nullable|string',
+            'ethical_violations' => 'nullable|string',
+            'session_attendance_rate' => 'nullable|numeric|min:0|max:100',
+            'committee_participation' => 'nullable|string',
+            'community_engagement' => 'nullable|string',
+            'remarks' => 'nullable|string',
+            'bio_summary' => 'nullable|string',
+            'personal_mission' => 'nullable|string',
+            'created_by' => 'nullable|exists:users,id',
+            'updated_by' => 'nullable|exists:users,id',
+        ];
     }
 
-    // Relationships
+    /**
+     * Get the validation rules for updating a barangay official
+     */
+    public static function getUpdateRules(): array
+    {
+        return [
+            'resident_id' => 'sometimes|required|exists:residents,id',
+            'user_id' => 'sometimes|required|exists:users,id',
+            'prefix' => 'nullable|in:Mr.,Ms.,Mrs.,Dr.,Hon.',
+            'first_name' => 'sometimes|required|string|max:255',
+            'last_name' => 'sometimes|required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'suffix' => 'nullable|string|max:10',
+            'full_name' => 'nullable|string|max:500',
+            'birth_date' => 'sometimes|required|date',
+            'gender' => 'sometimes|required|in:MALE,FEMALE',
+            'contact_number' => 'nullable|string|max:20',
+            'email_address' => 'nullable|email|max:255',
+            'address' => 'nullable|string',
+            'position' => 'sometimes|required|in:BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,KAGAWAD,SK_CHAIRPERSON,SK_KAGAWAD,BARANGAY_CLERK,BARANGAY_TANOD',
+            'position_title' => 'nullable|string|max:255',
+            'committee_assignments' => 'nullable|array',
+            'committee_memberships' => 'nullable|array',
+            'term_start' => 'sometimes|required|date',
+            'term_end' => 'sometimes|required|date',
+            'term_number' => 'nullable|integer|min:0',
+            'is_current_term' => 'nullable|boolean',
+            'election_date' => 'nullable|date',
+            'votes_received' => 'nullable|integer|min:0',
+            'is_elected' => 'nullable|boolean',
+            'appointment_document' => 'nullable|string|max:500',
+            'status' => 'nullable|in:ACTIVE,INACTIVE,SUSPENDED,RESIGNED,TERMINATED,DECEASED',
+            'status_date' => 'nullable|date',
+            'status_reason' => 'nullable|string',
+            'educational_background' => 'nullable|string',
+            'work_experience' => 'nullable|string',
+            'skills_expertise' => 'nullable|string',
+            'trainings_attended' => 'nullable|array',
+            'certifications' => 'nullable|array',
+            'major_accomplishments' => 'nullable|string',
+            'projects_initiated' => 'nullable|array',
+            'performance_notes' => 'nullable|string',
+            'performance_rating' => 'nullable|integer|min:1|max:5',
+            'emergency_contact_name' => 'nullable|string|max:255',
+            'emergency_contact_number' => 'nullable|string|max:20',
+            'emergency_contact_relationship' => 'nullable|string|max:100',
+            'social_media_accounts' => 'nullable|array',
+            'documents' => 'nullable|array',
+            'profile_photo' => 'nullable|string|max:500',
+            'digital_signature' => 'nullable|string|max:500',
+            'oath_taking_date' => 'nullable|date',
+            'oath_taking_notes' => 'nullable|string',
+            'legal_issues' => 'nullable|string',
+            'ethical_violations' => 'nullable|string',
+            'session_attendance_rate' => 'nullable|numeric|min:0|max:100',
+            'committee_participation' => 'nullable|string',
+            'community_engagement' => 'nullable|string',
+            'remarks' => 'nullable|string',
+            'bio_summary' => 'nullable|string',
+            'personal_mission' => 'nullable|string',
+            'created_by' => 'nullable|exists:users,id',
+            'updated_by' => 'nullable|exists:users,id',
+        ];
+    }
+
+    /**
+     * Relationships
+     */
     public function resident(): BelongsTo
     {
         return $this->belongsTo(Resident::class);

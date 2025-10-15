@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Schemas\UserSchema;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -20,8 +19,8 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         try {
-            // Get validation rules from schema
-            $validationRules = UserSchema::getCreateValidationRules();
+            // Get validation rules from model
+            $validationRules = User::getCreateRules();
             
             // Remove system fields from validation that shouldn't be user-provided
             unset($validationRules['is_active'], $validationRules['is_verified'], 

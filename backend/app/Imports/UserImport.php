@@ -1,20 +1,18 @@
 <?php
 
 // ============================================================================
-// App/Imports/UsersImport.php (for Excel import functionality)
+// App/Imports/UserImport.php (for user data import functionality)
+// Note: For Excel functionality, install maatwebsite/excel package
 // ============================================================================
 
 namespace App\Imports;
 
 use App\Models\User;
-use App\Models\Schemas\UserSchema;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class UsersImport implements ToCollection, WithHeadingRow
+class UserImport
 {
     protected $options;
     protected $results = [
@@ -28,7 +26,27 @@ class UsersImport implements ToCollection, WithHeadingRow
         $this->options = $options;
     }
 
-    public function collection(Collection $rows)
+    /**
+     * Import users from array data
+     */
+    public function importFromArray(array $data): array
+    {
+        $this->processRows(collect($data));
+        return $this->results;
+    }
+
+    /**
+     * Import users from Collection (for Excel integration when package is installed)
+     */
+    public function collection(Collection $rows): void
+    {
+        $this->processRows($rows);
+    }
+
+    /**
+     * Process rows of user data
+     */
+    private function processRows(Collection $rows): void
     {
         foreach ($rows as $index => $row) {
             try {
@@ -49,7 +67,7 @@ class UsersImport implements ToCollection, WithHeadingRow
                 ];
 
                 // Validate data
-                $validator = Validator::make($userData, UserSchema::getCreateValidationRules());
+                $validator = Validator::make($userData, User::getCreateRules());
 
                 if ($validator->fails()) {
                     $this->results['errors'][] = [

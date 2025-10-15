@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Resident;
-use App\Models\Schemas\DocumentSchema;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -176,7 +176,7 @@ class DocumentController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $validationRules = DocumentSchema::getCreateValidationRules();
+            $validationRules = Document::getCreateRules();
             $validated = $request->validate($validationRules);
 
             // Mass create includes cash-bond fields if present in validation rules & $fillable
@@ -245,7 +245,7 @@ class DocumentController extends Controller
         try {
             $document = Document::findOrFail($id);
 
-            $validationRules = DocumentSchema::getUpdateValidationRules();
+            $validationRules = Document::getUpdateRules();
             $validationRules = array_map(function ($rule) use ($id) {
                 return str_replace('{id}', $id, $rule);
             }, $validationRules);

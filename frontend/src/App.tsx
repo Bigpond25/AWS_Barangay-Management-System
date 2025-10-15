@@ -250,14 +250,7 @@ const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: "import",
-        element: (
-          <PermissionGuard permission="manage-users">
-            <DataImport />
-          </PermissionGuard>
-        ),
-      },
+
       {
         path: "process-document",
         children: [
@@ -360,6 +353,57 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: "projects",
+        // children: [
+        //   {
+        //     index: true,
+        //     element: <ProjectsAndPrograms />,
+        //   },
+        //   {
+        //     path: "edit/:projectId",
+        //     element: <EditProject />,
+        //   },
+        //   {
+        //     path: "add",
+        //     element: <AddNewProject />,
+        //   },
+        // ],
+      },      {
+        path: "users",
+        children: [
+          {
+            index: true,
+            element: (
+              <PermissionGuard permission="manage-users">
+                <UserManagement />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "edit/:id",
+            element: (
+              <PermissionGuard permission="manage-users">
+                <EditUserPage />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "view/:id",
+            element: (
+              <PermissionGuard permission="manage-users">
+                <ViewUserPage />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "permissions",
+            element: (
+              <PermissionGuard permission="manage-roles">
+                <PermissionManagementPage />
+              </PermissionGuard>
+            ),
+          },
+          {
         path: "officials",
         children: [
           {
@@ -404,66 +448,28 @@ const router = createBrowserRouter([
           }
         ]
       },
-      {
-        path: "projects",
-        // children: [
-        //   {
-        //     index: true,
-        //     element: <ProjectsAndPrograms />,
-        //   },
-        //   {
-        //     path: "edit/:projectId",
-        //     element: <EditProject />,
-        //   },
-        //   {
-        //     path: "add",
-        //     element: <AddNewProject />,
-        //   },
-        // ],
-      },      {
-        path: "users",
-        children: [
-          {
-            index: true,
-            element: (
-              <PermissionGuard permission="manage-users">
-                <UserManagement />
-              </PermissionGuard>
-            ),
-          },
-          {
-            path: "edit/:id",
-            element: (
-              <PermissionGuard permission="manage-users">
-                <EditUserPage />
-              </PermissionGuard>
-            ),
-          },
-          {
-            path: "view/:id",
-            element: (
-              <PermissionGuard permission="manage-users">
-                <ViewUserPage />
-              </PermissionGuard>
-            ),
-          },
         ],
       },
       {
         path: "settings",
-        element: (
-          <PermissionGuard permission="system-settings">
-            <SettingsPage />
-          </PermissionGuard>
-        ),
-      },
-      {
-        path: "permissions",
-        element: (
-          <PermissionGuard permission="manage-roles">
-            <PermissionManagementPage />
-          </PermissionGuard>
-        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <PermissionGuard permission="system-settings">
+                <SettingsPage />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "import",
+            element: (
+              <PermissionGuard permission="manage-users">
+                <DataImport />
+              </PermissionGuard>
+            ),
+          },
+        ]
       },
       {
         path: "reports",

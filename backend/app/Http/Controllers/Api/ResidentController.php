@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Resident;
-use App\Models\Schemas\ResidentSchema;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -132,7 +131,7 @@ class ResidentController extends Controller
     {
         try {
             // Validate using schema rules
-            $validatedData = $request->validate(ResidentSchema::getCreateValidationRules());
+            $validatedData = $request->validate(Resident::getCreateValidationRules());
 
             // Set created_by if user is authenticated
             if (auth('sanctum')->check()) {
@@ -406,7 +405,7 @@ class ResidentController extends Controller
     {
         try {
             // Validate using schema rules
-            $validatedData = $request->validate(ResidentSchema::getUpdateValidationRules());
+            $validatedData = $request->validate(Resident::getUpdateValidationRules());
 
             // Set updated_by if user is authenticated
             if (auth('sanctum')->check()) {

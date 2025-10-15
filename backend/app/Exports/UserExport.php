@@ -1,19 +1,16 @@
 <?php
 
 // ============================================================================
-// App/Exports/UsersExport.php (for Excel export functionality)
+// App/Exports/UserExport.php (for Excel export functionality)
+// Compatible with maatwebsite/excel 1.x
 // ============================================================================
 
 namespace App\Exports;
 
 use App\Models\User;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Support\Collection;
 
-class UsersExport implements FromCollection, WithHeadings, WithMapping, WithStyles
+class UserExport
 {
     protected $users;
 
@@ -22,58 +19,62 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, WithStyl
         $this->users = $users;
     }
 
-    public function collection()
+    /**
+     * Get the users data as an array for export (compatible with Excel 1.x)
+     */
+    public function toArray(): array
     {
-        return $this->users;
-    }
-
-    public function headings(): array
-    {
-        return [
+        $data = [];
+        
+        // Add headers
+        $data[] = [
             'ID',
             'First Name',
+            'Middle Name', 
             'Last Name',
-            'Middle Name',
+            'Username',
             'Email',
             'Phone',
-            'Username',
             'Role',
             'Department',
             'Position',
             'Employee ID',
             'Is Active',
             'Is Verified',
-            'Last Login',
             'Created At',
+            'Last Login'
         ];
+
+        // Add user data
+        foreach ($this->users as $user) {
+            $data[] = [
+                $user->id,
+                $user->first_name,
+                $user->middle_name,
+                $user->last_name,
+                $user->username,
+                $user->email,
+                $user->phone ?? '',
+                $user->role,
+                $user->department,
+                $user->position ?? '',
+                $user->employee_id ?? '',
+                $user->is_active ? 'Yes' : 'No',
+                $user->is_verified ? 'Yes' : 'No',
+                $user->created_at ? $user->created_at->format('Y-m-d H:i:s') : '',
+                $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i:s') : 'Never'
+            ];
+        }
+
+        return $data;
     }
 
-    public function map($user): array
+    /**
+     * Get collection for Excel export
+     */
+    public function collection(): Collection
     {
-        return [
-            $user->id,
-            $user->first_name,
-            $user->last_name,
-            $user->middle_name,
-            $user->email,
-            $user->phone,
-            $user->username,
-            $user->role_display_name,
-            $user->department_display_name,
-            $user->position,
-            $user->employee_id,
-            $user->is_active ? 'Yes' : 'No',
-            $user->is_verified ? 'Yes' : 'No',
-            $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i:s') : 'Never',
-            $user->created_at->format('Y-m-d H:i:s'),
-        ];
-    }
-
-    public function styles(Worksheet $sheet)
-    {
-        return [
-            1 => ['font' => ['bold' => true]],
-        ];
+        return collect($this->toArray());
     }
 }
 

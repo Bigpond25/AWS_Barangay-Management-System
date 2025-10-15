@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use App\Models\Schemas\AgendaSchema;
 use Carbon\Carbon;
 
 class Agenda extends Model
@@ -83,7 +82,27 @@ class Agenda extends Model
      */
     public static function getCreateRules(): array
     {
-        return AgendaSchema::getCreateValidationRules();
+        return [
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'date' => 'required|date',
+            'time' => 'required|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
+            'duration_minutes' => 'nullable|integer',
+            'category' => 'required|string|in:MEETING,REVIEW,PRESENTATION,EVALUATION,BUDGET,PLANNING,INSPECTION,OTHER',
+            'priority' => 'nullable|string|in:LOW,NORMAL,HIGH,URGENT',
+            'status' => 'nullable|string|in:SCHEDULED,IN_PROGRESS,COMPLETED,CANCELLED,POSTPONED',
+            'location' => 'nullable|string|max:255',
+            'venue' => 'nullable|string|max:255',
+            'participants' => 'nullable|array',
+            'organizer' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            'attachments' => 'nullable|array',
+            'reminder_enabled' => 'nullable|boolean',
+            'reminder_minutes_before' => 'nullable|integer',
+            'created_by' => 'nullable|integer|exists:users,id',
+            'updated_by' => 'nullable|integer|exists:users,id',
+        ];
     }
 
     /**
@@ -91,7 +110,27 @@ class Agenda extends Model
      */
     public static function getUpdateRules(): array
     {
-        return AgendaSchema::getUpdateValidationRules();
+        return [
+            'title' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+            'date' => 'sometimes|required|date',
+            'time' => 'sometimes|required|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
+            'duration_minutes' => 'nullable|integer',
+            'category' => 'sometimes|required|string|in:MEETING,REVIEW,PRESENTATION,EVALUATION,BUDGET,PLANNING,INSPECTION,OTHER',
+            'priority' => 'nullable|string|in:LOW,NORMAL,HIGH,URGENT',
+            'status' => 'nullable|string|in:SCHEDULED,IN_PROGRESS,COMPLETED,CANCELLED,POSTPONED',
+            'location' => 'nullable|string|max:255',
+            'venue' => 'nullable|string|max:255',
+            'participants' => 'nullable|array',
+            'organizer' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            'attachments' => 'nullable|array',
+            'reminder_enabled' => 'nullable|boolean',
+            'reminder_minutes_before' => 'nullable|integer',
+            'created_by' => 'nullable|integer|exists:users,id',
+            'updated_by' => 'nullable|integer|exists:users,id',
+        ];
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Schemas\ResidentSchema;
+
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -78,28 +78,42 @@ class Resident extends Model
     ];
     
     /**
-     * OPTIMIZED: Constructor with schema caching
+     * OPTIMIZED: Constructor with caching
      */
     public function __construct(array $attributes = [])
     {
-        // PERFORMANCE: Cache fillable and casts to avoid repeated schema calls
+        // PERFORMANCE: Cache fillable and casts to avoid repeated calls
         if (self::$cachedFillable === null) {
-            self::$cachedFillable = ResidentSchema::getFillableFields();
+            self::$cachedFillable = [
+                'first_name', 'middle_name', 'last_name', 'suffix', 'gender', 'civil_status',
+                'birth_date', 'birth_place', 'nationality', 'religion', 'occupation', 'monthly_income',
+                'educational_attainment', 'contact_number', 'email_address', 'emergency_contact_name',
+                'emergency_contact_number', 'relationship_to_emergency_contact', 'house_number',
+                'street_sitio', 'barangay', 'municipality', 'province', 'postal_code', 'complete_address',
+                'is_registered_voter', 'voter_id_number', 'precinct_number', 'senior_citizen',
+                'senior_citizen_id', 'person_with_disability', 'pwd_id', 'indigenous_people',
+                'tribe_ethnicity', 'four_ps_beneficiary', 'four_ps_id', 'philhealth_member',
+                'philhealth_id', 'sss_member', 'sss_id', 'tin_number', 'blood_type', 'height_cm',
+                'weight_kg', 'medical_conditions', 'allergies', 'medications', 'created_by', 'updated_by'
+            ];
         }
         
         if (self::$cachedCasts === null) {
-            self::$cachedCasts = array_merge(
-                ResidentSchema::getCasts(),
-                [
-                    'birth_date' => 'date',
-                    'senior_citizen' => 'boolean',
-                    'person_with_disability' => 'boolean',
-                    'indigenous_people' => 'boolean',
-                    'four_ps_beneficiary' => 'boolean',
-                    'created_at' => 'datetime',
-                    'updated_at' => 'datetime',
-                ]
-            );
+            self::$cachedCasts = [
+                'birth_date' => 'date',
+                'senior_citizen' => 'boolean',
+                'person_with_disability' => 'boolean',
+                'indigenous_people' => 'boolean',
+                'four_ps_beneficiary' => 'boolean',
+                'is_registered_voter' => 'boolean',
+                'philhealth_member' => 'boolean',
+                'sss_member' => 'boolean',
+                'height_cm' => 'decimal:2',
+                'weight_kg' => 'decimal:2',
+                'monthly_income' => 'decimal:2',
+                'created_at' => 'datetime',
+                'updated_at' => 'datetime',
+            ];
         }
         
         $this->fillable = self::$cachedFillable;
@@ -762,6 +776,145 @@ class Resident extends Model
             'deleted' => "$user deleted a resident record",
             default => "$user performed $event action"
         };
+    }
+
+    // Constants for validation
+    public const GENDERS = ['MALE', 'FEMALE', 'NON_BINARY', 'PREFER_NOT_TO_SAY'];
+    public const CIVIL_STATUSES = ['SINGLE', 'LIVE_IN', 'MARRIED', 'WIDOWED', 'DIVORCED', 'SEPARATED', 'ANNULLED', 'PREFER_NOT_TO_SAY'];
+    public const STATUSES = ['ACTIVE', 'INACTIVE', 'DECEASED', 'TRANSFERRED'];
+    public const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'UNKNOWN'];
+    public const EDUCATIONAL_ATTAINMENTS = [
+        'NO_EDUCATION', 'ELEMENTARY_UNDERGRADUATE', 'ELEMENTARY_GRADUATE',
+        'HIGH_SCHOOL_UNDERGRADUATE', 'HIGH_SCHOOL_GRADUATE', 'VOCATIONAL',
+        'COLLEGE_UNDERGRADUATE', 'COLLEGE_GRADUATE', 'MASTERAL', 'DOCTORAL'
+    ];
+
+    /**
+     * Get validation rules for creating a resident
+     */
+    public static function getCreateRules(): array
+    {
+        return [
+            'first_name' => 'required|string|max:100',
+            'middle_name' => 'nullable|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'suffix' => 'nullable|string|max:20',
+            'gender' => 'required|string|in:' . implode(',', self::GENDERS),
+            'civil_status' => 'required|string|in:' . implode(',', self::CIVIL_STATUSES),
+            'birth_date' => 'required|date|before:today',
+            'birth_place' => 'nullable|string|max:255',
+            'nationality' => 'nullable|string|max:100|default:Filipino',
+            'religion' => 'nullable|string|max:100',
+            'occupation' => 'nullable|string|max:150',
+            'monthly_income' => 'nullable|numeric|min:0|max:9999999.99',
+            'educational_attainment' => 'nullable|string|in:' . implode(',', self::EDUCATIONAL_ATTAINMENTS),
+            'contact_number' => 'nullable|string|max:20',
+            'email_address' => 'nullable|email|max:150',
+            'emergency_contact_name' => 'nullable|string|max:150',
+            'emergency_contact_number' => 'nullable|string|max:20',
+            'relationship_to_emergency_contact' => 'nullable|string|max:100',
+            'house_number' => 'nullable|string|max:50',
+            'street_sitio' => 'nullable|string|max:150',
+            'barangay' => 'nullable|string|max:100',
+            'municipality' => 'nullable|string|max:100',
+            'province' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:10',
+            'complete_address' => 'nullable|string|max:500',
+            'is_registered_voter' => 'boolean',
+            'voter_id_number' => 'nullable|string|max:50',
+            'precinct_number' => 'nullable|string|max:20',
+            'senior_citizen' => 'boolean',
+            'senior_citizen_id' => 'nullable|string|max:50',
+            'person_with_disability' => 'boolean',
+            'pwd_id' => 'nullable|string|max:50',
+            'indigenous_people' => 'boolean',
+            'tribe_ethnicity' => 'nullable|string|max:100',
+            'four_ps_beneficiary' => 'boolean',
+            'four_ps_id' => 'nullable|string|max:50',
+            'philhealth_member' => 'boolean',
+            'philhealth_id' => 'nullable|string|max:50',
+            'sss_member' => 'boolean',
+            'sss_id' => 'nullable|string|max:50',
+            'tin_number' => 'nullable|string|max:20',
+            'blood_type' => 'nullable|string|in:' . implode(',', self::BLOOD_TYPES),
+            'height_cm' => 'nullable|numeric|min:0|max:300',
+            'weight_kg' => 'nullable|numeric|min:0|max:500',
+            'medical_conditions' => 'nullable|string|max:1000',
+            'allergies' => 'nullable|string|max:1000',
+            'medications' => 'nullable|string|max:1000',
+        ];
+    }
+
+    /**
+     * Get validation rules for updating a resident
+     */
+    public static function getUpdateRules(): array
+    {
+        return [
+            'first_name' => 'sometimes|required|string|max:100',
+            'middle_name' => 'nullable|string|max:100',
+            'last_name' => 'sometimes|required|string|max:100',
+            'suffix' => 'nullable|string|max:20',
+            'gender' => 'sometimes|required|string|in:' . implode(',', self::GENDERS),
+            'civil_status' => 'sometimes|required|string|in:' . implode(',', self::CIVIL_STATUSES),
+            'birth_date' => 'sometimes|required|date|before:today',
+            'birth_place' => 'nullable|string|max:255',
+            'nationality' => 'nullable|string|max:100',
+            'religion' => 'nullable|string|max:100',
+            'occupation' => 'nullable|string|max:150',
+            'monthly_income' => 'nullable|numeric|min:0|max:9999999.99',
+            'educational_attainment' => 'nullable|string|in:' . implode(',', self::EDUCATIONAL_ATTAINMENTS),
+            'contact_number' => 'nullable|string|max:20',
+            'email_address' => 'nullable|email|max:150',
+            'emergency_contact_name' => 'nullable|string|max:150',
+            'emergency_contact_number' => 'nullable|string|max:20',
+            'relationship_to_emergency_contact' => 'nullable|string|max:100',
+            'house_number' => 'nullable|string|max:50',
+            'street_sitio' => 'nullable|string|max:150',
+            'barangay' => 'nullable|string|max:100',
+            'municipality' => 'nullable|string|max:100',
+            'province' => 'nullable|string|max:100',
+            'postal_code' => 'nullable|string|max:10',
+            'complete_address' => 'nullable|string|max:500',
+            'is_registered_voter' => 'boolean',
+            'voter_id_number' => 'nullable|string|max:50',
+            'precinct_number' => 'nullable|string|max:20',
+            'senior_citizen' => 'boolean',
+            'senior_citizen_id' => 'nullable|string|max:50',
+            'person_with_disability' => 'boolean',
+            'pwd_id' => 'nullable|string|max:50',
+            'indigenous_people' => 'boolean',
+            'tribe_ethnicity' => 'nullable|string|max:100',
+            'four_ps_beneficiary' => 'boolean',
+            'four_ps_id' => 'nullable|string|max:50',
+            'philhealth_member' => 'boolean',
+            'philhealth_id' => 'nullable|string|max:50',
+            'sss_member' => 'boolean',
+            'sss_id' => 'nullable|string|max:50',
+            'tin_number' => 'nullable|string|max:20',
+            'blood_type' => 'nullable|string|in:' . implode(',', self::BLOOD_TYPES),
+            'height_cm' => 'nullable|numeric|min:0|max:300',
+            'weight_kg' => 'nullable|numeric|min:0|max:500',
+            'medical_conditions' => 'nullable|string|max:1000',
+            'allergies' => 'nullable|string|max:1000',
+            'medications' => 'nullable|string|max:1000',
+        ];
+    }
+
+    /**
+     * Get validation rules for creating residents (alias method)
+     */
+    public static function getCreateValidationRules(): array
+    {
+        return self::getCreateRules();
+    }
+
+    /**
+     * Get validation rules for updating residents (alias method)
+     */
+    public static function getUpdateValidationRules(): array
+    {
+        return self::getUpdateRules();
     }
 
     /**

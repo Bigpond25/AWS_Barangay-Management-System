@@ -266,17 +266,8 @@ const HouseholdManagement: React.FC = () => {
         <div className="p-6 border-b border-gray-200">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-darktext border-l-4 border-smblue-400 pl-4">
-              Households ({filteredHouseholds.length})
+              {t('households.title')}
             </h3>
-            
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleRefresh}
-                className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
-              >
-                Refresh
-              </button>
-            </div>
           </div>
 
           {/* Enhanced Search */}

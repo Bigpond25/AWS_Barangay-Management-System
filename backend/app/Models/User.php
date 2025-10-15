@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Schemas\UserSchema;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,14 +20,48 @@ class User extends Authenticatable
     public $incrementing = false;
 
     /**
-     * Get fillable fields from schema
+     * The attributes that are mass assignable.
      */
-    protected $fillable;
+    protected $fillable = [
+        'username',
+        'email',
+        'password',
+        'first_name',
+        'last_name',
+        'middle_name',
+        'suffix',
+        'role',
+        'department',
+        'position',
+        'employee_id',
+        'contact_number',
+        'address',
+        'emergency_contact_name',
+        'emergency_contact_number',
+        'profile_photo',
+        'digital_signature',
+        'is_active',
+        'is_verified',
+        'status',
+        'last_login_at',
+        'notes',
+        'resident_id',
+        'created_by',
+        'updated_by',
+    ];
     
     /**
-     * Get casts from schema
+     * The attributes that should be cast.
      */
-    protected $casts;
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'is_active' => 'boolean',
+        'is_verified' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -61,24 +94,118 @@ class User extends Authenticatable
         'can_generate_reports'
     ];
 
-    public function __construct(array $attributes = [])
+    /**
+     * User role constants
+     */
+    const ROLES = [
+        'SUPER_ADMIN',
+        'ADMIN',
+        'BARANGAY_CAPTAIN',
+        'BARANGAY_SECRETARY',
+        'BARANGAY_TREASURER',
+        'BARANGAY_COUNCILOR',
+        'BARANGAY_CLERK',
+        'HEALTH_WORKER',
+        'SOCIAL_WORKER',
+        'SECURITY_OFFICER',
+        'DATA_ENCODER',
+        'VIEWER'
+    ];
+
+    /**
+     * Department constants
+     */
+    const DEPARTMENTS = [
+        'ADMINISTRATION',
+        'HEALTH_SERVICES',
+        'SOCIAL_SERVICES',
+        'SECURITY_PUBLIC_SAFETY',
+        'FINANCE_TREASURY',
+        'RECORDS_MANAGEMENT',
+        'COMMUNITY_DEVELOPMENT',
+        'DISASTER_RISK_REDUCTION',
+        'ENVIRONMENTAL_MANAGEMENT',
+        'YOUTH_SPORTS_DEVELOPMENT',
+        'SENIOR_CITIZEN_AFFAIRS',
+        'WOMENS_AFFAIRS',
+        'BUSINESS_PERMITS',
+        'INFRASTRUCTURE_DEVELOPMENT'
+    ];
+
+    /**
+     * User status constants
+     */
+    const STATUSES = [
+        'ACTIVE',
+        'INACTIVE',
+        'SUSPENDED',
+        'PENDING_VERIFICATION'
+    ];
+
+    /**
+     * Get the validation rules for creating a new user
+     */
+    public static function getCreateRules(): array
     {
-        // Set fillable and casts from schema
-        $this->fillable = UserSchema::getFillableFields();
-        $this->casts = array_merge(
-            UserSchema::getCasts(),
-            [
-                'email_verified_at' => 'datetime',
-                'last_login_at' => 'datetime',
-                'is_active' => 'boolean',
-                'is_verified' => 'boolean',
-                'created_at' => 'datetime',
-                'updated_at' => 'datetime',
-                'password' => 'hashed',
-            ]
-        );
-        
-        parent::__construct($attributes);
+        return [
+            'username' => 'required|string|max:50|unique:users,username|regex:/^[a-zA-Z0-9_]+$/',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/',
+            'first_name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
+            'middle_name' => 'nullable|string|max:50',
+            'suffix' => 'nullable|string|max:10',
+            'role' => 'required|in:SUPER_ADMIN,ADMIN,BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,BARANGAY_COUNCILOR,BARANGAY_CLERK,HEALTH_WORKER,SOCIAL_WORKER,SECURITY_OFFICER,DATA_ENCODER,VIEWER',
+            'department' => 'nullable|in:ADMINISTRATION,HEALTH_SERVICES,SOCIAL_SERVICES,SECURITY_PUBLIC_SAFETY,FINANCE_TREASURY,RECORDS_MANAGEMENT,COMMUNITY_DEVELOPMENT,DISASTER_RISK_REDUCTION,ENVIRONMENTAL_MANAGEMENT,YOUTH_SPORTS_DEVELOPMENT,SENIOR_CITIZEN_AFFAIRS,WOMENS_AFFAIRS,BUSINESS_PERMITS,INFRASTRUCTURE_DEVELOPMENT',
+            'position' => 'nullable|string|max:100',
+            'employee_id' => 'nullable|string|max:50|unique:users,employee_id',
+            'contact_number' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'emergency_contact_name' => 'nullable|string|max:100',
+            'emergency_contact_number' => 'nullable|string|max:20',
+            'profile_photo' => 'nullable|string|max:255',
+            'digital_signature' => 'nullable|string|max:255',
+            'is_active' => 'nullable|boolean',
+            'is_verified' => 'nullable|boolean',
+            'status' => 'nullable|in:ACTIVE,INACTIVE,SUSPENDED,PENDING_VERIFICATION',
+            'notes' => 'nullable|string',
+            'resident_id' => 'nullable|exists:residents,id',
+            'created_by' => 'nullable|exists:users,id',
+            'updated_by' => 'nullable|exists:users,id',
+        ];
+    }
+
+    /**
+     * Get the validation rules for updating a user
+     */
+    public static function getUpdateRules($id = null): array
+    {
+        return [
+            'username' => 'sometimes|required|string|max:50|unique:users,username' . ($id ? ",$id" : '') . '|regex:/^[a-zA-Z0-9_]+$/',
+            'email' => 'sometimes|required|email|max:255|unique:users,email' . ($id ? ",$id" : ''),
+            'password' => 'nullable|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/',
+            'first_name' => 'sometimes|required|string|max:50',
+            'last_name' => 'sometimes|required|string|max:50',
+            'middle_name' => 'nullable|string|max:50',
+            'suffix' => 'nullable|string|max:10',
+            'role' => 'sometimes|required|in:SUPER_ADMIN,ADMIN,BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,BARANGAY_COUNCILOR,BARANGAY_CLERK,HEALTH_WORKER,SOCIAL_WORKER,SECURITY_OFFICER,DATA_ENCODER,VIEWER',
+            'department' => 'nullable|in:ADMINISTRATION,HEALTH_SERVICES,SOCIAL_SERVICES,SECURITY_PUBLIC_SAFETY,FINANCE_TREASURY,RECORDS_MANAGEMENT,COMMUNITY_DEVELOPMENT,DISASTER_RISK_REDUCTION,ENVIRONMENTAL_MANAGEMENT,YOUTH_SPORTS_DEVELOPMENT,SENIOR_CITIZEN_AFFAIRS,WOMENS_AFFAIRS,BUSINESS_PERMITS,INFRASTRUCTURE_DEVELOPMENT',
+            'position' => 'nullable|string|max:100',
+            'employee_id' => 'nullable|string|max:50|unique:users,employee_id' . ($id ? ",$id" : ''),
+            'contact_number' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'emergency_contact_name' => 'nullable|string|max:100',
+            'emergency_contact_number' => 'nullable|string|max:20',
+            'profile_photo' => 'nullable|string|max:255',
+            'digital_signature' => 'nullable|string|max:255',
+            'is_active' => 'nullable|boolean',
+            'is_verified' => 'nullable|boolean',
+            'status' => 'nullable|in:ACTIVE,INACTIVE,SUSPENDED,PENDING_VERIFICATION',
+            'notes' => 'nullable|string',
+            'resident_id' => 'nullable|exists:residents,id',
+            'created_by' => 'nullable|exists:users,id',
+            'updated_by' => 'nullable|exists:users,id',
+        ];
     }
 
     /**

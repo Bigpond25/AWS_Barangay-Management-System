@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Schemas\HouseholdSchema;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,14 +21,48 @@ class Household extends Model implements Auditable
     public $incrementing = false;
 
     /**
-     * Get fillable fields from schema
+     * The attributes that are mass assignable.
      */
-    protected $fillable;
+    protected $fillable = [
+        'household_number',
+        'household_type',
+        'head_resident_id',
+        'house_number',
+        'street_sitio',
+        'barangay',
+        'complete_address',
+        'monthly_income',
+        'primary_income_source',
+        'four_ps_beneficiary',
+        'indigent_family',
+        'has_senior_citizen',
+        'has_pwd_member',
+        'house_type',
+        'ownership_status',
+        'has_electricity',
+        'has_water_supply',
+        'has_internet_access',
+        'status',
+        'remarks',
+        'created_by',
+        'updated_by',
+    ];
     
     /**
-     * Get casts from schema
+     * The attributes that should be cast.
      */
-    protected $casts;
+    protected $casts = [
+        'id' => 'string',
+        'four_ps_beneficiary' => 'boolean',
+        'indigent_family' => 'boolean',
+        'has_senior_citizen' => 'boolean',
+        'has_pwd_member' => 'boolean',
+        'has_electricity' => 'boolean',
+        'has_water_supply' => 'boolean',
+        'has_internet_access' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
     
     /**
      * The attributes that should be hidden for serialization.
@@ -46,17 +79,124 @@ class Household extends Model implements Auditable
         'member_count',
         'has_head_resident',
     ];
+
+    /**
+     * Constants for household types
+     */
+    const HOUSEHOLD_TYPES = ['NUCLEAR', 'EXTENDED', 'SINGLE', 'SINGLE_PARENT', 'OTHER'];
     
-    public function __construct(array $attributes = [])
+    /**
+     * Constants for income ranges
+     */
+    const INCOME_RANGES = ['BELOW_10000', 'RANGE_10000_25000', 'RANGE_25000_50000', 'RANGE_50000_100000', 'ABOVE_100000'];
+    
+    /**
+     * Constants for house types
+     */
+    const HOUSE_TYPES = ['CONCRETE', 'SEMI_CONCRETE', 'WOOD', 'BAMBOO', 'MIXED'];
+    
+    /**
+     * Constants for ownership status
+     */
+    const OWNERSHIP_STATUS = ['OWNED', 'RENTED', 'SHARED', 'INFORMAL_SETTLER'];
+    
+    /**
+     * Constants for status
+     */
+    const STATUS_OPTIONS = ['ACTIVE', 'INACTIVE', 'TRANSFERRED'];
+    
+    /**
+     * Constants for relationship types
+     */
+    const RELATIONSHIP_TYPES = [
+        'HEAD', 'SPOUSE', 'SON', 'DAUGHTER', 'FATHER', 'MOTHER',
+        'BROTHER', 'SISTER', 'GRANDFATHER', 'GRANDMOTHER', 'GRANDSON',
+        'GRANDDAUGHTER', 'UNCLE', 'AUNT', 'NEPHEW', 'NIECE', 'COUSIN',
+        'IN_LAW', 'BOARDER', 'OTHER'
+    ];
+
+    /**
+     * Get the validation rules for creating a new household
+     */
+    public static function getCreateRules(): array
     {
-        // Set fillable and casts from schema
-        $this->fillable = HouseholdSchema::getFillableFields();
-        $this->casts = array_merge([
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ], HouseholdSchema::getCasts());
-        
-        parent::__construct($attributes);
+        return [
+            'household_number' => 'required|string|max:50|unique:households,household_number',
+            'household_type' => 'required|in:NUCLEAR,EXTENDED,SINGLE,SINGLE_PARENT,OTHER',
+            'head_resident_id' => 'nullable|exists:residents,id',
+            'house_number' => 'required|string|max:50',
+            'street_sitio' => 'required|string|max:100',
+            'barangay' => 'required|string|max:100',
+            'complete_address' => 'required|string',
+            'monthly_income' => 'nullable|in:BELOW_10000,RANGE_10000_25000,RANGE_25000_50000,RANGE_50000_100000,ABOVE_100000',
+            'primary_income_source' => 'nullable|string|max:255',
+            'four_ps_beneficiary' => 'nullable|boolean',
+            'indigent_family' => 'nullable|boolean',
+            'has_senior_citizen' => 'nullable|boolean',
+            'has_pwd_member' => 'nullable|boolean',
+            'house_type' => 'nullable|in:CONCRETE,SEMI_CONCRETE,WOOD,BAMBOO,MIXED',
+            'ownership_status' => 'nullable|in:OWNED,RENTED,SHARED,INFORMAL_SETTLER',
+            'has_electricity' => 'nullable|boolean',
+            'has_water_supply' => 'nullable|boolean',
+            'has_internet_access' => 'nullable|boolean',
+            'status' => 'nullable|in:ACTIVE,INACTIVE,TRANSFERRED',
+            'remarks' => 'nullable|string',
+            'created_by' => 'nullable|exists:users,id',
+            'updated_by' => 'nullable|exists:users,id',
+        ];
+    }
+
+    /**
+     * Get the validation rules for updating a household
+     */
+    public static function getUpdateRules($id = null): array
+    {
+        return [
+            'household_number' => 'sometimes|required|string|max:50|unique:households,household_number' . ($id ? ",$id" : ''),
+            'household_type' => 'sometimes|required|in:NUCLEAR,EXTENDED,SINGLE,SINGLE_PARENT,OTHER',
+            'head_resident_id' => 'nullable|exists:residents,id',
+            'house_number' => 'sometimes|required|string|max:50',
+            'street_sitio' => 'sometimes|required|string|max:100',
+            'barangay' => 'sometimes|required|string|max:100',
+            'complete_address' => 'sometimes|required|string',
+            'monthly_income' => 'nullable|in:BELOW_10000,RANGE_10000_25000,RANGE_25000_50000,RANGE_50000_100000,ABOVE_100000',
+            'primary_income_source' => 'nullable|string|max:255',
+            'four_ps_beneficiary' => 'nullable|boolean',
+            'indigent_family' => 'nullable|boolean',
+            'has_senior_citizen' => 'nullable|boolean',
+            'has_pwd_member' => 'nullable|boolean',
+            'house_type' => 'nullable|in:CONCRETE,SEMI_CONCRETE,WOOD,BAMBOO,MIXED',
+            'ownership_status' => 'nullable|in:OWNED,RENTED,SHARED,INFORMAL_SETTLER',
+            'has_electricity' => 'nullable|boolean',
+            'has_water_supply' => 'nullable|boolean',
+            'has_internet_access' => 'nullable|boolean',
+            'status' => 'nullable|in:ACTIVE,INACTIVE,TRANSFERRED',
+            'remarks' => 'nullable|string',
+            'created_by' => 'nullable|exists:users,id',
+            'updated_by' => 'nullable|exists:users,id',
+        ];
+    }
+
+    /**
+     * Get validation rules for member relationships
+     */
+    public static function getMemberValidationRules(): array
+    {
+        return [
+            'member_ids' => 'nullable|array',
+            'member_ids.*.resident_id' => [
+                'required',
+                'string',
+                'exists:residents,id',
+                function ($attribute, $value, $fail) {
+                    $headResidentId = request()->input('head_resident_id');
+                    if ($headResidentId && $value === $headResidentId) {
+                        $fail('A resident cannot be both household head and a member.');
+                    }
+                },
+            ],
+            'member_ids.*.relationship' => 'required|string|in:HEAD,SPOUSE,SON,DAUGHTER,FATHER,MOTHER,BROTHER,SISTER,GRANDFATHER,GRANDMOTHER,GRANDSON,GRANDDAUGHTER,UNCLE,AUNT,NEPHEW,NIECE,COUSIN,IN_LAW,BOARDER,OTHER',
+        ];
     }
 
     /**

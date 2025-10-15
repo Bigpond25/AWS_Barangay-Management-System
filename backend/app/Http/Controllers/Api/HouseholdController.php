@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Household;
-use App\Models\Schemas\HouseholdSchema;
+
 use App\Models\Resident;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -161,11 +161,11 @@ class HouseholdController extends Controller
             Log::info("Household creation request received", ['request_data' => $request->all()]);
             
             // Use validation rules from schema
-            $validated = $request->validate(HouseholdSchema::getCreateValidationRules());
+            $validated = $request->validate(Household::getCreateRules());
             
             // Validate member relationships if provided
             if ($request->has('member_ids')) {
-                $memberValidationRules = HouseholdSchema::getMemberValidationRules();
+                $memberValidationRules = Household::getMemberValidationRules();
                 $request->validate($memberValidationRules);
             }
 
@@ -360,11 +360,11 @@ class HouseholdController extends Controller
     {
         try {
             // Use validation rules from schema for updates
-            $validated = $request->validate(HouseholdSchema::getUpdateValidationRules());
+            $validated = $request->validate(Household::getUpdateRules());
             
             // Validate member relationships if provided
             if ($request->has('member_ids')) {
-                $memberValidationRules = HouseholdSchema::getMemberValidationRules();
+                $memberValidationRules = Household::getMemberValidationRules();
                 $request->validate($memberValidationRules);
             }
 

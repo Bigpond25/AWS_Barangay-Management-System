@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Support\Str;
 
 class Setting extends Model
 {
+    use HasUuids;
     protected $fillable = [
         // General Information
         'barangay',
@@ -47,23 +49,24 @@ class Setting extends Model
         $settings = static::first();
         
         if (!$settings) {
-            // Use firstOrCreate to prevent race conditions
-            $settings = static::firstOrCreate(
-                ['id' => 1], // Ensure only one record with ID 1
-                [
-                    'system_name' => 'Barangay Management System',
-                    'version_number' => '1.0.0',
-                    'primary_language' => 'Filipino',
-                    'secondary_language' => 'English',
-                    'opening_hours' => '8:00 AM',
-                    'closing_hours' => '5:00 PM',
-                    'type' => 'Urban',
-                    'session_timeout' => 30,
-                    'max_login_attempts' => 3,
-                    'data_retention' => 7,
-                    'backup_frequency' => 'Daily',
-                ]
-            );
+            // Create the first settings record with default values
+            $settings = new static([
+                'system_name' => 'Barangay Management System',
+                'version_number' => '1.0.0',
+                'primary_language' => 'Filipino',
+                'secondary_language' => 'English',
+                'opening_hours' => '8:00 AM',
+                'closing_hours' => '5:00 PM',
+                'type' => 'Urban',
+                'session_timeout' => 30,
+                'max_login_attempts' => 3,
+                'data_retention' => 7,
+                'backup_frequency' => 'Daily',
+            ]);
+            
+            // Generate UUID manually if needed
+            $settings->id = (string) Str::uuid();
+            $settings->save();
         }
         
         return $settings;

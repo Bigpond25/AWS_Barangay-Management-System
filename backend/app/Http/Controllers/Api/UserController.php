@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserActivity;
 use App\Models\UserSession;
-use App\Models\Schemas\UserSchema;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -19,8 +19,8 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\UsersExport;
-use App\Imports\UsersImport;
+use App\Exports\UserExport;
+use App\Imports\UserImport;
 
 class UserController extends Controller
 {
@@ -110,7 +110,7 @@ class UserController extends Controller
             DB::beginTransaction();
 
             // Get validation rules from schema
-            $rules = UserSchema::getCreateValidationRules();
+            $rules = User::getCreateRules();
             $rules['confirm_password'] = 'required|same:password';
             
             $validatedData = $request->validate($rules);
@@ -236,7 +236,7 @@ class UserController extends Controller
             $user = User::findOrFail($id);
 
             // Get validation rules from schema for updates
-            $rules = UserSchema::getUpdateValidationRules();
+            $rules = User::getUpdateRules();
             
             // Handle unique validation for current user
             if (isset($rules['username'])) {
@@ -1195,7 +1195,10 @@ class UserController extends Controller
                     $q->where('first_name', 'like', "%{$search}%")
                       ->orWhere('last_name', 'like', "%{$search}%")
                       ->orWhere('username', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('employee_id', 'like', "%{$search}%")
+                      ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
+                      ->orWhereRaw("CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) LIKE ?", ["%{$search}%"]);
                 });
             }
 
@@ -1208,11 +1211,20 @@ class UserController extends Controller
             ]);
 
             $fileName = 'users_export_' . now()->format('Y-m-d_H-i-s');
+            $exportData = new UserExport($users);
 
             if ($format === 'excel') {
-                return Excel::download(new UsersExport($users), $fileName . '.xlsx');
+                return Excel::create($fileName, function($excel) use ($exportData) {
+                    $excel->sheet('Users', function($sheet) use ($exportData) {
+                        $sheet->fromArray($exportData->toArray(), null, 'A1', false, false);
+                    });
+                })->download('xlsx');
             } else {
-                return Excel::download(new UsersExport($users), $fileName . '.csv');
+                return Excel::create($fileName, function($excel) use ($exportData) {
+                    $excel->sheet('Users', function($sheet) use ($exportData) {
+                        $sheet->fromArray($exportData->toArray(), null, 'A1', false, false);
+                    });
+                })->download('csv');
             }
 
         } catch (\Exception $e) {
@@ -1239,8 +1251,12 @@ class UserController extends Controller
             $file = $request->file('file');
             $options = json_decode($request->options ?? '{}', true);
 
-            $import = new UsersImport($options);
-            Excel::import($import, $file);
+            $import = new UserImport($options);
+            
+            Excel::load($file->getRealPath(), function($reader) use ($import) {
+                $results = $reader->get();
+                $import->collection($results);
+            });
 
             $results = $import->getResults();
 

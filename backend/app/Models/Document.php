@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Schemas\DocumentSchema;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -20,7 +19,7 @@ class Document extends Model implements Auditable
     public $incrementing = false;
 
     /**
-     * Cached schema data for performance
+     * Cached data for performance
      */
     private static $cachedDocumentTypes = null;
     private static $cachedPriorityOptions = null;
@@ -28,42 +27,322 @@ class Document extends Model implements Auditable
     private static $cachedPaymentStatusOptions = null;
 
     /**
-     * Cached fillable fields from schema
+     * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'type', 'resident_id', 'applicant_name', 'purpose', 'applicant_address', 
-        'applicant_contact', 'applicant_email', 'priority', 'needed_date', 'processing_fee',
-        'status', 'payment_status', 'document_number', 'serial_number', 'submitted_at',
-        'processed_at', 'approved_at', 'released_at', 'clearance_purpose', 'clearance_type',
-        'business_name', 'business_type', 'business_address', 'business_owner', 
-        'business_category', 'indigency_reason', 'family_monthly_income', 'family_size',
-        'residency_period', 'previous_address', 'requirements_submitted', 'notes',
-        'remarks', 'certifying_official', 'file_path', 'file_bucket', 'file_storage_path',
-        'file_storage_provider', 'file_migrated_to_supabase', 'processed_by', 'approved_by',
-        'released_by', 'created_by', 'updated_by', 'received_from', 'representing_entity',
-        'acknowledgement_address', 'bond_amount', 'expiry_date', 'sign_wordings', 
-        'sign_material', 'sign_size', 'case_number', 'hearing_date', 'hearing_time',
-        'hearing_type', 'complainant_name', 'complainant_address', 'respondent_name',
-        'respondent_address', 'case_description', 'date_approved', 'last_compliance', 'retirement_date'
+        // Basic Document Information
+        'type',
+        'resident_id',
+        'applicant_name',
+        'purpose',
+        'applicant_address',
+        'applicant_contact',
+        'applicant_email',
+        'priority',
+        'needed_date',
+        'processing_fee',
+        'status',
+        'payment_status',
+        'document_number',
+        'serial_number',
+        'submitted_at',
+        'processed_at',
+        'approved_at',
+        'released_at',
+        
+        // Document Specific Fields
+        'clearance_purpose',
+        'clearance_type',
+        'date_approved',
+        'last_compliance',
+        'business_name',
+        'business_type',
+        'business_address',
+        'business_owner',
+        'business_category',
+        'indigency_reason',
+        'monthly_income',
+        'family_monthly_income',
+        'family_size',
+        'residency_period',
+        'previous_address',
+        'ownership_type',
+        'retirement_date',
+        'sign_wordings',
+        'sign_material',
+        'sign_size',
+        'case_number',
+        'case_title',
+        'case_description',
+        'complainant_name',
+        'complainant_address',
+        'respondent_name',
+        'respondent_address',
+        'hearing_date',
+        'hearing_time',
+        'hearing_type',
+        'received_from',
+        'bond_amount',
+        'representing_entity',
+        'acknowledgement_address',
+        'barangay_case',
+        'summon_date',
+        'summon_time',
+        'summon_address',
+        'to',
+        'for',
+        
+        // Processing Information
+        'requirements_submitted',
+        'notes',
+        'remarks',
+        'certifying_official',
+        'processed_by',
+        'approved_by',
+        'released_by',
+        'created_by',
+        'updated_by',
+        'expiry_date',
+        
+        // Legacy fields
+        'file_path',
+        'file_bucket',
+        'file_storage_path',
+        'file_storage_provider',
+        'file_migrated_to_supabase',
     ];
 
     /**
-     * Cached casts from schema
+     * The attributes that should be cast.
      */
     protected $casts = [
-        'needed_date' => 'date',
+        'needed_date' => 'datetime',
         'submitted_at' => 'datetime',
         'processed_at' => 'datetime', 
         'approved_at' => 'datetime',
         'released_at' => 'datetime',
-        'expiry_date' => 'date',
+        'expiry_date' => 'datetime',
+        'hearing_date' => 'datetime',
+        'date_approved' => 'datetime',
+        'last_compliance' => 'datetime',
+        'retirement_date' => 'datetime',
         'processing_fee' => 'decimal:2',
         'family_monthly_income' => 'decimal:2',
+        'monthly_income' => 'decimal:2',
         'bond_amount' => 'decimal:2',
         'family_size' => 'integer',
         'file_migrated_to_supabase' => 'boolean',
-        'requirements_submitted' => 'array'
+        'requirements_submitted' => 'array',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
+
+    /**
+     * Document type constants and mappings
+     */
+    const DOCUMENT_TYPES = [
+        'BARANGAY_CLEARANCE' => 'Barangay Clearance',
+        'CERTIFICATE_OF_RESIDENCY' => 'Certificate of Residency',
+        'CERTIFICATE_OF_INDIGENCY' => 'Certificate of Indigency',
+        'BUSINESS_PERMIT' => 'Business Permit',
+        'BUSINESS_SIGN_CLEARANCE' => 'Business Sign Clearance',
+        'BUILDING_PERMIT' => 'Building Permit',
+        'FIRST_TIME_JOB_SEEKER' => 'First Time Job Seeker',
+        'SENIOR_CITIZEN_ID' => 'Senior Citizen ID',
+        'PWD_ID' => 'PWD ID',
+        'BARANGAY_ID' => 'Barangay ID',
+        'RETIREMENT_CESSATION_DISSOLUTION' => 'Retirement/Cessation/Dissolution',
+        'NOTICE_OF_HEARING' => 'Notice of Hearing',
+        'CASH_BOND' => 'Cash Bond',
+        'SUMMON' => 'Summon',
+        'BARANGAY_CLEARANCE_INSTALLATION' => 'Barangay Clearance Installation',
+        'OTHERS' => 'Others',
+    ];
+
+    /**
+     * Priority options
+     */
+    const PRIORITY_OPTIONS = [
+        'LOW' => 'Low',
+        'NORMAL' => 'Normal',
+        'HIGH' => 'High',
+        'URGENT' => 'Urgent',
+    ];
+
+    /**
+     * Status options
+     */
+    const STATUS_OPTIONS = [
+        'PENDING' => 'Pending',
+        'PROCESSING' => 'Processing',
+        'APPROVED' => 'Approved',
+        'RELEASED' => 'Released',
+        'REJECTED' => 'Rejected',
+        'CANCELLED' => 'Cancelled',
+    ];
+
+    /**
+     * Payment status options
+     */
+    const PAYMENT_STATUS_OPTIONS = [
+        'UNPAID' => 'Unpaid',
+        'PAID' => 'Paid',
+        'WAIVED' => 'Waived',
+    ];
+
+    /**
+     * Get the validation rules for creating a new document
+     */
+    public static function getCreateRules(): array
+    {
+        return [
+            'type' => 'required|string|max:255',
+            'resident_id' => 'required|exists:residents,id',
+            'applicant_name' => 'required|string|max:255',
+            'purpose' => 'required|string',
+            'applicant_address' => 'nullable|string',
+            'applicant_contact' => 'nullable|string|max:20',
+            'applicant_email' => 'nullable|email|max:255',
+            'priority' => 'nullable|string|max:50',
+            'needed_date' => 'nullable|date',
+            'processing_fee' => 'nullable|numeric|min:0',
+            'status' => 'nullable|string|max:50',
+            'payment_status' => 'nullable|string|max:50',
+            'document_number' => 'nullable|string|max:255|unique:documents,document_number',
+            'serial_number' => 'nullable|string|max:255|unique:documents,serial_number',
+            'submitted_at' => 'nullable|date',
+            'processed_at' => 'nullable|date',
+            'approved_at' => 'nullable|date',
+            'released_at' => 'nullable|date',
+            'clearance_purpose' => 'nullable|string|max:255',
+            'clearance_type' => 'nullable|string|max:255',
+            'date_approved' => 'nullable|date',
+            'last_compliance' => 'nullable|date',
+            'business_name' => 'nullable|string|max:255',
+            'business_type' => 'nullable|string|max:255',
+            'business_address' => 'nullable|string',
+            'business_owner' => 'nullable|string|max:255',
+            'business_category' => 'nullable|string|max:255',
+            'indigency_reason' => 'nullable|string',
+            'monthly_income' => 'nullable|numeric|min:0',
+            'family_monthly_income' => 'nullable|numeric|min:0',
+            'family_size' => 'nullable|integer|min:0',
+            'residency_period' => 'nullable|string|max:255',
+            'previous_address' => 'nullable|string',
+            'ownership_type' => 'nullable|string|max:255',
+            'retirement_date' => 'nullable|date',
+            'sign_wordings' => 'nullable|string|max:255',
+            'sign_material' => 'nullable|string|max:255',
+            'sign_size' => 'nullable|string|max:255',
+            'case_number' => 'nullable|string|max:255',
+            'case_title' => 'nullable|string|max:255',
+            'case_description' => 'nullable|string',
+            'complainant_name' => 'nullable|string|max:255',
+            'complainant_address' => 'nullable|string',
+            'respondent_name' => 'nullable|string|max:255',
+            'respondent_address' => 'nullable|string',
+            'hearing_date' => 'nullable|date',
+            'hearing_time' => 'nullable|string|max:50',
+            'hearing_type' => 'nullable|string|max:255',
+            'received_from' => 'nullable|string|max:255',
+            'bond_amount' => 'nullable|numeric|min:0',
+            'representing_entity' => 'nullable|string|max:255',
+            'acknowledgement_address' => 'nullable|string|max:255',
+            'barangay_case' => 'nullable|string|max:255',
+            'summon_date' => 'nullable|string|max:255',
+            'summon_time' => 'nullable|string|max:255',
+            'summon_address' => 'nullable|string|max:255',
+            'to' => 'nullable|string|max:255',
+            'for' => 'nullable|string|max:255',
+            'requirements_submitted' => 'nullable|array',
+            'notes' => 'nullable|string',
+            'remarks' => 'nullable|string',
+            'certifying_official' => 'nullable|string|max:255',
+            'processed_by' => 'nullable|exists:users,id',
+            'approved_by' => 'nullable|exists:users,id',
+            'released_by' => 'nullable|exists:users,id',
+            'created_by' => 'nullable|exists:users,id',
+            'updated_by' => 'nullable|exists:users,id',
+            'expiry_date' => 'nullable|date',
+        ];
+    }
+
+    /**
+     * Get the validation rules for updating a document
+     */
+    public static function getUpdateRules(): array
+    {
+        return [
+            'type' => 'sometimes|required|string|max:255',
+            'resident_id' => 'sometimes|required|exists:residents,id',
+            'applicant_name' => 'sometimes|required|string|max:255',
+            'purpose' => 'sometimes|required|string',
+            'applicant_address' => 'nullable|string',
+            'applicant_contact' => 'nullable|string|max:20',
+            'applicant_email' => 'nullable|email|max:255',
+            'priority' => 'nullable|string|max:50',
+            'needed_date' => 'nullable|date',
+            'processing_fee' => 'nullable|numeric|min:0',
+            'status' => 'nullable|string|max:50',
+            'payment_status' => 'nullable|string|max:50',
+            'document_number' => 'nullable|string|max:255|unique:documents,document_number,{id}',
+            'serial_number' => 'nullable|string|max:255|unique:documents,serial_number,{id}',
+            'submitted_at' => 'nullable|date',
+            'processed_at' => 'nullable|date',
+            'approved_at' => 'nullable|date',
+            'released_at' => 'nullable|date',
+            'clearance_purpose' => 'nullable|string|max:255',
+            'clearance_type' => 'nullable|string|max:255',
+            'date_approved' => 'nullable|date',
+            'last_compliance' => 'nullable|date',
+            'business_name' => 'nullable|string|max:255',
+            'business_type' => 'nullable|string|max:255',
+            'business_address' => 'nullable|string',
+            'business_owner' => 'nullable|string|max:255',
+            'business_category' => 'nullable|string|max:255',
+            'indigency_reason' => 'nullable|string',
+            'monthly_income' => 'nullable|numeric|min:0',
+            'family_monthly_income' => 'nullable|numeric|min:0',
+            'family_size' => 'nullable|integer|min:0',
+            'residency_period' => 'nullable|string|max:255',
+            'previous_address' => 'nullable|string',
+            'ownership_type' => 'nullable|string|max:255',
+            'retirement_date' => 'nullable|date',
+            'sign_wordings' => 'nullable|string|max:255',
+            'sign_material' => 'nullable|string|max:255',
+            'sign_size' => 'nullable|string|max:255',
+            'case_number' => 'nullable|string|max:255',
+            'case_title' => 'nullable|string|max:255',
+            'case_description' => 'nullable|string',
+            'complainant_name' => 'nullable|string|max:255',
+            'complainant_address' => 'nullable|string',
+            'respondent_name' => 'nullable|string|max:255',
+            'respondent_address' => 'nullable|string',
+            'hearing_date' => 'nullable|date',
+            'hearing_time' => 'nullable|string|max:50',
+            'hearing_type' => 'nullable|string|max:255',
+            'received_from' => 'nullable|string|max:255',
+            'bond_amount' => 'nullable|numeric|min:0',
+            'representing_entity' => 'nullable|string|max:255',
+            'acknowledgement_address' => 'nullable|string|max:255',
+            'barangay_case' => 'nullable|string|max:255',
+            'summon_date' => 'nullable|string|max:255',
+            'summon_time' => 'nullable|string|max:255',
+            'summon_address' => 'nullable|string|max:255',
+            'to' => 'nullable|string|max:255',
+            'for' => 'nullable|string|max:255',
+            'requirements_submitted' => 'nullable|array',
+            'notes' => 'nullable|string',
+            'remarks' => 'nullable|string',
+            'certifying_official' => 'nullable|string|max:255',
+            'processed_by' => 'nullable|exists:users,id',
+            'approved_by' => 'nullable|exists:users,id',
+            'released_by' => 'nullable|exists:users,id',
+            'created_by' => 'nullable|exists:users,id',
+            'updated_by' => 'nullable|exists:users,id',
+            'expiry_date' => 'nullable|date',
+        ];
+    }
 
     /**
      * Computed attributes with caching
@@ -71,7 +350,7 @@ class Document extends Model implements Auditable
     public function getDocumentTypeDisplayAttribute(): string
     {
         if (self::$cachedDocumentTypes === null) {
-            self::$cachedDocumentTypes = DocumentSchema::getDocumentTypes();
+            self::$cachedDocumentTypes = self::DOCUMENT_TYPES;
         }
         return self::$cachedDocumentTypes[$this->type] ?? $this->type;
     }
@@ -79,7 +358,7 @@ class Document extends Model implements Auditable
     public function getPriorityDisplayAttribute(): string
     {
         if (self::$cachedPriorityOptions === null) {
-            self::$cachedPriorityOptions = DocumentSchema::getPriorityOptions();
+            self::$cachedPriorityOptions = self::PRIORITY_OPTIONS;
         }
         return self::$cachedPriorityOptions[$this->priority] ?? ucfirst($this->priority);
     }
@@ -87,7 +366,7 @@ class Document extends Model implements Auditable
     public function getStatusDisplayAttribute(): string
     {
         if (self::$cachedStatusOptions === null) {
-            self::$cachedStatusOptions = DocumentSchema::getStatusOptions();
+            self::$cachedStatusOptions = self::STATUS_OPTIONS;
         }
         return self::$cachedStatusOptions[$this->status] ?? ucfirst($this->status);
     }
@@ -95,7 +374,7 @@ class Document extends Model implements Auditable
     public function getPaymentStatusDisplayAttribute(): string
     {
         if (self::$cachedPaymentStatusOptions === null) {
-            self::$cachedPaymentStatusOptions = DocumentSchema::getPaymentStatusOptions();
+            self::$cachedPaymentStatusOptions = self::PAYMENT_STATUS_OPTIONS;
         }
         return self::$cachedPaymentStatusOptions[$this->payment_status] ?? ucfirst($this->payment_status);
     }
