@@ -217,7 +217,7 @@ class ReportsController extends Controller
                 ->orderBy('street')
                 ->get();
 
-            $data = $streetData->map(function ($item) {
+            $data = $streetData->map(function (Resident $item) {
                 return [
                     'label' => $item->street ?: 'No Street Specified',
                     'value' => $item->total,
@@ -261,7 +261,7 @@ class ReportsController extends Controller
                 ->orderBy('total', 'desc')
                 ->get();
 
-            $data = $documentsData->map(function ($item) {
+            $data = $documentsData->map(function (Document $item) {
                 return [
                     'label' => $item->type,
                     'value' => $item->total,
@@ -313,7 +313,7 @@ class ReportsController extends Controller
             ->limit(5)
             ->get();
 
-            $data = $servicesData->map(function ($item) {
+            $data = $servicesData->map(function (Appointment $item) {
                 return [
                     'service' => $item->service ?? 'Unknown Service',
                     'requested' => $item->requested,

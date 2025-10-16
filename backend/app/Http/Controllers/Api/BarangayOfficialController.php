@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\BarangayOfficial;
 use App\Models\Resident;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -479,7 +480,7 @@ class BarangayOfficialController extends Controller
         $officials = $query->orderBy('position')->orderBy('created_at')->get();
 
         // Format data for export
-        $exportData = $officials->map(function ($official) {
+        $exportData = $officials->map(function (BarangayOfficial $official) {
             return [
                 'prefix' => $official->prefix,
                 'full_name' => $official->resident ? $official->resident->full_name : '',

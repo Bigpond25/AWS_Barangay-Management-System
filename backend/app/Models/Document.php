@@ -10,6 +10,25 @@ use Illuminate\Support\Facades\Auth;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * @property int|null $count Aggregated count field from queries
+ * @property int|null $total Aggregated total count from queries
+ * @property int|null $total_documents Aggregated total documents count
+ * @property int|null $pending_documents Aggregated pending documents count
+ * @property int|null $processing_documents Aggregated processing documents count
+ * @property int|null $completed_documents Aggregated completed documents count
+ * @property int|null $cancelled_documents Aggregated cancelled documents count
+ * @property int|null $approved_documents Aggregated approved documents count
+ * @property int|null $released_documents Aggregated released documents count
+ * @property int|null $rejected_documents Aggregated rejected documents count
+ * @property int|null $urgent_documents Aggregated urgent documents count
+ * @property float|null $total_processing_fees Aggregated total processing fees
+ * @property float|null $unpaid_fees Aggregated unpaid fees
+ * @property float|null $paid_fees Aggregated paid fees
+ * @property-read User|null $processedByUser User who processed the document
+ * @property-read User|null $approvedByUser User who approved the document
+ * @property-read User|null $releasedByUser User who released the document
+ */
 class Document extends Model implements Auditable
 {
     use HasFactory, HasUuids, \OwenIt\Auditing\Auditable;
@@ -335,7 +354,7 @@ class Document extends Model implements Auditable
         }
 
         $endDate = $this->released_at ?? now();
-        return $this->submitted_at->diffInDays($endDate);
+        return (int) $this->submitted_at->diffInDays($endDate);
     }
 
     public function getIsOverdueAttribute(): bool
@@ -641,7 +660,7 @@ class Document extends Model implements Auditable
     protected static function generateSerialNumber(): string
     {
         // OPTIMIZED: Use microtime for better uniqueness and performance
-        $timestamp = str_replace('.', '', microtime(true));
+        $timestamp = str_replace('.', '', (string) microtime(true));
         $random = strtoupper(Str::random(4));
 
         return 'SN-' . now()->format('Y') . '-' . substr($timestamp, -6) . $random;

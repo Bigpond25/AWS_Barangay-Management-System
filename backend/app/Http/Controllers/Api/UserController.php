@@ -345,7 +345,7 @@ class UserController extends Controller
             $user = User::findOrFail($id);
             
             // Prevent deletion of current user
-            if (Auth::check() && Auth::id() == $id) {
+            if (Auth::check() && Auth::id() === $id) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Cannot delete your own account'
@@ -561,7 +561,7 @@ class UserController extends Controller
             ]);
 
             // Prevent status change of current user
-            if (Auth::check() && Auth::id() == $id) {
+            if (Auth::check() && Auth::id() === $id) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Cannot change status of your own account'
@@ -1214,17 +1214,9 @@ class UserController extends Controller
             $exportData = new UserExport($users);
 
             if ($format === 'excel') {
-                return Excel::create($fileName, function($excel) use ($exportData) {
-                    $excel->sheet('Users', function($sheet) use ($exportData) {
-                        $sheet->fromArray($exportData->toArray(), null, 'A1', false, false);
-                    });
-                })->download('xlsx');
+                return Excel::download($exportData, $fileName . '.xlsx');
             } else {
-                return Excel::create($fileName, function($excel) use ($exportData) {
-                    $excel->sheet('Users', function($sheet) use ($exportData) {
-                        $sheet->fromArray($exportData->toArray(), null, 'A1', false, false);
-                    });
-                })->download('csv');
+                return Excel::download($exportData, $fileName . '.csv');
             }
 
         } catch (\Exception $e) {
@@ -1253,10 +1245,7 @@ class UserController extends Controller
 
             $import = new UserImport($options);
             
-            Excel::load($file->getRealPath(), function($reader) use ($import) {
-                $results = $reader->get();
-                $import->collection($results);
-            });
+            Excel::import($import, $file);
 
             $results = $import->getResults();
 
@@ -1298,7 +1287,7 @@ class UserController extends Controller
     /**
      * Log user activity.
      */
-    private function logUserActivity(int $userId, string $action, string $resource, ?int $resourceId = null, array $metadata = []): void
+    private function logUserActivity(int|string $userId, string $action, string $resource, int|string|null $resourceId = null, array $metadata = []): void
     {
         try {
             UserActivity::create([
@@ -1319,7 +1308,7 @@ class UserController extends Controller
     /**
      * Terminate all user sessions.
      */
-    private function terminateAllUserSessions(int $userId, bool $logActivity = true): int
+    private function terminateAllUserSessions(int|string $userId, bool $logActivity = true): int
     {
         try {
             $count = UserSession::where('user_id', $userId)->count();
@@ -1343,11 +1332,9 @@ class UserController extends Controller
      */
     private function sendUserCredentials(User $user, string $password): void
     {
-        try {
-            // Mail::to($user->email)->send(new UserCredentialsMail($user, $password));
-        } catch (\Exception $e) {
-            \Log::error('Failed to send user credentials email: ' . $e->getMessage());
-        }
+        // TODO: Implement email sending
+        // Mail::to($user->email)->send(new UserCredentialsMail($user, $password));
+        \Log::info('User credentials would be sent to: ' . $user->email);
     }
 
     /**
@@ -1355,10 +1342,8 @@ class UserController extends Controller
      */
     private function sendPasswordResetEmail(User $user, string $temporaryPassword): void
     {
-        try {
-            // Mail::to($user->email)->send(new PasswordResetMail($user, $temporaryPassword));
-        } catch (\Exception $e) {
-            \Log::error('Failed to send password reset email: ' . $e->getMessage());
-        }
+        // TODO: Implement email sending
+        // Mail::to($user->email)->send(new PasswordResetMail($user, $temporaryPassword));
+        \Log::info('Password reset email would be sent to: ' . $user->email);
     }
 }

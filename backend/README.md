@@ -7,6 +7,23 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Code Quality
+
+This project uses PHPStan, PHP CS Fixer, and PHP Insights for code quality:
+
+```bash
+# Run static analysis
+composer analyse
+
+# Format code
+composer format
+
+# Check code quality metrics
+composer insights
+```
+
+See [../LINTING_SETUP.md](../LINTING_SETUP.md) for complete documentation.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

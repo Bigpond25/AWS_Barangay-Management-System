@@ -6,7 +6,6 @@
  * Laravel configuration file - env() and database_path() functions are available
  * in Laravel's configuration context. IDE warnings for these functions are false positives.
  * 
- * @phpstan-ignore-next-line
  * @psalm-suppress UndefinedFunction
  */
 

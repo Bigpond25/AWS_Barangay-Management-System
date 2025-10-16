@@ -11,6 +11,9 @@ use Carbon\Carbon;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property float|null $weight_percentage Milestone weight percentage for calculations
+ */
 class ProjectMilestone extends Model implements Auditable
 {
     use HasFactory, HasUuids, \OwenIt\Auditing\Auditable;
@@ -158,7 +161,7 @@ class ProjectMilestone extends Model implements Auditable
         ]);
     }
 
-    public function complete(string $notes = null, int $qualityScore = null): void
+    public function complete(?string $notes = null, ?int $qualityScore = null): void
     {
         $this->update([
             'status' => 'COMPLETED',
@@ -172,7 +175,7 @@ class ProjectMilestone extends Model implements Auditable
         $this->updateProjectProgress();
     }
 
-    public function markAsDelayed(string $reason = null): void
+    public function markAsDelayed(?string $reason = null): void
     {
         $this->update([
             'status' => 'DELAYED',
@@ -198,7 +201,7 @@ class ProjectMilestone extends Model implements Auditable
 
         if ($percentage >= 100 && $this->status !== 'COMPLETED') {
             $this->complete();
-        } elseif ($percentage > 0 && $this->status === 'PENDING') {
+        } elseif ($percentage > 0 && $this->status !== 'IN_PROGRESS') {
             $this->start();
         }
 
@@ -206,7 +209,7 @@ class ProjectMilestone extends Model implements Auditable
         $this->updateProjectProgress();
     }
 
-    public function assignResponsible(int $userId, string $team = null): void
+    public function assignResponsible(int $userId, ?string $team = null): void
     {
         $this->update([
             'responsible_user_id' => $userId,
@@ -214,7 +217,7 @@ class ProjectMilestone extends Model implements Auditable
         ]);
     }
 
-    public function updateBudget(float $allocatedBudget, float $actualCost = null): void
+    public function updateBudget(float $allocatedBudget, ?float $actualCost = null): void
     {
         $this->update([
             'allocated_budget' => $allocatedBudget,
@@ -222,7 +225,7 @@ class ProjectMilestone extends Model implements Auditable
         ]);
     }
 
-    public function reschedule(Carbon $newTargetDate, string $reason = null): void
+    public function reschedule(Carbon $newTargetDate, ?string $reason = null): void
     {
         $this->update([
             'target_date' => $newTargetDate,
@@ -319,19 +322,21 @@ class ProjectMilestone extends Model implements Auditable
     private function updateProjectProgress(): void
     {
         // Calculate weighted progress for the project
+        /** @var Project $project */
         $project = $this->project;
         $milestones = $project->milestones;
         
         $totalWeight = $milestones->sum('weight_percentage');
         
         if ($totalWeight > 0) {
-            $weightedProgress = $milestones->sum(function ($milestone) {
+            /** @phpstan-ignore-next-line - Type hint is correct but more specific than PHPStan expects */
+            $weightedProgress = $milestones->sum(function (ProjectMilestone $milestone) {
                 return ($milestone->progress_percentage * $milestone->weight_percentage) / 100;
             });
             
             $projectProgress = ($weightedProgress / $totalWeight) * 100;
             
-            $project->updateProgress(round($projectProgress));
+            $project->updateProgress((int) round($projectProgress));
         }
     }
 

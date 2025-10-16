@@ -88,7 +88,6 @@ class User extends Authenticatable
         'department_display',
         'is_user_active',
         'has_logged_in',
-        'is_barangay_official',
         'can_manage_residents',
         'can_manage_users',
         'can_generate_reports'
@@ -288,7 +287,7 @@ class User extends Authenticatable
             'VIEWER' => 'Viewer',
         ];
 
-        return $roleMap[$this->role] ?? 'Viewer';
+        return $roleMap[$this->role];
     }
 
     public function getDepartmentDisplayAttribute(): string
@@ -307,10 +306,10 @@ class User extends Authenticatable
             'SENIOR_CITIZEN_AFFAIRS' => 'Senior Citizen Affairs',
             'WOMENS_AFFAIRS' => "Women's Affairs",
             'BUSINESS_PERMITS' => 'Business Permits',
-            'INFRASTRUCTURE_DEVELOPMENT' => 'Infrastructure Development',
+            'INFRASTRUCTURE_PROJECTS' => 'Infrastructure Projects',
         ];
 
-        return $departmentMap[$this->department] ?? 'Administration';
+        return $departmentMap[$this->department] ?? 'Not Assigned';
     }
 
     public function getIsUserActiveAttribute(): bool
@@ -424,9 +423,11 @@ class User extends Authenticatable
 
     /**
      * Get the current active barangay official record for this user
+     * @return BarangayOfficial|null
      */
     public function currentOfficialPosition(): ?BarangayOfficial
     {
+        /** @var BarangayOfficial|null */
         return $this->barangayOfficials()
             ->where('status', 'ACTIVE')
             ->where('is_current_term', true)
@@ -524,7 +525,7 @@ class User extends Authenticatable
 
     public function isBarangayOfficial(): bool
     {
-        return $this->is_barangay_official;
+        return $this->getIsBarangayOfficialAttribute();
     }
 
     public function hasResident(): bool
@@ -549,8 +550,8 @@ class User extends Authenticatable
             'SUPER_ADMIN' => 10,
         ];
 
-        $currentUserLevel = $roleHierarchy[$this->role] ?? 0;
-        $targetUserLevel = $roleHierarchy[$targetUser->role] ?? 0;
+        $currentUserLevel = $roleHierarchy[$this->role];
+        $targetUserLevel = $roleHierarchy[$targetUser->role];
         
         // Super admin can edit anyone
         if ($this->role === 'SUPER_ADMIN') return true;
@@ -635,7 +636,7 @@ class User extends Authenticatable
         $array['department_display'] = $this->department_display;
         $array['is_user_active'] = $this->is_user_active;
         $array['has_logged_in'] = $this->has_logged_in;
-        $array['is_barangay_official'] = $this->is_barangay_official;
+        $array['is_barangay_official'] = $this->getIsBarangayOfficialAttribute();
         $array['can_manage_residents'] = $this->can_manage_residents;
         $array['can_manage_users'] = $this->can_manage_users;
         $array['can_generate_reports'] = $this->can_generate_reports;

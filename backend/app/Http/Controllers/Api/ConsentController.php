@@ -274,7 +274,7 @@ class ConsentController extends Controller
             return [
                 'id' => $consent->id,
                 'user_name' => $consent->user ? $consent->user->first_name . ' ' . $consent->user->last_name : 'N/A',
-                'user_email' => $consent->user?->email ?? 'N/A',
+                'user_email' => $consent->user->email ?? 'N/A',
                 'consent_type' => $consent->consent_type,
                 'consent_version' => $consent->consent_version,
                 'consented' => $consent->consented ? 'Yes' : 'No',

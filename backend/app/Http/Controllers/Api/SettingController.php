@@ -140,7 +140,7 @@ class SettingController extends Controller
                 'settings' => $settings->toFrontendFormat(),
                 'timestamp' => now()->toISOString(),
                 'version' => $settings->version_number ?? '1.0.0',
-                'created_by' => auth('sanctum')->user()?->name ?? 'System'
+                'created_by' => auth('sanctum')->user()->name ?? 'System'
             ];
             
             return response()->json([

@@ -5,6 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
+/**
+ * @property string $table_name
+ * @property string $record_id
+ * @property string $action_type
+ * @property array|null $old_values
+ * @property array|null $new_values
+ * @property string|null $name (computed from causer relationship)
+ * @property string|null $email (computed from causer relationship)
+ * @property int $hour (computed from created_at)
+ * @property int $day (computed from created_at)
+ * @property int $activity_count (computed in queries)
+ * @property string $timestamp (computed from created_at)
+ */
 class ActivityLog extends Model
 {
     use HasUuids;

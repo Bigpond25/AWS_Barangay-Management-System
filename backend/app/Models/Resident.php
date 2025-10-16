@@ -15,6 +15,27 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
+/**
+ * @property-read int $total_documents
+ * @property-read int $pending_documents_count
+ * @property-read int $total_tickets
+ * @property-read int $total_appointments
+ * @property-read array<string, mixed> $summary
+ * @property-read int $total_residents
+ * @property-read int $active_residents
+ * @property-read int $inactive_residents
+ * @property-read int $male_residents
+ * @property-read int $female_residents
+ * @property-read int $senior_citizens
+ * @property-read int $pwd_residents
+ * @property-read int $four_ps_beneficiaries
+ * @property-read int $registered_voters
+ * @property-read int $employed_residents
+ * @property-read int $children
+ * @property-read int $adults
+ * @property-read int $seniors
+ * @property int|null $total Aggregated total count from queries
+ */
 class Resident extends Model
 {
     use HasFactory, HasUuids, SoftDeletes, LogsActivity;
@@ -25,8 +46,6 @@ class Resident extends Model
     /**
      * Cached schema data for performance optimization
      */
-    private static $cachedFillable = null;
-    private static $cachedCasts = null;
     private static $cachedGenderMap = null;
     private static $cachedCivilStatusMap = null;
     
@@ -37,14 +56,43 @@ class Resident extends Model
     private $cachedAge = null;
 
     /**
-     * Get fillable fields from schema (OPTIMIZED with caching)
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
      */
-    protected $fillable;
+    protected $fillable = [
+        'first_name', 'middle_name', 'last_name', 'suffix', 'gender', 'civil_status',
+        'birth_date', 'birth_place', 'nationality', 'religion', 'occupation', 'monthly_income',
+        'educational_attainment', 'contact_number', 'email_address', 'emergency_contact_name',
+        'emergency_contact_number', 'relationship_to_emergency_contact', 'house_number',
+        'street_sitio', 'barangay', 'municipality', 'province', 'postal_code', 'complete_address',
+        'is_registered_voter', 'voter_id_number', 'precinct_number', 'senior_citizen',
+        'senior_citizen_id', 'person_with_disability', 'pwd_id', 'indigenous_people',
+        'tribe_ethnicity', 'four_ps_beneficiary', 'four_ps_id', 'philhealth_member',
+        'philhealth_id', 'sss_member', 'sss_id', 'tin_number', 'blood_type', 'height_cm',
+        'weight_kg', 'medical_conditions', 'allergies', 'medications', 'created_by', 'updated_by'
+    ];
     
     /**
-     * Get casts from schema (OPTIMIZED with caching)
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
      */
-    protected $casts;
+    protected $casts = [
+        'birth_date' => 'datetime',
+        'senior_citizen' => 'boolean',
+        'person_with_disability' => 'boolean',
+        'indigenous_people' => 'boolean',
+        'four_ps_beneficiary' => 'boolean',
+        'is_registered_voter' => 'boolean',
+        'philhealth_member' => 'boolean',
+        'sss_member' => 'boolean',
+        'height_cm' => 'decimal:2',
+        'weight_kg' => 'decimal:2',
+        'monthly_income' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -73,54 +121,10 @@ class Resident extends Model
         'gender_display',
         'civil_status_display',
         'special_classifications',
-        'household_relationship',
-        'is_household_head'
+        'household_relationship'
     ];
     
-    /**
-     * OPTIMIZED: Constructor with caching
-     */
-    public function __construct(array $attributes = [])
-    {
-        // PERFORMANCE: Cache fillable and casts to avoid repeated calls
-        if (self::$cachedFillable === null) {
-            self::$cachedFillable = [
-                'first_name', 'middle_name', 'last_name', 'suffix', 'gender', 'civil_status',
-                'birth_date', 'birth_place', 'nationality', 'religion', 'occupation', 'monthly_income',
-                'educational_attainment', 'contact_number', 'email_address', 'emergency_contact_name',
-                'emergency_contact_number', 'relationship_to_emergency_contact', 'house_number',
-                'street_sitio', 'barangay', 'municipality', 'province', 'postal_code', 'complete_address',
-                'is_registered_voter', 'voter_id_number', 'precinct_number', 'senior_citizen',
-                'senior_citizen_id', 'person_with_disability', 'pwd_id', 'indigenous_people',
-                'tribe_ethnicity', 'four_ps_beneficiary', 'four_ps_id', 'philhealth_member',
-                'philhealth_id', 'sss_member', 'sss_id', 'tin_number', 'blood_type', 'height_cm',
-                'weight_kg', 'medical_conditions', 'allergies', 'medications', 'created_by', 'updated_by'
-            ];
-        }
-        
-        if (self::$cachedCasts === null) {
-            self::$cachedCasts = [
-                'birth_date' => 'date',
-                'senior_citizen' => 'boolean',
-                'person_with_disability' => 'boolean',
-                'indigenous_people' => 'boolean',
-                'four_ps_beneficiary' => 'boolean',
-                'is_registered_voter' => 'boolean',
-                'philhealth_member' => 'boolean',
-                'sss_member' => 'boolean',
-                'height_cm' => 'decimal:2',
-                'weight_kg' => 'decimal:2',
-                'monthly_income' => 'decimal:2',
-                'created_at' => 'datetime',
-                'updated_at' => 'datetime',
-            ];
-        }
-        
-        $this->fillable = self::$cachedFillable;
-        $this->casts = self::$cachedCasts;
-        
-        parent::__construct($attributes);
-    }
+
 
     /**
      * OPTIMIZED: Boot method with performance improvements
@@ -137,10 +141,9 @@ class Resident extends Model
             
             // OPTIMIZED: Only calculate age if birth_date is provided and senior_citizen is not set
             if ($model->birth_date && !isset($model->attributes['senior_citizen'])) {
-                // Use attribute directly to avoid Carbon parsing overhead
-                $birthYear = (int) date('Y', strtotime($model->birth_date));
-                $currentYear = (int) date('Y');
-                $age = $currentYear - $birthYear;
+                // Use Carbon for timezone-aware date calculations
+                $birthDate = Carbon::parse($model->birth_date);
+                $age = $birthDate->age;
                 
                 if ($age >= 60) {
                     $model->senior_citizen = true;
@@ -155,9 +158,8 @@ class Resident extends Model
             
             // OPTIMIZED: Only update senior citizen status if birth_date actually changed
             if ($model->isDirty('birth_date') && $model->birth_date) {
-                $birthYear = (int) date('Y', strtotime($model->birth_date));
-                $currentYear = (int) date('Y');
-                $age = $currentYear - $birthYear;
+                $birthDate = Carbon::parse($model->birth_date);
+                $age = $birthDate->age;
                 $model->senior_citizen = $age >= 60;
             }
         });
@@ -264,7 +266,10 @@ class Resident extends Model
 
     public function getFormattedBirthDateAttribute(): string
     {
-        return $this->birth_date ? $this->birth_date->format('F d, Y') : '';
+        if (!$this->birth_date) {
+            return '';
+        }
+        return $this->birth_date->format('F d, Y');
     }
 
     public function getCompleteAddressDisplayAttribute(): string
@@ -339,12 +344,14 @@ class Resident extends Model
     public function getHouseholdRelationshipAttribute(): ?string
     {
         $household = $this->households()->first();
-        return $household ? $household->pivot->relationship : null;
+        /** @var \Illuminate\Database\Eloquent\Relations\Pivot|null $pivot */
+        $pivot = $household?->pivot;
+        return $pivot->relationship ?? null;
     }
 
     public function getIsHouseholdHeadAttribute(): bool
     {
-        return $this->household_relationship === 'HEAD';
+        return $this->getHouseholdRelationshipAttribute() === 'HEAD';
     }
 
     /**
@@ -359,9 +366,11 @@ class Resident extends Model
 
     /**
      * NEW: Get the primary household (residents should only be in one household)
+     * @return Household|null
      */
     public function household(): ?Household
     {
+        /** @var Household|null */
         return $this->households()->first();
     }
 
@@ -391,9 +400,11 @@ class Resident extends Model
 
     /**
      * Get the current active barangay official record for this resident
+     * @return BarangayOfficial|null
      */
     public function currentOfficialPosition(): ?BarangayOfficial
     {
+        /** @var BarangayOfficial|null */
         return $this->barangayOfficials()
             ->where('status', 'ACTIVE')
             ->where('is_current_term', true)
@@ -644,7 +655,7 @@ class Resident extends Model
      */
     public function isHouseholdHead(): bool
     {
-        return $this->is_household_head;
+        return $this->getIsHouseholdHeadAttribute();
     }
 
     public function belongsToHousehold(): bool
@@ -652,14 +663,18 @@ class Resident extends Model
         return $this->households()->exists();
     }
 
+    /**
+     * @return Household|null
+     */
     public function getPrimaryHousehold(): ?Household
     {
+        /** @var Household|null */
         return $this->households()->first();
     }
 
     public function getHouseholdRelationshipType(): ?string
     {
-        return $this->household_relationship;
+        return $this->getHouseholdRelationshipAttribute();
     }
 
     /**
@@ -937,8 +952,8 @@ class Resident extends Model
         $array['gender_display'] = $this->gender_display;
         $array['civil_status_display'] = $this->civil_status_display;
         $array['special_classifications'] = $this->getSpecialClassificationsAttribute();
-        $array['household_relationship'] = $this->household_relationship;
-        $array['is_household_head'] = $this->is_household_head;
+        $array['household_relationship'] = $this->getHouseholdRelationshipAttribute();
+        $array['is_household_head'] = $this->getIsHouseholdHeadAttribute();
 
         return $array;
     }

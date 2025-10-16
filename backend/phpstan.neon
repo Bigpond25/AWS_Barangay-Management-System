@@ -1,0 +1,54 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - config
+        - database
+        - routes
+
+    # Level 0 is the loosest and level 9 is the strictest
+    # Start with level 5 and gradually increase
+    level: 5
+
+    # Reduce noise from PHPDoc type certainty warnings
+    treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        # Ignore common Laravel patterns that PHPStan might flag
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
+        
+        # Known Larastan false positives for relations that actually exist
+        - '#Relation .* is not found in App\\Models\\.*#'
+        
+        # Maatwebsite Excel v3+ facade methods not in stubs
+        - '#Call to an undefined static method Maatwebsite\\Excel\\Facades\\Excel::#'
+        
+        # Barryvdh DomPDF facade methods
+        - '#Call to static method .* on an unknown class Barryvdh\\DomPDF\\Facade\\Pdf#'
+        
+        # Larastan validation issue with valid accessor
+        - '#Property .member_count. does not exist in model#'
+        
+        # Unused methods that may be called dynamically or reserved for future use
+        - '#Method App\\Console\\Commands\\GenerateMigrationFromSchema::generateResidentMigration\(\) is unused#'
+        - '#Method App\\Http\\Controllers\\Api\\DocumentController::mapBackendStatusToFrontend\(\) is unused#'
+        - '#Method App\\Http\\Controllers\\Api\\HouseholdController::validateResidentAssignment\(\) is unused#'
+        - '#Method App\\Http\\Controllers\\Api\\HouseholdController::updateResidentHouseholdAssignments\(\) is unused#'
+
+    excludePaths:
+        - vendor
+        - storage
+        - bootstrap/cache
+        - database/factories
+        - database/seeders
+        - database/migrations/old
+        - app/Exports
+    
+    # Uncomment to enable strict rules
+    # strictRules:
+    #     disallowedConstructs: true
+    #     booleansInConditions: true
+    #     uselessCast: true
+    #     requireParentConstructCall: false

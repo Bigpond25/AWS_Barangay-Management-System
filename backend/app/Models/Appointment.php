@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int|null $requested Aggregated requested appointments count
+ * @property int|null $completed Aggregated completed appointments count
+ * @property float|null $fees_collected Aggregated fees collected
+ */
 class Appointment extends Model implements Auditable
 {
     use HasFactory, HasUuids;

@@ -11,6 +11,12 @@ use OwenIt\Auditing\Contracts\Auditable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property string|null $prefix Position prefix for display
+ * @property string|null $email Email address from resident relationship
+ * @property string|null $contact Contact number from resident relationship
+ * @property-read Resident|null $resident Associated resident relationship
+ */
 class BarangayOfficial extends Model implements Auditable
 {
     use HasFactory, HasUuids;
@@ -407,6 +413,7 @@ class BarangayOfficial extends Model implements Auditable
     public function syncPersonalDataFromResident(): void
     {
         if ($this->resident_id && $this->resident) {
+            /** @var Resident $resident */
             $resident = $this->resident;
             $this->first_name = $resident->first_name;
             $this->middle_name = $resident->middle_name;
@@ -415,7 +422,7 @@ class BarangayOfficial extends Model implements Auditable
             $this->full_name = $resident->full_name;
             $this->birth_date = $resident->birth_date;
             $this->gender = $resident->gender;
-            $this->contact_number = $resident->mobile_number;
+            $this->contact_number = $resident->contact_number ?? $resident->mobile_number ?? null;
             $this->email_address = $resident->email_address;
             $this->address = $resident->complete_address;
         }
@@ -446,7 +453,7 @@ class BarangayOfficial extends Model implements Auditable
         ]);
     }
 
-    public function startNewTerm(Carbon $startDate, Carbon $endDate, int $termNumber = null): void
+    public function startNewTerm(Carbon $startDate, Carbon $endDate, ?int $termNumber = null): void
     {
         $this->update([
             'term_start' => $startDate,

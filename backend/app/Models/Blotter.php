@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * @property Ticket|null $ticket The associated ticket relationship
+ * @property string|null $date_of_incident Legacy/computed incident date field
+ * @property string|null $time_of_incident Legacy/computed incident time field
+ * @property string|null $location_of_incident Legacy/computed incident location field
+ * @property string|null $description Legacy/computed incident description
+ */
 class Blotter extends Model
 {
     use HasFactory;

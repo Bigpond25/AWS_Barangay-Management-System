@@ -196,14 +196,15 @@ class ResidentController extends Controller
 
             $resident->load($allIncludes);
 
-            // Add computed relationship counts
-            $resident->total_documents = $resident->documents()->count();
-            $resident->pending_documents_count = $resident->documents()->where('status', 'PENDING')->count();
-            $resident->total_tickets = $resident->tickets()->count();
-            $resident->total_appointments = $resident->appointments()->count();
+            // Build response with computed relationship counts
+            $residentData = $resident->toArray();
+            $residentData['total_documents'] = $resident->documents()->count();
+            $residentData['pending_documents_count'] = $resident->documents()->where('status', 'PENDING')->count();
+            $residentData['total_tickets'] = $resident->tickets()->count();
+            $residentData['total_appointments'] = $resident->appointments()->count();
 
             return response()->json([
-                'data' => $resident
+                'data' => $residentData
             ]);
 
         } catch (\Exception $e) {
@@ -237,8 +238,8 @@ class ResidentController extends Controller
                 'updatedBy:id,first_name,last_name'
             ]);
 
-            // Add summary counts
-            $resident->summary = [
+            // Build summary counts separately
+            $summary = [
                 'total_documents' => $resident->documents->count(),
                 'pending_documents' => $resident->documents->where('status', 'PENDING')->count(),
                 'approved_documents' => $resident->documents->where('status', 'APPROVED')->count(),
@@ -249,8 +250,11 @@ class ResidentController extends Controller
                 'total_households' => $resident->households->count() + $resident->householdsAsHead->count()
             ];
 
+            $residentData = $resident->toArray();
+            $residentData['summary'] = $summary;
+
             return response()->json([
-                'data' => $resident
+                'data' => $residentData
             ]);
 
         } catch (\Exception $e) {

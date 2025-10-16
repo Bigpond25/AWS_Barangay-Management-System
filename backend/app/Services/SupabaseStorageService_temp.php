@@ -16,6 +16,10 @@ class SupabaseStorageService implements StorageInterface
 {
     private string $supabaseUrl;
     private string $serviceKey;
+    
+    /** 
+     * @phpstan-ignore-next-line property.onlyWritten
+     */
     private string $anonKey;
     
     /**
@@ -322,7 +326,10 @@ class SupabaseStorageService implements StorageInterface
             }
 
             $fileContent = $response->body();
-            $contentType = $response->header('Content-Type', 'application/octet-stream');
+            $contentType = $response->header('Content-Type');
+            if (empty($contentType)) {
+                $contentType = 'application/octet-stream';
+            }
 
             // Upload to new location
             $uploadResponse = Http::withHeaders([

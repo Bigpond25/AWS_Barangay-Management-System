@@ -5,6 +5,11 @@ namespace App\Traits;
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Trait LogsActivity
+ * 
+ * @property bool|null $skipActivityLogging
+ */
 trait LogsActivity
 {
     /**
@@ -27,8 +32,12 @@ trait LogsActivity
 
     /**
      * Log activity for the model
+     * 
+     * @param string $action
+     * @param array|null $oldValues
+     * @return void
      */
-    public function logActivity(string $action, array $oldValues = null): void
+    public function logActivity(string $action, ?array $oldValues = null): void
     {
         // Skip logging if no authenticated user (unless it's a system action)
         if (!Auth::check() && !$this->shouldLogSystemActions()) {
@@ -51,8 +60,14 @@ trait LogsActivity
 
     /**
      * Log a custom activity
+     * 
+     * @param string $action
+     * @param string|null $description
+     * @param array|null $oldValues
+     * @param array|null $newValues
+     * @return void
      */
-    public function logCustomActivity(string $action, string $description = null, array $oldValues = null, array $newValues = null): void
+    public function logCustomActivity(string $action, ?string $description = null, ?array $oldValues = null, ?array $newValues = null): void
     {
         $user = Auth::user();
 

@@ -11,6 +11,14 @@ use Carbon\Carbon;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property-read bool $is_active
+ * @property-read string|null $expertise
+ * @property-read string|null $member_contact
+ * @property-read bool $receives_notifications
+ * @property-read string $member_name
+ * @property-read string $member_email
+ */
 class ProjectTeamMember extends Model implements Auditable
 {
     use HasFactory, HasUuids, \OwenIt\Auditing\Auditable;
@@ -80,7 +88,7 @@ class ProjectTeamMember extends Model implements Auditable
     public function getDaysInProjectAttribute(): int
     {
         $endDate = $this->left_date ?? now();
-        return Carbon::parse($this->joined_date)->diffInDays($endDate);
+        return (int) Carbon::parse($this->joined_date)->diffInDays($endDate);
     }
 
     public function getIsCurrentMemberAttribute(): bool
@@ -132,7 +140,7 @@ class ProjectTeamMember extends Model implements Auditable
     }
 
     // Helper methods
-    public function deactivate(string $reason = null): void
+    public function deactivate(?string $reason = null): void
     {
         $this->update([
             'is_active' => false,
@@ -149,7 +157,7 @@ class ProjectTeamMember extends Model implements Auditable
         ]);
     }
 
-    public function changeRole(string $newRole, string $newResponsibilities = null): void
+    public function changeRole(string $newRole, ?string $newResponsibilities = null): void
     {
         $this->update([
             'role' => $newRole,
@@ -166,7 +174,7 @@ class ProjectTeamMember extends Model implements Auditable
         ]);
     }
 
-    public function ratePerformance(int $rating, string $notes = null): void
+    public function ratePerformance(int $rating, ?string $notes = null): void
     {
         $rating = max(1, min(5, $rating));
         
@@ -176,7 +184,7 @@ class ProjectTeamMember extends Model implements Auditable
         ]);
     }
 
-    public function updateContactInfo(string $email = null, string $contact = null): void
+    public function updateContactInfo(?string $email = null, ?string $contact = null): void
     {
         $updateData = [];
         
@@ -193,7 +201,7 @@ class ProjectTeamMember extends Model implements Auditable
         }
     }
 
-    public function setNotificationPreference(bool $receives, string $preference = null): void
+    public function setNotificationPreference(bool $receives, ?string $preference = null): void
     {
         $updateData = ['receives_notifications' => $receives];
         
@@ -232,9 +240,11 @@ class ProjectTeamMember extends Model implements Auditable
     {
         // Return user contact info if available, otherwise member contact info
         if ($this->user) {
+            /** @var User $user */
+            $user = $this->user;
             return [
-                'name' => $this->user->first_name . ' ' . $this->user->last_name,
-                'email' => $this->user->email,
+                'name' => $user->first_name . ' ' . $user->last_name,
+                'email' => $user->email,
                 'contact' => $this->member_contact
             ];
         }
@@ -251,9 +261,9 @@ class ProjectTeamMember extends Model implements Auditable
         $startDate = Carbon::parse($this->joined_date);
         $endDate = $this->left_date ? Carbon::parse($this->left_date) : now();
         
-        $totalDays = $startDate->diffInDays($endDate);
-        $months = $startDate->diffInMonths($endDate);
-        $years = $startDate->diffInYears($endDate);
+        $totalDays = (int) $startDate->diffInDays($endDate);
+        $months = (int) $startDate->diffInMonths($endDate);
+        $years = (int) $startDate->diffInYears($endDate);
         
         return [
             'days' => $totalDays,

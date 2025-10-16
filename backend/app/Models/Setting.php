@@ -43,14 +43,16 @@ class Setting extends Model
     /**
      * Get the current settings (singleton pattern)
      * Settings should only have one record
+     * 
+     * @return self
      */
-    public static function current()
+    public static function current(): self
     {
         $settings = static::first();
         
         if (!$settings) {
             // Create the first settings record with default values
-            $settings = new static([
+            $settings = static::create([
                 'system_name' => 'Barangay Management System',
                 'version_number' => '1.0.0',
                 'primary_language' => 'Filipino',
@@ -63,10 +65,6 @@ class Setting extends Model
                 'data_retention' => 7,
                 'backup_frequency' => 'Daily',
             ]);
-            
-            // Generate UUID manually if needed
-            $settings->id = (string) Str::uuid();
-            $settings->save();
         }
         
         return $settings;

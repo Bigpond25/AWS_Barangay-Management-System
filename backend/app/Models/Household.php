@@ -12,6 +12,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property int|null $total_households Aggregated total households count
+ * @property int|null $four_ps_beneficiaries Aggregated 4Ps beneficiaries count
+ * @property int|null $indigent_families Aggregated indigent families count
+ * @property int|null $with_senior_citizens Aggregated households with senior citizens count
+ * @property int|null $with_pwd_members Aggregated households with PWD members count
+ * @property int|null $with_electricity Aggregated households with electricity count
+ * @property int|null $with_water_supply Aggregated households with water supply count
+ * @property int|null $with_internet_access Aggregated households with internet access count
+ */
 class Household extends Model implements Auditable
 {
     use HasFactory, HasUuids, LogsActivity, \OwenIt\Auditing\Auditable;
@@ -76,8 +86,8 @@ class Household extends Model implements Auditable
      * The attributes that should be appended to the model's array form.
      */
     protected $appends = [
-        'member_count',
         'has_head_resident',
+        'member_count',
     ];
 
     /**
@@ -275,7 +285,9 @@ class Household extends Model implements Auditable
      */
     public function head(): ?Resident
     {
-        return $this->members()->wherePivot('relationship', 'HEAD')->first();
+        /** @var Resident|null $head */
+        $head = $this->members()->wherePivot('relationship', 'HEAD')->first();
+        return $head;
     }
 
     public function memberCount(): int
@@ -403,7 +415,7 @@ class Household extends Model implements Auditable
         $this->members()->detach($resident->id);
 
         // If removing the head, clear head_resident_id
-        if ($this->head_resident_id == $resident->id) {
+        if ($this->head_resident_id === $resident->id) {
             $this->update(['head_resident_id' => null]);
         }
     }
@@ -418,7 +430,7 @@ class Household extends Model implements Auditable
         // Handle head relationship changes
         if ($relationship === 'HEAD') {
             $this->update(['head_resident_id' => $resident->id]);
-        } elseif ($this->head_resident_id == $resident->id) {
+        } elseif ($this->head_resident_id === $resident->id) {
             $this->update(['head_resident_id' => null]);
         }
     }
@@ -458,7 +470,11 @@ class Household extends Model implements Auditable
     public function getMemberRelationship(Resident $resident): ?string
     {
         $member = $this->members()->where('residents.id', $resident->id)->first();
-        return $member ? $member->pivot->relationship : null;
+        if (!$member) {
+            return null;
+        }
+        
+        return $member->pivot->getAttribute('relationship');
     }
 
     // OwenIt Auditing

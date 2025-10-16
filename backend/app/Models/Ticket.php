@@ -66,7 +66,7 @@ class Ticket extends Model
 
         static::creating(function ($ticket) {
             if (empty($ticket->ticket_number)) {
-                $ticket->ticket_number = static::generateTicketNumber($ticket->type);
+                $ticket->ticket_number = self::generateTicketNumber($ticket->type);
             }
             if (empty($ticket->status)) {
                 $ticket->status = 'OPEN';
@@ -74,7 +74,10 @@ class Ticket extends Model
         });
     }
 
-    private static function generateTicketNumber($type): string
+    /**
+     * Generate a unique ticket number
+     */
+    protected static function generateTicketNumber($type): string
     {
         $prefix = match ($type) {
             'APPOINTMENT' => 'APT',
@@ -84,8 +87,9 @@ class Ticket extends Model
             default => 'TKT'
         };
 
-        $year = date('Y');
-        $month = date('m');
+        $now = now();
+        $year = $now->format('Y');
+        $month = $now->format('m');
 
         // Get the latest ticket number for this type and month
         $lastTicket = static::where('type', $type)

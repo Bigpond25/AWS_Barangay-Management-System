@@ -1,0 +1,1442 @@
+Note: Using configuration file /Users/jhndrncrz/Projects/AWS_Barangay-Management-System/backend/phpstan.neon.
+   0/152 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0%[1G[2K 152/152 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Console/Commands/GenerateMigrationFromSchema.php                   
+ ------ ----------------------------------------------------------------------- 
+  :34    Method                                                                 
+         App\Console\Commands\GenerateMigrationFromSchema::generateResidentMig  
+         ration() is unused.                                                    
+         🪪  method.unused                                                      
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ---------------------------------------------------------------------- 
+  Line   app/Exports/ActivityLogExport.php                                     
+ ------ ---------------------------------------------------------------------- 
+  :15    Class App\Exports\ActivityLogExport implements unknown interface      
+         Maatwebsite\Excel\Concerns\FromCollection.                            
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+  :15    Class App\Exports\ActivityLogExport implements unknown interface      
+         Maatwebsite\Excel\Concerns\WithColumnWidths.                          
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+  :15    Class App\Exports\ActivityLogExport implements unknown interface      
+         Maatwebsite\Excel\Concerns\WithHeadings.                              
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+  :15    Class App\Exports\ActivityLogExport implements unknown interface      
+         Maatwebsite\Excel\Concerns\WithMapping.                               
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+  :15    Class App\Exports\ActivityLogExport implements unknown interface      
+         Maatwebsite\Excel\Concerns\WithStyles.                                
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+  :15    Class App\Exports\ActivityLogExport implements unknown interface      
+         Maatwebsite\Excel\Concerns\WithTitle.                                 
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+ ------ ---------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/ActivityLogController.php                     
+ ------ ----------------------------------------------------------------------- 
+  :61    Relation 'user' is not found in App\Models\ActivityLog model.          
+         🪪  larastan.relationExistence                                         
+  :100   Relation 'user' is not found in App\Models\ActivityLog model.          
+         🪪  larastan.relationExistence                                         
+  :114   Access to an undefined property App\Models\ActivityLog::$table_name.   
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :114   Relation 'user' is not found in App\Models\ActivityLog model.          
+         🪪  larastan.relationExistence                                         
+  :115   Access to an undefined property App\Models\ActivityLog::$record_id.    
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :124   Access to an undefined property App\Models\ActivityLog::$action_type.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :124   Access to an undefined property App\Models\ActivityLog::$new_values.   
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :124   Access to an undefined property App\Models\ActivityLog::$old_values.   
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :205   Access to an undefined property App\Models\ActivityLog::$hour.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :206   Access to an undefined property App\Models\ActivityLog::$day.          
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :222   Relation 'user' is not found in App\Models\ActivityLog model.          
+         🪪  larastan.relationExistence                                         
+  :254   Access to an undefined property App\Models\ActivityLog::$name.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :255   Access to an undefined property                                        
+         App\Models\ActivityLog::$activity_count.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :258   Access to an undefined property App\Models\ActivityLog::$table_name.   
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :259   Access to an undefined property                                        
+         App\Models\ActivityLog::$activity_count.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :261   Access to an undefined property App\Models\ActivityLog::$timestamp.    
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :287   Parameter #1 $callback of method                                       
+         Illuminate\Database\Eloquent\Collection<int,App\Models\ActivityLog>::  
+         map() contains unresolvable type.                                      
+         🪪  argument.unresolvableType                                          
+  :291   Access to an undefined property App\Models\ActivityLog::$name.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :292   Access to an undefined property App\Models\ActivityLog::$email.        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :294   Access to an undefined property                                        
+         App\Models\ActivityLog::$activity_count.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :320   Parameter #1 $callback of method                                       
+         Illuminate\Database\Eloquent\Collection<int,App\Models\ActivityLog>::  
+         map() contains unresolvable type.                                      
+         🪪  argument.unresolvableType                                          
+  :322   Access to an undefined property App\Models\ActivityLog::$table_name.   
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :323   Access to an undefined property                                        
+         App\Models\ActivityLog::$activity_count.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :363   Relation 'user' is not found in App\Models\ActivityLog model.          
+         🪪  larastan.relationExistence                                         
+  :378   Call to an undefined static method                                     
+         Maatwebsite\Excel\Facades\Excel::download().                           
+         🪪  staticMethod.notFound                                              
+  :676   Call to static method loadView() on an unknown class                   
+         Barryvdh\DomPDF\Facade\Pdf.                                            
+         🪪  class.notFound                                                     
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/BarangayOfficialController.php                
+ ------ ----------------------------------------------------------------------- 
+  :101   Call to static method find() on an unknown class                       
+         App\Http\Controllers\Api\User.                                         
+         🪪  class.notFound                                                     
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+  :193   Call to static method find() on an unknown class                       
+         App\Http\Controllers\Api\User.                                         
+         🪪  class.notFound                                                     
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+  :425   Call to static method whereNotNull() on an unknown class               
+         App\Http\Controllers\Api\User.                                         
+         🪪  class.notFound                                                     
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols   
+  :482   Parameter #1 $callback of method                                       
+         Illuminate\Database\Eloquent\Collection<int,App\Models\BarangayOffici  
+         al>::map() contains unresolvable type.                                 
+         🪪  argument.unresolvableType                                          
+  :484   Access to an undefined property App\Models\BarangayOfficial::$prefix.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :485   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$full_name.                        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/BlotterController.php                         
+ ------ ----------------------------------------------------------------------- 
+  :33    Relation 'otherPeopleInvolved' is not found in App\Models\Blotter      
+         model.                                                                 
+         🪪  larastan.relationExistence                                         
+  :33    Relation 'supportingDocuments' is not found in App\Models\Blotter      
+         model.                                                                 
+         🪪  larastan.relationExistence                                         
+  :33    Relation 'ticket' is not found in App\Models\Blotter model.            
+         🪪  larastan.relationExistence                                         
+  :49    Access to an undefined property App\Models\Blotter::$ticket.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :196   Access to an undefined property App\Models\Blotter::$ticket.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :319   Access to an undefined property App\Models\Blotter::$ticket.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :329   Access to an undefined property                                        
+         App\Models\Blotter::$date_of_incident.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :330   Access to an undefined property                                        
+         App\Models\Blotter::$time_of_incident.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :331   Access to an undefined property                                        
+         App\Models\Blotter::$location_of_incident.                             
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :376   Access to an undefined property App\Models\Blotter::$ticket.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :453   Access to an undefined property App\Models\Blotter::$ticket.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/ComplaintController.php                       
+ ------ ----------------------------------------------------------------------- 
+  :22    Relation 'ticket' is not found in App\Models\Complaint model.          
+         🪪  larastan.relationExistence                                         
+  :38    Access to an undefined property App\Models\Complaint::$ticket.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :114   Access to an undefined property App\Models\Complaint::$ticket.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :188   Access to an undefined property App\Models\Complaint::$ticket.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :205   Access to an undefined property App\Models\Complaint::$ticket.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/ConsentController.php                         
+ ------ ----------------------------------------------------------------------- 
+  :193   Relation 'user' is not found in App\Models\DataConsent model.          
+         🪪  larastan.relationExistence                                         
+  :244   Relation 'user' is not found in App\Models\DataConsent model.          
+         🪪  larastan.relationExistence                                         
+  :276   Access to an undefined property App\Models\DataConsent::$user.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :277   Using nullsafe property access "?->email" on left side of ?? is        
+         unnecessary. Use -> instead.                                           
+         🪪  nullsafe.neverNull                                                 
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/DashboardController.php                       
+ ------ ----------------------------------------------------------------------- 
+  :413   Parameter #1 $callback of method                                       
+         Illuminate\Database\Eloquent\Collection<int,App\Models\BarangayOffici  
+         al>::map() contains unresolvable type.                                 
+         🪪  argument.unresolvableType                                          
+  :418   Access to an undefined property App\Models\BarangayOfficial::$email.   
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :419   Access to an undefined property                                        
+         App\Models\BarangayOfficial::$contact.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :439   Method                                                                 
+         App\Http\Controllers\Api\DashboardController::getDefaultPhoto() is     
+         unused.                                                                
+         🪪  method.unused                                                      
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/DocumentController.php                        
+ ------ ----------------------------------------------------------------------- 
+  :45    Relation 'approvedByUser' is not found in App\Models\Document model.   
+         🪪  larastan.relationExistence                                         
+  :45    Relation 'processedByUser' is not found in App\Models\Document model.  
+         🪪  larastan.relationExistence                                         
+  :45    Relation 'releasedByUser' is not found in App\Models\Document model.   
+         🪪  larastan.relationExistence                                         
+  :45    Relation 'resident' is not found in App\Models\Document model.         
+         🪪  larastan.relationExistence                                         
+  :214   Relation 'approvedByUser' is not found in App\Models\Document model.   
+         🪪  larastan.relationExistence                                         
+  :214   Relation 'processedByUser' is not found in App\Models\Document model.  
+         🪪  larastan.relationExistence                                         
+  :214   Relation 'releasedByUser' is not found in App\Models\Document model.   
+         🪪  larastan.relationExistence                                         
+  :214   Relation 'resident' is not found in App\Models\Document model.         
+         🪪  larastan.relationExistence                                         
+  :353   Access to an undefined property App\Models\Document::$count.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :361   Access to an undefined property App\Models\Document::$count.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :368   Access to an undefined property App\Models\Document::$count.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :375   Access to an undefined property App\Models\Document::$count.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :390   Access to an undefined property                                        
+         App\Models\Document::$total_documents.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :391   Access to an undefined property                                        
+         App\Models\Document::$pending_documents.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :392   Access to an undefined property                                        
+         App\Models\Document::$processing_documents.                            
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :393   Access to an undefined property                                        
+         App\Models\Document::$approved_documents.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :394   Access to an undefined property                                        
+         App\Models\Document::$released_documents.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :395   Access to an undefined property                                        
+         App\Models\Document::$rejected_documents.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :397   Access to an undefined property                                        
+         App\Models\Document::$urgent_documents.                                
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :403   Access to an undefined property                                        
+         App\Models\Document::$total_processing_fees.                           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :404   Access to an undefined property App\Models\Document::$unpaid_fees.     
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :405   Access to an undefined property App\Models\Document::$paid_fees.       
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :672   Relation 'approvedByUser' is not found in App\Models\Document model.   
+         🪪  larastan.relationExistence                                         
+  :672   Relation 'processedByUser' is not found in App\Models\Document model.  
+         🪪  larastan.relationExistence                                         
+  :672   Relation 'releasedByUser' is not found in App\Models\Document model.   
+         🪪  larastan.relationExistence                                         
+  :672   Relation 'resident' is not found in App\Models\Document model.         
+         🪪  larastan.relationExistence                                         
+  :697   Access to an undefined property                                        
+         App\Models\Document::$processedByUser.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :711   Access to an undefined property App\Models\Document::$approvedByUser.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :725   Access to an undefined property App\Models\Document::$releasedByUser.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :766   Relation 'resident' is not found in App\Models\Document model.         
+         🪪  larastan.relationExistence                                         
+  :768   Result of && is always true.                                           
+         🪪  booleanAnd.alwaysTrue                                              
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :768   Strict comparison using !== between                                    
+         'APPROVED'|'CANCELLED'|'PENDING'|'PROCESSING'|'REJECTED'|'RELEASED'    
+         and 'approved' will always evaluate to true.                           
+         🪪  notIdentical.alwaysTrue                                            
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :768   Strict comparison using !== between                                    
+         'APPROVED'|'CANCELLED'|'PENDING'|'PROCESSING'|'REJECTED'|'RELEASED'    
+         and 'released' will always evaluate to true.                           
+         🪪  notIdentical.alwaysTrue                                            
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :775   Unreachable statement - code above always terminates.                  
+         🪪  deadCode.unreachable                                               
+  :803   Relation 'approvedByUser' is not found in App\Models\Document model.   
+         🪪  larastan.relationExistence                                         
+  :803   Relation 'processedByUser' is not found in App\Models\Document model.  
+         🪪  larastan.relationExistence                                         
+  :803   Relation 'releasedByUser' is not found in App\Models\Document model.   
+         🪪  larastan.relationExistence                                         
+  :825   Access to an undefined property                                        
+         App\Models\Document::$processedByUser.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :840   Access to an undefined property App\Models\Document::$approvedByUser.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :855   Access to an undefined property App\Models\Document::$releasedByUser.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :886   Relation 'processedByUser' is not found in App\Models\Document model.  
+         🪪  larastan.relationExistence                                         
+  :886   Relation 'resident' is not found in App\Models\Document model.         
+         🪪  larastan.relationExistence                                         
+  :919   Relation 'processedByUser' is not found in App\Models\Document model.  
+         🪪  larastan.relationExistence                                         
+  :919   Relation 'resident' is not found in App\Models\Document model.         
+         🪪  larastan.relationExistence                                         
+  :964   Method                                                                 
+         App\Http\Controllers\Api\DocumentController::mapBackendStatusToFronte  
+         nd() is unused.                                                        
+         🪪  method.unused                                                      
+  :981   Method                                                                 
+         App\Http\Controllers\Api\DocumentController::generateCertificatePDF()  
+         is unused.                                                             
+         🪪  method.unused                                                      
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/HouseholdController.php                       
+ ------ ----------------------------------------------------------------------- 
+  :565   Access to an undefined property                                        
+         App\Models\Household::$total_households.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :568   Access to an undefined property                                        
+         App\Models\Household::$four_ps_beneficiaries.                          
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :569   Access to an undefined property                                        
+         App\Models\Household::$indigent_families.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :570   Access to an undefined property                                        
+         App\Models\Household::$with_senior_citizens.                           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :571   Access to an undefined property                                        
+         App\Models\Household::$with_pwd_members.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :574   Access to an undefined property                                        
+         App\Models\Household::$with_electricity.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :575   Access to an undefined property                                        
+         App\Models\Household::$with_water_supply.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :576   Access to an undefined property                                        
+         App\Models\Household::$with_internet_access.                           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :594   Access to an undefined property                                        
+         App\Models\Household::$four_ps_beneficiaries.                          
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :595   Access to an undefined property                                        
+         App\Models\Household::$indigent_families.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :596   Access to an undefined property                                        
+         App\Models\Household::$with_senior_citizens.                           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :597   Access to an undefined property                                        
+         App\Models\Household::$with_pwd_members.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :602   Access to an undefined property                                        
+         App\Models\Household::$with_electricity.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :603   Access to an undefined property                                        
+         App\Models\Household::$with_water_supply.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :604   Access to an undefined property                                        
+         App\Models\Household::$with_internet_access.                           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :868   Method                                                                 
+         App\Http\Controllers\Api\HouseholdController::validateResidentAssignm  
+         ent() is unused.                                                       
+         🪪  method.unused                                                      
+  :896   Method                                                                 
+         App\Http\Controllers\Api\HouseholdController::updateResidentHousehold  
+         Assignments() is unused.                                               
+         🪪  method.unused                                                      
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/ImportController.php                          
+ ------ ----------------------------------------------------------------------- 
+  :96    Comparison operation ">" between int<1, max> and 0 is always true.     
+         🪪  greater.alwaysTrue                                                 
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :476   Comparison operation ">" between int<1, max> and 0 is always true.     
+         🪪  greater.alwaysTrue                                                 
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/ReportsController.php                         
+ ------ ----------------------------------------------------------------------- 
+  :144   Comparison operation ">" between int<1, max> and 0 is always true.     
+         🪪  greater.alwaysTrue                                                 
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :220   Parameter #1 $callback of method                                       
+         Illuminate\Database\Eloquent\Collection<int,App\Models\Resident>::map  
+         () contains unresolvable type.                                         
+         🪪  argument.unresolvableType                                          
+  :223   Access to an undefined property App\Models\Resident::$total.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :264   Parameter #1 $callback of method                                       
+         Illuminate\Database\Eloquent\Collection<int,App\Models\Document>::map  
+         () contains unresolvable type.                                         
+         🪪  argument.unresolvableType                                          
+  :267   Access to an undefined property App\Models\Document::$total.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :316   Parameter #1 $callback of method                                       
+         Illuminate\Database\Eloquent\Collection<int,App\Models\Appointment>::  
+         map() contains unresolvable type.                                      
+         🪪  argument.unresolvableType                                          
+  :319   Access to an undefined property App\Models\Appointment::$requested.    
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :320   Access to an undefined property App\Models\Appointment::$completed.    
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :322   Access to an undefined property                                        
+         App\Models\Appointment::$fees_collected.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/ResidentController.php                        
+ ------ ----------------------------------------------------------------------- 
+  :200   Access to an undefined property                                        
+         App\Models\Resident::$total_documents.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :201   Access to an undefined property                                        
+         App\Models\Resident::$pending_documents_count.                         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :202   Access to an undefined property App\Models\Resident::$total_tickets.   
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :203   Access to an undefined property                                        
+         App\Models\Resident::$total_appointments.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :241   Access to an undefined property App\Models\Resident::$summary.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :570   Access to an undefined property                                        
+         App\Models\Resident::$total_residents.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :571   Access to an undefined property                                        
+         App\Models\Resident::$active_residents.                                
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :572   Access to an undefined property                                        
+         App\Models\Resident::$inactive_residents.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :573   Access to an undefined property App\Models\Resident::$male_residents.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :574   Access to an undefined property                                        
+         App\Models\Resident::$female_residents.                                
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :575   Access to an undefined property                                        
+         App\Models\Resident::$senior_citizens.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :576   Access to an undefined property App\Models\Resident::$pwd_residents.   
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :577   Access to an undefined property                                        
+         App\Models\Resident::$four_ps_beneficiaries.                           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :580   Access to an undefined property                                        
+         App\Models\Resident::$registered_voters.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :581   Access to an undefined property                                        
+         App\Models\Resident::$employed_residents.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :584   Access to an undefined property App\Models\Resident::$children.        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :585   Access to an undefined property App\Models\Resident::$adults.          
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :586   Access to an undefined property App\Models\Resident::$seniors.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ---------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/SettingController.php                  
+ ------ ---------------------------------------------------------------- 
+  :143   Using nullsafe property access "?->name" on left side of ?? is  
+         unnecessary. Use -> instead.                                    
+         🪪  nullsafe.neverNull                                          
+ ------ ---------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Http/Controllers/Api/SuggestionController.php                      
+ ------ ----------------------------------------------------------------------- 
+  :22    Relation 'ticket' is not found in App\Models\Suggestion model.         
+         🪪  larastan.relationExistence                                         
+  :38    Access to an undefined property App\Models\Suggestion::$ticket.        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :116   Access to an undefined property App\Models\Suggestion::$ticket.        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :192   Access to an undefined property App\Models\Suggestion::$ticket.        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :209   Access to an undefined property App\Models\Suggestion::$ticket.        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------- --------------------------------------------------------------------- 
+  Line    app/Http/Controllers/Api/UserController.php                          
+ ------- --------------------------------------------------------------------- 
+  :136    Parameter #1 $userId of method                                       
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int, string given.                                                   
+          🪪  argument.type                                                    
+  :136    Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :177    Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :277    Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :369    Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :422    Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :425    Parameter #1 $userId of method                                       
+          App\Http\Controllers\Api\UserController::terminateAllUserSessions()  
+          expects int, string given.                                           
+          🪪  argument.type                                                    
+  :513    Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :516    Parameter #1 $userId of method                                       
+          App\Http\Controllers\Api\UserController::terminateAllUserSessions()  
+          expects int, string given.                                           
+          🪪  argument.type                                                    
+  :580    Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :588    Parameter #1 $userId of method                                       
+          App\Http\Controllers\Api\UserController::terminateAllUserSessions()  
+          expects int, string given.                                           
+          🪪  argument.type                                                    
+  :890    Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :920    Parameter #1 $userId of method                                       
+          App\Http\Controllers\Api\UserController::terminateAllUserSessions()  
+          expects int, string given.                                           
+          🪪  argument.type                                                    
+  :957    Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :1001   Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :1039   Parameter #4 $resourceId of method                                   
+          App\Http\Controllers\Api\UserController::logUserActivity() expects   
+          int|null, string given.                                              
+          🪪  argument.type                                                    
+  :1217   Call to an undefined static method                                   
+          Maatwebsite\Excel\Facades\Excel::create().                           
+          🪪  staticMethod.notFound                                            
+  :1223   Call to an undefined static method                                   
+          Maatwebsite\Excel\Facades\Excel::create().                           
+          🪪  staticMethod.notFound                                            
+  :1256   Call to an undefined static method                                   
+          Maatwebsite\Excel\Facades\Excel::load().                             
+          🪪  staticMethod.notFound                                            
+  :1344   Method                                                               
+          App\Http\Controllers\Api\UserController::sendUserCredentials()       
+          returns void but does not have any side effects.                     
+          🪪  void.pure                                                        
+  :1348   Dead catch - Exception is never thrown in the try block.             
+          🪪  catch.neverThrown                                                
+  :1356   Method                                                               
+          App\Http\Controllers\Api\UserController::sendPasswordResetEmail()    
+          returns void but does not have any side effects.                     
+          🪪  void.pure                                                        
+  :1360   Dead catch - Exception is never thrown in the try block.             
+          🪪  catch.neverThrown                                                
+ ------- --------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------- 
+  Line   app/Http/Middleware/ConsentValidation.php                     
+ ------ -------------------------------------------------------------- 
+  :14    Deprecated in PHP 8.4: Parameter #3 $consentType (string) is  
+         implicitly nullable via default value null.                   
+         🪪  parameter.implicitlyNullable                              
+ ------ -------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/Agenda.php                                                  
+ ------ ----------------------------------------------------------------------- 
+  :282   Offset                                                                 
+         'BUDGET'|'EVALUATION'|'INSPECTION'|'MEETING'|'OTHER'|'PLANNING'|'PRES  
+         ENTATION'|'REVIEW' on array{MEETING: '#60a5fa', REVIEW: '#4ade80',     
+         PRESENTATION: '#a78bfa', EVALUATION: '#facc15', BUDGET: '#f87171',     
+         PLANNING: '#818cf8', INSPECTION: '#fb923c', OTHER: '#9ca3af'} on left  
+         side of ?? always exists and is not nullable.                          
+         🪪  nullCoalesce.offset                                                
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/BarangayOfficial.php                                        
+ ------ ----------------------------------------------------------------------- 
+  :411   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$first_name.                       
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :412   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$middle_name.                      
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :413   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$last_name.                        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :414   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$suffix.                           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :415   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$full_name.                        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :416   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$birth_date.                       
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :417   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$gender.                           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :418   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$mobile_number.                    
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :419   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$email_address.                    
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :420   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$complete_address.                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :449   Deprecated in PHP 8.4: Parameter #3 $termNumber (int) is implicitly    
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+ ------ ----------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------- 
+  Line   app/Models/DataConsent.php                                          
+ ------ -------------------------------------------------------------------- 
+  :102   Deprecated in PHP 8.4: Parameter #1 $reason (string) is implicitly  
+         nullable via default value null.                                    
+         🪪  parameter.implicitlyNullable                                    
+ ------ -------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/Document.php                                                
+ ------ ----------------------------------------------------------------------- 
+  :333   Negated boolean expression is always false.                            
+         🪪  booleanNot.alwaysFalse                                             
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :338   Method App\Models\Document::getProcessingDaysAttribute() should        
+         return int but returns float.                                          
+         🪪  return.type                                                        
+  :644   Parameter #3 $subject of function str_replace expects array<string>|s  
+         tring, float given.                                                    
+         🪪  argument.type                                                      
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/Household.php                                               
+ ------ ----------------------------------------------------------------------- 
+  :79    Property 'member_count' does not exist in model.                       
+         🪪  rules.modelAppends                                                 
+  :278   Method App\Models\Household::head() should return                      
+         App\Models\Resident|null but returns                                   
+         (Illuminate\Database\Eloquent\Model&object{pivot:                      
+         Illuminate\Database\Eloquent\Relations\Pivot})|null.                   
+         🪪  return.type                                                        
+  :461   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Relations\Pivot::$relationship.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/Project.php                                                 
+ ------ ----------------------------------------------------------------------- 
+  :128   Access to an undefined property                                        
+         App\Models\Project::$allocated_budget.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :129   Access to an undefined property App\Models\Project::$utilized_budget.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :151   Access to an undefined property                                        
+         App\Models\Project::$target_beneficiaries.                             
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :152   Access to an undefined property                                        
+         App\Models\Project::$actual_beneficiaries.                             
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :197   Access to an undefined property App\Models\Project::$category.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :201   Parameter #1 $string of function str_pad expects string, int<1, max>   
+         given.                                                                 
+         🪪  argument.type                                                      
+  :220   Access to an undefined property App\Models\Project::$category.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :240   Deprecated in PHP 8.4: Parameter #1 $completionReport (string) is      
+         implicitly nullable via default value null.                            
+         🪪  parameter.implicitlyNullable                                       
+  :287   Deprecated in PHP 8.4: Parameter #2 $description (string) is           
+         implicitly nullable via default value null.                            
+         🪪  parameter.implicitlyNullable                                       
+  :289   Access to an undefined property App\Models\Project::$utilized_budget.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :290   Access to an undefined property                                        
+         App\Models\Project::$allocated_budget.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :312   Deprecated in PHP 8.4: Parameter #2 $qualityRating (int) is            
+         implicitly nullable via default value null.                            
+         🪪  parameter.implicitlyNullable                                       
+  :333   Access to an undefined property                                        
+         App\Models\Project::$allocated_budget.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :333   Access to an undefined property App\Models\Project::$utilized_budget.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :339   Access to an undefined property                                        
+         App\Models\Project::$allocated_budget.                                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :339   Access to an undefined property App\Models\Project::$utilized_budget.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :363   Access to an undefined property App\Models\Project::$title.            
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :364   Access to an undefined property App\Models\Project::$category.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :366   Access to an undefined property App\Models\Project::$total_budget.     
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :370   Access to an undefined property App\Models\Project::$actual_end_date.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :372   Access to an undefined property App\Models\Project::$team_size.        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :383   Access to an undefined property App\Models\Project::$title.            
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :384   Access to an undefined property App\Models\Project::$category.         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :386   Access to an undefined property App\Models\Project::$total_budget.     
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :390   Access to an undefined property App\Models\Project::$actual_end_date.  
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :392   Access to an undefined property App\Models\Project::$team_size.        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/ProjectMilestone.php                                        
+ ------ ----------------------------------------------------------------------- 
+  :161   Deprecated in PHP 8.4: Parameter #1 $notes (string) is implicitly      
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :161   Deprecated in PHP 8.4: Parameter #2 $qualityScore (int) is implicitly  
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :175   Deprecated in PHP 8.4: Parameter #1 $reason (string) is implicitly     
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :201   Result of && is always false.                                          
+         🪪  booleanAnd.alwaysFalse                                             
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :201   Strict comparison using === between                                    
+         'CANCELLED'|'COMPLETED'|'DELAYED'|'IN_PROGRESS'|'NOT_STARTED' and      
+         'PENDING' will always evaluate to false.                               
+         🪪  identical.alwaysFalse                                              
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :209   Deprecated in PHP 8.4: Parameter #2 $team (string) is implicitly       
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :217   Deprecated in PHP 8.4: Parameter #2 $actualCost (float) is implicitly  
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :225   Deprecated in PHP 8.4: Parameter #2 $reason (string) is implicitly     
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :323   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$milestones.                       
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :334   Call to an undefined method                                            
+         Illuminate\Database\Eloquent\Model::updateProgress().                  
+         🪪  method.notFound                                                    
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/ProjectTeamMember.php                                       
+ ------ ----------------------------------------------------------------------- 
+  :83    Method App\Models\ProjectTeamMember::getDaysInProjectAttribute()       
+         should return int but returns float.                                   
+         🪪  return.type                                                        
+  :88    Access to an undefined property                                        
+         App\Models\ProjectTeamMember::$is_active.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :135   Deprecated in PHP 8.4: Parameter #1 $reason (string) is implicitly     
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :152   Deprecated in PHP 8.4: Parameter #2 $newResponsibilities (string) is   
+         implicitly nullable via default value null.                            
+         🪪  parameter.implicitlyNullable                                       
+  :169   Deprecated in PHP 8.4: Parameter #2 $notes (string) is implicitly      
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :179   Deprecated in PHP 8.4: Parameter #1 $email (string) is implicitly      
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :179   Deprecated in PHP 8.4: Parameter #2 $contact (string) is implicitly    
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :196   Deprecated in PHP 8.4: Parameter #2 $preference (string) is            
+         implicitly nullable via default value null.                            
+         🪪  parameter.implicitlyNullable                                       
+  :209   Access to an undefined property                                        
+         App\Models\ProjectTeamMember::$expertise.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :228   Access to an undefined property                                        
+         App\Models\ProjectTeamMember::$is_active.                              
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :228   Access to an undefined property                                        
+         App\Models\ProjectTeamMember::$receives_notifications.                 
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :236   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$first_name.                       
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :236   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$last_name.                        
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :237   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Model::$email.                            
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :238   Access to an undefined property                                        
+         App\Models\ProjectTeamMember::$member_contact.                         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :243   Access to an undefined property                                        
+         App\Models\ProjectTeamMember::$member_name.                            
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :244   Access to an undefined property                                        
+         App\Models\ProjectTeamMember::$member_email.                           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :245   Access to an undefined property                                        
+         App\Models\ProjectTeamMember::$member_contact.                         
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :262   Parameter #1 $years of method                                          
+         App\Models\ProjectTeamMember::formatTenure() expects int, float        
+         given.                                                                 
+         🪪  argument.type                                                      
+  :262   Parameter #2 $months of method                                         
+         App\Models\ProjectTeamMember::formatTenure() expects int, float        
+         given.                                                                 
+         🪪  argument.type                                                      
+  :262   Parameter #3 $days of method                                           
+         App\Models\ProjectTeamMember::formatTenure() expects int, float        
+         given.                                                                 
+         🪪  argument.type                                                      
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/Resident.php                                                
+ ------ ----------------------------------------------------------------------- 
+  :42    PHPDoc type array<int, string> of property App\Models\Resident::$fill  
+         able is not covariant with PHPDoc type list<string> of overridden pro  
+         perty Illuminate\Database\Eloquent\Model::$fillable.                   
+         🪪  property.phpDocType                                                
+         💡  You can fix 3rd party PHPDoc types with stub files:                
+         💡  https://phpstan.org/user-guide/stub-files                          
+  :104   Property 'is_household_head' does not exist in model.                  
+         🪪  rules.modelAppends                                                 
+  :232   Negated boolean expression is always false.                            
+         🪪  booleanNot.alwaysFalse                                             
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :251   Ternary operator condition is always true.                             
+         🪪  ternary.alwaysTrue                                                 
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :299   Ternary operator condition is always true.                             
+         🪪  ternary.alwaysTrue                                                 
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :317   Ternary operator condition is always true.                             
+         🪪  ternary.alwaysTrue                                                 
+         💡  Because the type is coming from a PHPDoc, you can turn off this    
+         check by setting treatPhpDocTypesAsCertain: false in your phpstan.neo  
+         n.                                                                     
+  :326   Access to an undefined property                                        
+         Illuminate\Database\Eloquent\Relations\Pivot::$relationship.           
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :349   Method App\Models\Resident::household() should return                  
+         App\Models\Household|null but returns                                  
+         (Illuminate\Database\Eloquent\Model&object{pivot:                      
+         Illuminate\Database\Eloquent\Relations\Pivot})|null.                   
+         🪪  return.type                                                        
+  :381   Method App\Models\Resident::currentOfficialPosition() should return    
+         App\Models\BarangayOfficial|null but returns                           
+         Illuminate\Database\Eloquent\Model|null.                               
+         🪪  return.type                                                        
+  :631   Access to an undefined property                                        
+         App\Models\Resident::$is_household_head.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :641   Method App\Models\Resident::getPrimaryHousehold() should return        
+         App\Models\Household|null but returns                                  
+         (Illuminate\Database\Eloquent\Model&object{pivot:                      
+         Illuminate\Database\Eloquent\Relations\Pivot})|null.                   
+         🪪  return.type                                                        
+  :925   Access to an undefined property                                        
+         App\Models\Resident::$is_household_head.                               
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/Setting.php                                                 
+ ------ ----------------------------------------------------------------------- 
+  :53    Unsafe usage of new static().                                          
+         🪪  new.static                                                         
+         💡  See:                                                               
+         https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-st  
+         atic                                                                   
+  :68    Property App\Models\Setting::$id (int) does not accept string.         
+         🪪  assign.propertyType                                                
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------- 
+  Line   app/Models/Ticket.php                                        
+ ------ ------------------------------------------------------------- 
+  :69    Unsafe call to private method                                
+         App\Models\Ticket::generateTicketNumber() through static::.  
+         🪪  staticClassAccess.privateMethod                          
+ ------ ------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/User.php                                                    
+ ------ ----------------------------------------------------------------------- 
+  :91    Property 'is_barangay_official' does not exist in model.               
+         🪪  rules.modelAppends                                                 
+  :291   Offset                                                                 
+         'ADMIN'|'BARANGAY_CAPTAIN'|'BARANGAY_CLERK'|'BARANGAY_COUNCILOR'|'BAR  
+         ANGAY_SECRETARY'|'BARANGAY_TREASURER'|'DATA_ENCODER'|'HEALTH_WORKER'|  
+         'SECURITY_OFFICER'|'SOCIAL_WORKER'|'SUPER_ADMIN'|'VIEWER' on           
+         array{SUPER_ADMIN: 'Super Administrator', ADMIN: 'Administrator',      
+         BARANGAY_CAPTAIN: 'Barangay Captain', BARANGAY_SECRETARY: 'Barangay    
+         Secretary', BARANGAY_TREASURER: 'Barangay Treasurer',                  
+         BARANGAY_COUNCILOR: 'Barangay Councilor', BARANGAY_CLERK: 'Barangay    
+         Clerk', HEALTH_WORKER: 'Health Worker', ...} on left side of ??        
+         always exists and is not nullable.                                     
+         🪪  nullCoalesce.offset                                                
+  :313   Offset                                                                 
+         'ADMINISTRATION'|'BUSINESS_PERMITS'|'COMMUNITY…'|'DISASTER_RISK…'|'EN  
+         VIRONMENTAL…'|'FINANCE_TREASURY'|'HEALTH_SERVICES'|'INFRASTRUCTURE…'|  
+         'RECORDS_MANAGEMENT'|'SECURITY_PUBLIC…'|'SENIOR_CITIZEN…'|'SOCIAL_SER  
+         VICES'|'WOMENS_AFFAIRS'|'YOUTH_SPORTS…' on array{ADMINISTRATION:       
+         'Administration', HEALTH_SERVICES: 'Health Services',                  
+         SOCIAL_SERVICES: 'Social Services', SECURITY_PUBLIC_SAFETY: 'Security  
+         & Public…', FINANCE_TREASURY: 'Finance & Treasury',                    
+         RECORDS_MANAGEMENT: 'Records Management', COMMUNITY_DEVELOPMENT:       
+         'Community…', DISASTER_RISK_REDUCTION: 'Disaster Risk…', ...} on left  
+         side of ?? always exists and is not nullable.                          
+         🪪  nullCoalesce.offset                                                
+  :430   Method App\Models\User::currentOfficialPosition() should return        
+         App\Models\BarangayOfficial|null but returns                           
+         Illuminate\Database\Eloquent\Model|null.                               
+         🪪  return.type                                                        
+  :527   Access to an undefined property                                        
+         App\Models\User::$is_barangay_official.                                
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :552   Offset                                                                 
+         'ADMIN'|'BARANGAY_CAPTAIN'|'BARANGAY_CLERK'|'BARANGAY_COUNCILOR'|'BAR  
+         ANGAY_SECRETARY'|'BARANGAY_TREASURER'|'DATA_ENCODER'|'HEALTH_WORKER'|  
+         'SECURITY_OFFICER'|'SOCIAL_WORKER'|'SUPER_ADMIN'|'VIEWER' on           
+         array{VIEWER: 1, DATA_ENCODER: 2, SECURITY_OFFICER: 3, SOCIAL_WORKER:  
+         3, HEALTH_WORKER: 3, BARANGAY_CLERK: 4, BARANGAY_COUNCILOR: 5,         
+         BARANGAY_TREASURER: 6, ...} on left side of ?? always exists and is    
+         not nullable.                                                          
+         🪪  nullCoalesce.offset                                                
+  :553   Offset                                                                 
+         'ADMIN'|'BARANGAY_CAPTAIN'|'BARANGAY_CLERK'|'BARANGAY_COUNCILOR'|'BAR  
+         ANGAY_SECRETARY'|'BARANGAY_TREASURER'|'DATA_ENCODER'|'HEALTH_WORKER'|  
+         'SECURITY_OFFICER'|'SOCIAL_WORKER'|'SUPER_ADMIN'|'VIEWER' on           
+         array{VIEWER: 1, DATA_ENCODER: 2, SECURITY_OFFICER: 3, SOCIAL_WORKER:  
+         3, HEALTH_WORKER: 3, BARANGAY_CLERK: 4, BARANGAY_COUNCILOR: 5,         
+         BARANGAY_TREASURER: 6, ...} on left side of ?? always exists and is    
+         not nullable.                                                          
+         🪪  nullCoalesce.offset                                                
+  :638   Access to an undefined property                                        
+         App\Models\User::$is_barangay_official.                                
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/UserActivity.php                                            
+ ------ ----------------------------------------------------------------------- 
+  :97    Access to an undefined property App\Models\UserActivity::$action.      
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :97    Access to an undefined property App\Models\UserActivity::$action.      
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :110   Access to an undefined property App\Models\UserActivity::$resource.    
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :110   Access to an undefined property App\Models\UserActivity::$resource.    
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Models/UserSession.php                                             
+ ------ ----------------------------------------------------------------------- 
+  :77    Access to an undefined property                                        
+         App\Models\UserSession::$last_activity.                                
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+  :149   Access to an undefined property                                        
+         App\Models\UserSession::$last_activity.                                
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Services/SupabaseStorageService.php                                
+ ------ ----------------------------------------------------------------------- 
+  :19    Property App\Services\SupabaseStorageService::$anonKey is never read,  
+         only written.                                                          
+         🪪  property.onlyWritten                                               
+         💡  See:                                                               
+         https://phpstan.org/developing-extensions/always-read-written-propert  
+         ies                                                                    
+  :343   Expression on left side of ?? is not nullable.                         
+         🪪  nullCoalesce.expr                                                  
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Services/SupabaseStorageService_temp.php                           
+ ------ ----------------------------------------------------------------------- 
+  :19    Property App\Services\SupabaseStorageService::$anonKey is never read,  
+         only written.                                                          
+         🪪  property.onlyWritten                                               
+         💡  See:                                                               
+         https://phpstan.org/developing-extensions/always-read-written-propert  
+         ies                                                                    
+  :325   Method Illuminate\Http\Client\Response::header() invoked with 2        
+         parameters, 1 required.                                                
+         🪪  arguments.count                                                    
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Traits/LogsActivity.php (in context of class                       
+         App\Models\Household)                                                  
+ ------ ----------------------------------------------------------------------- 
+  :31    Deprecated in PHP 8.4: Parameter #2 $oldValues (array) is implicitly   
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :55    Deprecated in PHP 8.4: Parameter #2 $description (string) is           
+         implicitly nullable via default value null.                            
+         🪪  parameter.implicitlyNullable                                       
+  :55    Deprecated in PHP 8.4: Parameter #3 $oldValues (array) is implicitly   
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :55    Deprecated in PHP 8.4: Parameter #4 $newValues (array) is implicitly   
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :197   Access to an undefined property                                        
+         App\Models\Household::$skipActivityLogging.                            
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   app/Traits/LogsActivity.php (in context of class App\Models\Resident)  
+ ------ ----------------------------------------------------------------------- 
+  :31    Deprecated in PHP 8.4: Parameter #2 $oldValues (array) is implicitly   
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :55    Deprecated in PHP 8.4: Parameter #2 $description (string) is           
+         implicitly nullable via default value null.                            
+         🪪  parameter.implicitlyNullable                                       
+  :55    Deprecated in PHP 8.4: Parameter #3 $oldValues (array) is implicitly   
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :55    Deprecated in PHP 8.4: Parameter #4 $newValues (array) is implicitly   
+         nullable via default value null.                                       
+         🪪  parameter.implicitlyNullable                                       
+  :197   Access to an undefined property                                        
+         App\Models\Resident::$skipActivityLogging.                             
+         🪪  property.notFound                                                  
+         💡  Learn more: https://phpstan.org/blog/solving-phpstan-access-to-und  
+         efined-property                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ -------------------------------------------- 
+  Line   config/database.php                         
+ ------ -------------------------------------------- 
+  :10    No error to ignore is reported on line 10.  
+ ------ -------------------------------------------- 
+
+ ------ ---------------------------------------------------------------------- 
+  Line   database/migrations/old/2025_06_14_071434_create_users_table.php      
+ ------ ---------------------------------------------------------------------- 
+  :33    Access to constant ROLES on an unknown class                          
+         App\Models\Schemas\UserSchema.                                        
+         🪪  class.notFound                                                    
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+  :34    Access to constant DEPARTMENTS on an unknown class                    
+         App\Models\Schemas\UserSchema.                                        
+         🪪  class.notFound                                                    
+         💡  Learn more at https://phpstan.org/user-guide/discovering-symbols  
+ ------ ---------------------------------------------------------------------- 
+
+ -- --------------------------------------------------------------------------- 
+     Error                                                                      
+ -- --------------------------------------------------------------------------- 
+     Ignored error pattern #Call to an undefined method                         
+     Illuminate\\Database\\Query\\Builder# was not matched in reported errors.  
+ -- --------------------------------------------------------------------------- 
+
+ [ERROR] Found 308 errors                                                       
+
+Script vendor/bin/phpstan analyse --memory-limit=2G handling the phpstan event returned with error code 1

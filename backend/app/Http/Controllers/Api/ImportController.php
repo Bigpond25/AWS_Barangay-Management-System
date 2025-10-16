@@ -285,7 +285,7 @@ class ImportController extends Controller
         
         // Convert empty strings to null
         foreach ($transformed as $key => $value) {
-            if ($value === '' || $value === null) {
+            if ($value === '') {
                 $transformed[$key] = null;
             }
         }
@@ -297,7 +297,7 @@ class ImportController extends Controller
     }
 
     /**
-     * Validate resident data
+     * Transform household data from CSV to match model structure
      */
     private function validateResidentData(array $data): \Illuminate\Contracts\Validation\Validator
     {
@@ -670,7 +670,7 @@ class ImportController extends Controller
         
         // Convert empty strings to null
         foreach ($transformed as $key => $value) {
-            if ($value === '' || $value === null) {
+            if ($value === '') {
                 $transformed[$key] = null;
             }
         }

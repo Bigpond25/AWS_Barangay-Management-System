@@ -12,6 +12,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
+/**
+ * @property-read string $action
+ * @property-read string $resource
+ */
 class UserActivity extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;

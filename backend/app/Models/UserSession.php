@@ -11,7 +11,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
+/**
+ * @property int $last_activity
+ * @property \Illuminate\Support\Carbon $expires_at
+ * @property bool $is_current
+ * @property string $user_agent
+ * @property string $ip_address
+ */
 class UserSession extends Model
 {
     use HasFactory, HasUuids;

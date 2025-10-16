@@ -11,7 +11,7 @@ class ConsentValidation
     /**
      * Handle an incoming request - check for required consents
      */
-    public function handle(Request $request, Closure $next, string $consentType = null)
+    public function handle(Request $request, Closure $next, ?string $consentType = null)
     {
         // Skip consent validation for certain routes
         $skipRoutes = [

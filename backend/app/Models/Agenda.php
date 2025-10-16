@@ -279,7 +279,7 @@ class Agenda extends Model
             'OTHER' => '#9ca3af',        // gray-400
         ];
 
-        return $colors[$this->category] ?? $colors['OTHER'];
+        return $colors[$this->category];
     }
 
     /**

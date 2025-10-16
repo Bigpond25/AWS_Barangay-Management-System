@@ -12,6 +12,17 @@ use Carbon\Carbon;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property-read float $allocated_budget
+ * @property-read float $utilized_budget
+ * @property-read int $target_beneficiaries
+ * @property-read int $actual_beneficiaries
+ * @property-read string $category
+ * @property-read string $title
+ * @property-read float $total_budget
+ * @property-read Carbon|null $actual_end_date
+ * @property-read int $team_size
+ */
 class Project extends Model implements Auditable
 {
     use HasFactory, HasUuids, \OwenIt\Auditing\Auditable;
@@ -125,7 +136,7 @@ class Project extends Model implements Auditable
     // Computed attributes
     public function getBudgetUtilizationRateAttribute(): float
     {
-        if ($this->allocated_budget == 0) return 0;
+        if ($this->allocated_budget === 0 || $this->allocated_budget === 0.0) return 0;
         return round(($this->utilized_budget / $this->allocated_budget) * 100, 2);
     }
 
@@ -148,7 +159,7 @@ class Project extends Model implements Auditable
 
     public function getBeneficiaryReachRateAttribute(): float
     {
-        if ($this->target_beneficiaries == 0) return 0;
+        if ($this->target_beneficiaries === 0) return 0;
         return round(($this->actual_beneficiaries / $this->target_beneficiaries) * 100, 2);
     }
 
@@ -198,7 +209,7 @@ class Project extends Model implements Auditable
                       ->whereYear('created_at', $year)
                       ->count() + 1;
         
-        return "PROJ-{$categoryCode}-{$year}-" . str_pad($count, 3, '0', STR_PAD_LEFT);
+        return "PROJ-{$categoryCode}-{$year}-" . str_pad((string) $count, 3, '0', STR_PAD_LEFT);
     }
 
     private function getCategoryCode(): string
@@ -237,7 +248,7 @@ class Project extends Model implements Auditable
         ]);
     }
 
-    public function complete(string $completionReport = null): void
+    public function complete(?string $completionReport = null): void
     {
         $this->update([
             'status' => 'COMPLETED',
@@ -284,7 +295,7 @@ class Project extends Model implements Auditable
         }
     }
 
-    public function addBudgetUtilization(float $amount, string $description = null): void
+    public function addBudgetUtilization(float $amount, ?string $description = null): void
     {
         $newUtilized = $this->utilized_budget + $amount;
         $newRemaining = $this->allocated_budget - $newUtilized;
@@ -309,7 +320,7 @@ class Project extends Model implements Auditable
         ]);
     }
 
-    public function addMonitoringEntry(string $remarks, int $qualityRating = null): void
+    public function addMonitoringEntry(string $remarks, ?int $qualityRating = null): void
     {
         $this->update([
             'last_monitoring_date' => now(),
@@ -347,7 +358,7 @@ class Project extends Model implements Auditable
         $totalDays = $this->start_date->diffInDays($this->end_date);
         $elapsedDays = $this->start_date->diffInDays($today);
         
-        if ($totalDays == 0) return false;
+        if ($totalDays === 0) return false;
         
         $expectedProgress = ($elapsedDays / $totalDays) * 100;
         return $this->progress_percentage < $expectedProgress;

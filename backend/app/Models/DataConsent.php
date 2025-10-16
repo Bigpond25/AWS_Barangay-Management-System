@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use OwenIt\Auditing\Contracts\Auditable;
 
+/**
+ * @property User|null $user The associated user relationship
+ */
 class DataConsent extends Model implements Auditable
 {
     use HasFactory, HasUuids, SoftDeletes, \OwenIt\Auditing\Auditable;
@@ -99,7 +102,7 @@ class DataConsent extends Model implements Auditable
         return !is_null($this->withdrawn_at);
     }
 
-    public function withdraw(string $reason = null): void
+    public function withdraw(?string $reason = null): void
     {
         $this->update([
             'withdrawn_at' => now(),

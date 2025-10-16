@@ -410,7 +410,7 @@ class DashboardController extends Controller
                     'profile_photo',
                 ])
                 ->get()
-                ->map(function ($official) {
+                ->map(function (BarangayOfficial $official) {
                     return [
                         'id' => $official->id,
                         'name' => trim($official->first_name . ' ' . $official->last_name),
@@ -431,23 +431,5 @@ class DashboardController extends Controller
                 'errors' => ['general' => [$e->getMessage()]]
             ], 500);
         }
-    }
-
-    /**
-     * Generate a default photo URL based on name and ID
-     */
-    private function getDefaultPhoto($firstName, $id): string
-    {
-        // Use different photos based on the person's first name and ID for variety
-        $photos = [
-            'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-            'https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80',
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
-        ];
-        
-        return $photos[$id % count($photos)];
     }
 }
