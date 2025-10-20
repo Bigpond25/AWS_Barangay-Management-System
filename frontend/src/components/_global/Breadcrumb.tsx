@@ -108,7 +108,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ className = '', isLoaded = true
     >
       {breadcrumbs.map((breadcrumb, index) => (
         <React.Fragment key={breadcrumb.path}>
-          {breadcrumb.isClickable ? (
+          {breadcrumb.isClickable && breadcrumb.label != "Barangay Records" ? (
             <button
               onClick={() => handleBreadcrumbClick(breadcrumb.path)}
               className="text-smblue-400 hover:text-smblue-600 transition-colors duration-200 cursor-pointer"

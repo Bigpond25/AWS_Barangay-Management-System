@@ -13,6 +13,7 @@ import {
   FiUpload,
   FiCalendar,
   FiShield,
+  FiArchive
 } from "react-icons/fi";
 import sanMiguelLogo from "@/assets/sanMiguelLogo.jpg";
 import { usePermissionCheck } from "@/hooks/usePermissionCheck";
@@ -96,6 +97,19 @@ const Sidebar: React.FC<SidebarProps> = ({
         { id: "certificate-residency", label: "Certificate of Residency" },
         { id: "notice-of-hearing", label: "Notice of Hearing" },
         { id: "retirement", label: "Retirement" },
+      ],
+    },
+    {
+      id: "barangay-records",
+      label: "Barangay Records",
+      icon: FiArchive,
+      hasSubmenu: true,
+      submenu: [
+        { id: "establishments", label: "Establishment / Business Clearance" },
+        { id: "infrastructure", label: "Infrastructure / Building Permit" },  
+        { id: "lupon-cases", label: "Lupon Cases" },                          
+        { id: "personal-clearance", label: "Personal Clearance" },            
+        { id: "shooting-permit", label: "Shooting Permit" },                  
       ],
     },
     {
@@ -308,7 +322,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     e.preventDefault();
 
     // Always navigate to the menu item
-    onItemClick(item.id);
+    if (item.label != 'Barangay Records') {
+      onItemClick(item.id);
+    }
 
     // If it has submenu and sidebar is expanded, ensure it's expanded
     if (item.hasSubmenu && (isExpanded || isMobile) && !isMobile) {

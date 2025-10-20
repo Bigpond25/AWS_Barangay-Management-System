@@ -125,7 +125,7 @@ export const UserSchema = UserFormDataSchema.extend({
   last_login_at: z.string().nullable().optional(),
   created_at: z.string(),
   updated_at: z.string(),
-  created_by: z.number().nullable().optional(),
+  // created_by: z.number().nullable().optional(),
   updated_by: z.number().nullable().optional(),
   created_by: z.object({
     id: z.number(),

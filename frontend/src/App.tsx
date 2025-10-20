@@ -67,6 +67,10 @@ import CashBondPrint from "./components/processDocument/CashBondPrint";
 import SummonPrint from "./components/processDocument/SummonPrint";
 import SummonForm from "./components/processDocument/SummonForm";
 
+import Establishment from "./components/barangayRecords/Establishment";
+import AddNewEstablishment from "./components/barangayRecords/AddNewEstablishment";
+import EstablishmentDetails from "./components/barangayRecords/EstablishmentDetails";
+
 
 // Wrapper components to handle navigation prop
 const ProcessDocumentWrapper = () => {
@@ -354,6 +358,35 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard permission="create-documents">
                 <RetirementFormWrapper />
+              </PermissionGuard>
+            ),
+          },
+        ],
+      },
+      {
+        path: "barangay-records",
+        children: [
+          {
+            path: "establishments",
+            element: (
+                <PermissionGuard>
+                  <Establishment />
+                </PermissionGuard>
+            ),
+          },
+          {
+            path: "establishments/add",
+            element: (
+              <PermissionGuard>
+                <AddNewEstablishment />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "establishments/:id",
+            element: (
+              <PermissionGuard>
+                <EstablishmentDetails />
               </PermissionGuard>
             ),
           },

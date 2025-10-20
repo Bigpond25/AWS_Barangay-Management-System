@@ -3,26 +3,27 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ResidentController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\HouseholdController;
-use App\Http\Controllers\Api\DocumentController;
-use App\Http\Controllers\Api\ProjectController;
-use App\Http\Controllers\Api\ComplaintController;
-use App\Http\Controllers\Api\SuggestionController;
-use App\Http\Controllers\Api\BlotterController;
-use App\Http\Controllers\Api\AppointmentController;
-use App\Http\Controllers\Api\BarangayOfficialController;
-use App\Http\Controllers\Api\SettingController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\ReportsController;
-use App\Http\Controllers\Api\FileUploadController;
+use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\ImportController;
 use App\Http\Controllers\Api\TicketController;
-use App\Http\Controllers\Api\AgendaController;
-use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\BlotterController;
 use App\Http\Controllers\Api\ConsentController;
+use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\ReportsController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StorageController;
+use App\Http\Controllers\Api\DocumentController;
+use App\Http\Controllers\Api\ResidentController;
+use App\Http\Controllers\Api\ComplaintController;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\HouseholdController;
+use App\Http\Controllers\Api\FileUploadController;
+use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\SuggestionController;
+use App\Http\Controllers\Api\AppointmentController;
+use App\Http\Controllers\Api\EstablishmentController;
+use App\Http\Controllers\Api\BarangayOfficialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
+    });
+
+    Route::prefix('establishments')->group(function () {
+        Route::get('/', [EstablishmentController::class, 'index']);
+        Route::post('/', [EstablishmentController::class, 'store']);
+        Route::get('/{establishment}', [EstablishmentController::class, 'show']);
+        Route::put('/{establishment}', [EstablishmentController::class, 'update']);
+        Route::delete('/{establishment}', [EstablishmentController::class, 'destroy']);
+        Route::post('/import', [EstablishmentController::class, 'import']);
     });
 
     // Import/Export functionality
