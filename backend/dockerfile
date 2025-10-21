@@ -1,7 +1,7 @@
 # Use official PHP 8.3 FPM Alpine
 FROM php:8.3-fpm-alpine
 
-# Install system dependencies
+# Install system dependencies and PHP extensions
 RUN apk add --no-cache \
     nginx \
     postgresql-dev \
@@ -11,7 +11,13 @@ RUN apk add --no-cache \
     unzip \
     git \
     curl \
-    && docker-php-ext-install pdo_pgsql pgsql
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo_pgsql pgsql mbstring xml
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -65,9 +71,10 @@ http {
     server {
         listen 8080;
         server_name _;
+
         root /var/www/html/public;
-        index index.php;
-        
+        index index.php index.html;
+
         location / {
             try_files \$uri \$uri/ /index.php?\$query_string;
         }
