@@ -93,8 +93,8 @@ const BusinessSignClearanceColoredPrint: React.FC = () => {
   const permitNumber = document.document_number ? document.document_number.split('-').pop() : '2897';
   const processingFee = parseFloat(String(document.processing_fee)) || 0;
   
-  const dateIssued = document.approved_at ? 
-    new Date(document.approved_at).toLocaleDateString('en-US', { 
+  const dateIssued = document.approved_date ? 
+    new Date(document.approved_date).toLocaleDateString('en-US', { 
       day: '2-digit',
       month: 'short', 
       year: '2-digit' 
