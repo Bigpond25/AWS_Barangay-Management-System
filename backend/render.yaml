@@ -1,0 +1,59 @@
+services:
+  - type: web
+    name: barangay-management
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /
+    envVars:
+      # App Configuration
+      - key: APP_NAME
+        value: Barangay Management System
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        value: https://barangay-management.onrender.com  # Update with your actual URL
+      - key: APP_KEY
+        generateValue: true  # Render will generate this
+      
+      # Database - Using Supabase
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        value: aws-1-ap-southeast-1.pooler.supabase.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        value: postgres
+      - key: DB_USERNAME
+        value: postgres.muoktkmarwtaeyoehvbd
+      - key: DB_PASSWORD
+        sync: false  # Add this manually in Render dashboard
+      - key: DB_SSLMODE
+        value: require
+      
+      # Supabase Configuration
+      - key: SUPABASE_URL
+        value: https://muoktkmarwtaeyoehvbd.supabase.co
+      - key: SUPABASE_ANON_KEY
+        sync: false  # Add this manually
+      - key: SUPABASE_SERVICE_KEY
+        sync: false  # Add this manually
+      
+      # Cache & Session
+      - key: CACHE_STORE
+        value: database
+      - key: SESSION_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      
+      # Logging
+      - key: LOG_CHANNEL
+        value: stderr
+      
+      # Other
+      - key: WEBROOT
+        value: /var/www/html/public
