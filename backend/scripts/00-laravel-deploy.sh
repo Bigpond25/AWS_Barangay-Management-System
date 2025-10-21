@@ -7,6 +7,10 @@ echo "🚀 Starting Laravel deployment..."
 echo "⏳ Waiting for database connection..."
 php /var/www/html/artisan tinker --execute="DB::connection()->getPdo();" || sleep 5
 
+# 🟩 Run post-install artisan scripts manually
+echo "🧩 Running Laravel package discovery..."
+php /var/www/html/artisan package:discover --ansi || true
+
 # Generate APP_KEY if not set
 if [ -z "$APP_KEY" ]; then
     echo "🔑 Generating APP_KEY..."
@@ -24,6 +28,13 @@ echo "📦 Caching configuration..."
 php /var/www/html/artisan config:cache
 php /var/www/html/artisan route:cache
 php /var/www/html/artisan view:cache
+
+# 🟩 Optional: ensure Supabase vars are loaded
+if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
+    echo "⚠️  Warning: SUPABASE_URL or SUPABASE_KEY is not set. Check Render environment variables."
+else
+    echo "🔐 Supabase environment variables detected."
+fi
 
 # Run migrations
 echo "🗄️  Running database migrations..."
