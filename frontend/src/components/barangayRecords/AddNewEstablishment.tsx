@@ -4,10 +4,48 @@ import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../_global/Breadcrumb";
 import { establishmentService } from "@/services/establishments/establishment.service";
 
+type FormShape = {
+  business_name: string;
+  room_unit: string;
+  building: string;
+  no: string;
+  location: string;
+  owner: string;
+  telephone: string;
+  representative: string;
+  position: string;
+  nature_of_business: string;
+  type: string;
+  status: string;
+  capitalization: string;
+  ctc_no: string;
+  date_issued: string;
+  date_approved: string;
+  date_last_renewal: string;
+  remarks: string;
+  remarks_on_print_business: string;
+  date_of_retirement: string;
+  amount_paid: string;
+  clearance_fee: string;
+  sign_amount_paid: string;
+  sign_date: string;
+  sign_or: string;
+  custom_date: string;
+  custom_paid: string;
+  custom_or: string;
+  retirement_clearance: string;
+  personal_clearance_fee: string;
+  sign_wordings: string;
+  size: string;
+  material: string;
+  docs_attachment: File | null | string;
+  signature: File | null | string;
+};
+
 const AddNewEstablishment: React.FC = () => {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormShape>({
     business_name: "",
     room_unit: "",
     building: "",
@@ -41,8 +79,8 @@ const AddNewEstablishment: React.FC = () => {
     sign_wordings: "",
     size: "",
     material: "",
-    docs_attachment: "",
-    signature: "",
+    docs_attachment: null,
+    signature: null,
   });
 
   const locations = [
@@ -67,24 +105,47 @@ const AddNewEstablishment: React.FC = () => {
     "DALISAY EXT.",
   ];
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, files } = e.target as any;
-    if (files) {
-      setForm({ ...form, [name]: files[0] });
-    } else {
-      setForm({ ...form, [name]: value });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+  ) => {
+    const target = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+    const { name } = target;
+
+    // File inputs come through as HTMLInputElement with files
+    if ("files" in target && target.files && target.files.length > 0) {
+      const file = target.files[0];
+      setForm((prev) => ({ ...prev, [name]: file } as any));
+      return;
     }
+
+    // Otherwise, normal value
+    const value = (target as HTMLInputElement).value;
+    setForm((prev) => ({ ...prev, [name]: value } as any));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitting form data:", form);
+
     const formData = new FormData();
 
-    for (const key in form) {
-      formData.append(key, form[key]);
-    }
+    // iterate keys with keyof typing so TS knows these are valid keys
+    (Object.keys(form) as Array<keyof FormShape>).forEach((key) => {
+      const value = form[key];
 
+      // Only use instanceof File when value is an object (type guard)
+      if (typeof value === "object" && value !== null && value instanceof File) {
+        formData.append(String(key), value);
+      } else if (typeof value === "object" && value !== null && (value as File).name && (value as File).size) {
+        // handle file-like objects if any slipped through
+        formData.append(String(key), value as any);
+      } else {
+        // append as string for all other values
+        formData.append(String(key), value !== undefined && value !== null ? String(value) : "");
+      }
+    });
+
+    // call your service (assumed to accept FormData)
     establishmentService.createEstablishment(formData);
   };
 
@@ -94,19 +155,10 @@ const AddNewEstablishment: React.FC = () => {
 
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-6">
-
       <Breadcrumb isLoaded={true} />
 
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* <button
-            onClick={handleBack}
-            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-500 font-medium"
-          >
-            <FiArrowLeft className="w-4 h-4" />
-            Back to list
-          </button> */}
           <h1 className="text-2xl font-bold text-gray-800">Add New Establishment</h1>
         </div>
       </div>

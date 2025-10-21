@@ -35,9 +35,10 @@ const Establishment: React.FC = () => {
       // Laravel pagination format
       setEstablishments(data.data || []);
       setPagination({
-        current_page: data.meta.current_page,
-        last_page: data.meta.last_page,
+        current_page: data.current_page ?? 1,
+        last_page: data.last_page ?? 1,
       });
+
     } catch (error) {
       console.error('Error fetching establishments:', error);
     } finally {
