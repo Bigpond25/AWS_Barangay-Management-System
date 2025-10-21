@@ -145,7 +145,7 @@ $query = Document::select([
 ## Integration Points
 
 ### API Conventions
-- Base URL: `http://127.0.0.1:8000/api`
+- Base URL: `https://barangay-management-system-od8g.onrender.com/api`
 - Bearer token authentication via axios interceptors
 - Standardized response format with Laravel API resources
 - Pagination follows Laravel's default structure

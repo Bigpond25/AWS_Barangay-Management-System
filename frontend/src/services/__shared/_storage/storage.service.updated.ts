@@ -78,7 +78,7 @@ export class StorageService extends BaseApiService implements IStorageService {
     }
 
     // Fallback to Laravel asset URL
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+    const baseUrl = import.meta.env.VITE_API_URL || 'https://barangay-management-system-od8g.onrender.com';
     return `${baseUrl}/storage/public/${path}`;
   }
 
@@ -345,7 +345,7 @@ export class StorageService extends BaseApiService implements IStorageService {
     }
 
     // For local storage
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+    const baseUrl = import.meta.env.VITE_API_URL || 'https://barangay-management-system-od8g.onrender.com';
     return `${baseUrl}/storage/public/${relativePath.replace(/^\//, '')}`;
   }
 }

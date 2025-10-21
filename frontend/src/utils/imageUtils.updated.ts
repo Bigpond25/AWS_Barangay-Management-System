@@ -46,7 +46,7 @@ export const buildImageUrl = (filename: string | null, folder?: string): string 
   }
 
   // Fallback to local storage for backward compatibility
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+  const baseUrl = import.meta.env.VITE_API_URL || 'https://barangay-management-system-od8g.onrender.com';
   const folderPath = folder || 'residents/photos';
   return `${baseUrl}/storage/public/${folderPath}/${filename}`;
 };
@@ -86,7 +86,7 @@ export const buildImageUrlAsync = async (filename: string | null, folder?: strin
   }
 
   // Fallback to local storage for backward compatibility
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+  const baseUrl = import.meta.env.VITE_API_URL || 'https://barangay-management-system-od8g.onrender.com';
   const folderPath = folder || 'residents/photos';
   return `${baseUrl}/storage/public/${folderPath}/${filename}`;
 };
@@ -115,7 +115,7 @@ export const buildResidentPhotoUrl = async (residentId: string, filename: string
   }
 
   // Fallback to local storage
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+  const baseUrl = import.meta.env.VITE_API_URL || 'https://barangay-management-system-od8g.onrender.com';
   return `${baseUrl}/storage/public/residents/photos/${filename}`;
 };
 
@@ -147,7 +147,7 @@ export const buildDocumentUrl = async (
   }
 
   // Fallback to local storage
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+  const baseUrl = import.meta.env.VITE_API_URL || 'https://barangay-management-system-od8g.onrender.com';
   return `${baseUrl}/storage/private/residents/documents/${residentId}/${docType}/${filename}`;
 };
 
