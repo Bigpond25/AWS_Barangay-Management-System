@@ -1,8 +1,8 @@
-# Use PHP 8.2 with FPM and Nginx
-FROM richarvey/nginx-php-fpm:3.1.6
+# Use PHP 8.3 with FPM and Nginx
+FROM richarvey/nginx-php-fpm:php83
 
-# Copy application files
-COPY . /var/www/html
+# Copy backend application files
+COPY backend /var/www/html
 
 # Set working directory
 WORKDIR /var/www/html
@@ -11,6 +11,7 @@ WORKDIR /var/www/html
 RUN apk add --no-cache \
     postgresql-dev \
     libpq \
+    bash \
     && docker-php-ext-install pdo_pgsql pgsql
 
 # Set environment variables
@@ -33,7 +34,7 @@ RUN chown -R nginx:nginx /var/www/html \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
 # Copy deployment script to scripts directory
-COPY scripts/00-laravel-deploy.sh /scripts/00-laravel-deploy.sh
+COPY backend/scripts/00-laravel-deploy.sh /scripts/00-laravel-deploy.sh
 RUN chmod +x /scripts/00-laravel-deploy.sh
 
 # Create custom entrypoint
