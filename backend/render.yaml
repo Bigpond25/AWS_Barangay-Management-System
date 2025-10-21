@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: barangay-management-web
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: APP_KEY
+        sync: false
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: barangay-db
+          property: connectionString
+      - key: DB_CONNECTION
+        value: mysql   # or pgsql
+      - key: WEBROOT
+        value: /var/www/html/public
+
+databases:
+  - name: barangay-db
+    plan: free
+    databaseName: barangay_db
+    user: barangay_user

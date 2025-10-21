@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Log;
+
 use App\Models\Schemas\HouseholdSchema;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;

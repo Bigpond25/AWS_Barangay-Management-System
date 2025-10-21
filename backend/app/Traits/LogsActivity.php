@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Facades\Log;
+
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Auth;
 

@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {

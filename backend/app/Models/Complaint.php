@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Log;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
 use OwenIt\Auditing\Contracts\Auditable;

@@ -1,0 +1,30 @@
+# Use a stable PHP-FPM + Nginx base image; you can choose one that matches your Laravel (PHP) version
+FROM richarvey/nginx-php-fpm:latest
+
+# Copy the entire app
+COPY . /var/www/html
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Set environment variables for the image
+ENV SKIP_COMPOSER=1 \
+    WEBROOT=/var/www/html/public \
+    PHP_ERRORS_STDERR=1 \
+    RUN_SCRIPTS=1 \
+    REAL_IP_HEADER=1 \
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    APP_ENV=production \
+    APP_DEBUG=false \
+    LOG_CHANNEL=stderr
+
+# (Optional) If you have frontend assets (e.g., using npm/webpack/Vite)
+# Uncomment and adjust if necessary:
+# RUN apk add --no-cache nodejs npm
+# RUN npm install && npm run build
+
+# Expose port if needed (Render may auto detect)
+EXPOSE 8080
+
+# Use the provided start script of the base image
+CMD ["/start.sh"]

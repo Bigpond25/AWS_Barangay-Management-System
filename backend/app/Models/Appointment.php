@@ -3,6 +3,8 @@
 // app/Models/Appointment.php
 namespace App\Models;
 
+use Illuminate\Support\Facades\Log;
+
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use OwenIt\Auditing\Contracts\Auditable;
