@@ -32,12 +32,21 @@ RUN chown -R nginx:nginx /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Copy deployment script
+# Copy deployment script to scripts directory
 COPY scripts/00-laravel-deploy.sh /scripts/00-laravel-deploy.sh
 RUN chmod +x /scripts/00-laravel-deploy.sh
+
+# Create custom entrypoint
+RUN echo '#!/bin/bash' > /scripts/entrypoint.sh && \
+    echo 'set -e' >> /scripts/entrypoint.sh && \
+    echo 'echo "Running Laravel deployment script..."' >> /scripts/entrypoint.sh && \
+    echo '/scripts/00-laravel-deploy.sh' >> /scripts/entrypoint.sh && \
+    echo 'echo "Starting web server..."' >> /scripts/entrypoint.sh && \
+    echo 'exec /start.sh' >> /scripts/entrypoint.sh && \
+    chmod +x /scripts/entrypoint.sh
 
 # Expose port
 EXPOSE 8080
 
-# Start command
-CMD ["/start.sh"]
+# Start command - run deployment then web server
+CMD ["/scripts/entrypoint.sh"]
