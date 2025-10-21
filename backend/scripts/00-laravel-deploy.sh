@@ -17,6 +17,18 @@ if [ -z "$APP_KEY" ]; then
     php /var/www/html/artisan key:generate --force
 fi
 
+# 🟩 Ensure Supabase vars are recognized
+if [ -z "$SUPABASE_KEY" ] && [ -n "$SUPABASE_SERVICE_KEY" ]; then
+    export SUPABASE_KEY="$SUPABASE_SERVICE_KEY"
+    echo "✅ Using SUPABASE_SERVICE_KEY as SUPABASE_KEY"
+fi
+
+if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
+    echo "⚠️  Warning: SUPABASE_URL or SUPABASE_KEY is not set. Check Render environment variables."
+else
+    echo "🔐 Supabase environment variables detected."
+fi
+
 # Clear and cache configuration
 echo "🧹 Clearing caches..."
 php /var/www/html/artisan config:clear
@@ -28,13 +40,6 @@ echo "📦 Caching configuration..."
 php /var/www/html/artisan config:cache
 php /var/www/html/artisan route:cache
 php /var/www/html/artisan view:cache
-
-# 🟩 Optional: ensure Supabase vars are loaded
-if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
-    echo "⚠️  Warning: SUPABASE_URL or SUPABASE_KEY is not set. Check Render environment variables."
-else
-    echo "🔐 Supabase environment variables detected."
-fi
 
 # Run migrations
 echo "🗄️  Running database migrations..."
