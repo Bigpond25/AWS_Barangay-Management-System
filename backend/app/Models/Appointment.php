@@ -55,7 +55,7 @@ class Appointment extends Model implements Auditable
 
     // Use static initialization instead of constructor
     protected $fillable = [
-        'base_ticket_id',
+        'ticket_id',
         'department',
         'date',
         'time',
@@ -88,7 +88,7 @@ class Appointment extends Model implements Auditable
 
     public function ticket(): BelongsTo
     {
-        return $this->belongsTo(Ticket::class, 'base_ticket_id');
+        return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 
     // // Scope for checking schedule conflicts
