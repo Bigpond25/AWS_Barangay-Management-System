@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import Breadcrumb from "../_global/Breadcrumb";
+import Breadcrumb from "../../_global/Breadcrumb";
 import { establishmentService } from "@/services/establishments/establishment.service";
 
 const AddNewEstablishment: React.FC = () => {

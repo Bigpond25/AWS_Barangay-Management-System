@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Establishment;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Establishment\Clearances\BarangayClearanceNew;
+use App\Models\Establishment\Clearances\BarangayClearanceRenewal;
 
 class Establishment extends Model
 {
@@ -62,5 +64,15 @@ class Establishment extends Model
         static::updating(function ($establishment) {
             $establishment->updated_by = Auth::user()->id;
         });
+    }
+
+    public function barangayClearancesNew()
+    {
+        return $this->hasMany(BarangayClearanceNew::class)->latest();
+    }
+
+    public function barangayClearancesRenewal()
+    {
+        return $this->hasMany(BarangayClearanceRenewal::class)->latest();
     }
 }

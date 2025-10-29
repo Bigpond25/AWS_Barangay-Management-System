@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StorageController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\ResidentController;
+use App\Http\Controllers\Api\ShootingController;
 use App\Http\Controllers\Api\ComplaintController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\HouseholdController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\SuggestionController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\EstablishmentController;
+use App\Http\Controllers\Api\InfrastructureController;
 use App\Http\Controllers\Api\BarangayOfficialController;
 
 /*
@@ -93,6 +95,26 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{establishment}', [EstablishmentController::class, 'update']);
         Route::delete('/{establishment}', [EstablishmentController::class, 'destroy']);
         Route::post('/import', [EstablishmentController::class, 'import']);
+        Route::post('/{establishment}/clearance/new', [EstablishmentController::class, 'attachNewClearance']);
+        Route::post('/{establishment}/clearance/renewal', [EstablishmentController::class, 'attachRenewalClearance']);
+    });
+
+    Route::prefix('infrastructures')->group(function () {
+        Route::get('/', [InfrastructureController::class, 'index']);
+        Route::post('/', [InfrastructureController::class, 'store']);
+        Route::get('/{infrastructure}', [InfrastructureController::class, 'show']);
+        Route::put('/{infrastructure}', [InfrastructureController::class, 'update']);
+        Route::delete('/{infrastructure}', [InfrastructureController::class, 'destroy']);
+        Route::post('/import', [InfrastructureController::class, 'import']);
+    });
+
+    Route::prefix('shootings')->name('shootings.')->group(function () {
+        Route::get('/', [ShootingController::class, 'index'])->name('index');
+        Route::get('/{shooting}', [ShootingController::class, 'show'])->name('show');
+        Route::post('/', [ShootingController::class, 'store'])->name('store');
+        Route::put('/{shooting}', [ShootingController::class, 'update'])->name('update');
+        Route::delete('/{shooting}', [ShootingController::class, 'destroy'])->name('destroy');
+        Route::post('/import', [ShootingController::class, 'import'])->name('import');
     });
 
     // Import/Export functionality

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FiArrowLeft,
@@ -8,7 +8,13 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiX,
+  FiPrinter,
 } from "react-icons/fi";
+import { establishmentService } from "@/services/establishments/establishment.service";
+import type { EstablishmentSchema } from "@/services/establishments/establishment.types";
+import barangayTemplate from '@/assets/barangay_clearance.pdf';
+import barangayRenewalTemplate from '@/assets/barangay_clearance_renewal.pdf';
+import { PDFDocument, StandardFonts  } from 'pdf-lib';
 
 interface ClearanceOption {
   label: string;
@@ -17,50 +23,33 @@ interface ClearanceOption {
 
 interface GeneratedFile {
   id: number;
+  applicant: string | null;
+  business: string | null;
+  address: string | null;
+  issueDate: string | null;
+  ownership: string | null;
+  recordNo: string | null;
+  clearanceFee: string | null;
+  orNumber: string | null;
+  remarks: string | null;
   filename: string;
-  generated_at: string;
+  generatedAt: string;
   status: string;
 }
 
 const clearanceOptions: ClearanceOption[] = [
   { label: "Barangay Clearance (New)", type: "new" },
   { label: "Barangay Clearance (Renewal)", type: "renewal" },
-  { label: "Business Closure / Retirement", type: "retirement" },
-  { label: "Signage Clearance", type: "signage" },
-  { label: "Custom Clearance", type: "custom" },
-  { label: "Liquor Clearance", type: "liquor" },
+  // ongoing development, temporarily commented out
+  // { label: "Business Closure / Retirement", type: "retirement" },
+  // { label: "Signage Clearance", type: "signage" },
+  // { label: "Custom Clearance", type: "custom" },
+  // { label: "Liquor Clearance", type: "liquor" },
 ];
 
 const EstablishmentDetails: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const establishment = {
-    id,
-    name: "Cafe Aurora",
-    owner: "Jane Dela Cruz",
-    type: "Café / Beverage",
-    address: "Purok 5, Brgy. Mabini",
-    permit_no: "BRG-2025-0001",
-    status: "Active",
-  };
-
-  // Mock generated PDFs
-  const mockGeneratedData: Record<string, GeneratedFile[]> = {
-    new: Array.from({ length: 25 }, (_, i) => ({
-      id: i + 1,
-      filename: `barangay_clearance_new_2025-${(i + 1)
-        .toString()
-        .padStart(2, "0")}.pdf`,
-      generated_at: `2025-${(i + 1).toString().padStart(2, "0")}-01`,
-      status: i % 2 === 0 ? "Active" : "Archived",
-    })),
-    renewal: [],
-    retirement: [],
-    signage: [],
-    custom: [],
-    liquor: [],
-  };
 
   const [expandedType, setExpandedType] = useState<string | null>(null);
   const [modalType, setModalType] = useState<string | null>(null);
@@ -72,19 +61,108 @@ const EstablishmentDetails: React.FC = () => {
     setExpandedType(expandedType === type ? null : type);
   };
 
-  const openModal = (type: string) => setModalType(type);
-  const closeModal = () => setModalType(null);
-
   const handleGenerateClick = (type: string) => {
     console.log(`Generate ${type} for establishment ${id}`);
+    if (type == 'new') {
+      navigate(`/barangay-records/establishments/${id}/clearance/${type}/generate`);
+    } else if(type == 'renewal') {
+      navigate(`/barangay-records/establishments/${id}/clearance/${type}/generate`);
+    }
   };
 
-  const handleDownload = (file: GeneratedFile) => {
-    console.log(`Download ${file.filename}`);
+  const processClearance = async (file: GeneratedFile, type: string) => {
+    const existingPdfBytes = await fetch(type == 'new' ? barangayTemplate : barangayRenewalTemplate).then(res => res.arrayBuffer());
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+    const pdfForm = pdfDoc.getForm();
+    pdfForm.getTextField('establishment_id').setText(file.id.toString());
+    pdfForm.getTextField('applicant_name').setText(file.applicant ?? '');
+    pdfForm.getTextField('business_name').setText(file.business ?? '');
+    pdfForm.getTextField('location').setText(file.address ?? '');
+
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    pdfForm.getTextField('applicant_name').updateAppearances(boldFont);
+    pdfForm.getTextField('business_name').updateAppearances(boldFont);
+    pdfForm.getTextField('location').updateAppearances(boldFont);
+    
+    const issuedDate = new Date(file.issueDate); // e.g. "2024-05-02"
+
+    const formattedDate = issuedDate.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+    pdfForm.getTextField('issued_date').setText(formattedDate ?? '');
+
+    pdfForm.getTextField('ownership').setText(file.ownership ?? '');
+    // pdfForm.getTextField('record_no').setText(form.recordNo);
+    pdfForm.getTextField('clearance_fee').setText(file.clearanceFee ?? '');
+    pdfForm.getTextField('or_no').setText(file.orNumber ?? '');
+
+    pdfForm.getTextField('remarks').setText(file.remarks ?? '');
+
+    pdfForm.flatten(); // optional: makes fields non-editable
+    const pdfBytes = await pdfDoc.save();
+
+    return pdfBytes;
+  }
+
+   const handleDownload = async (file: GeneratedFile, type: string) => {
+    const pdfBytes = await processClearance(file, type);
+
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.setAttribute('download', file.filename);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    return pdfBytes;
+  };
+    
+
+  const handleView = async (file: GeneratedFile, type: string) => {
+    const pdfBytes = await processClearance(file, type);
+
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.setAttribute('target', '_blank');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    return pdfBytes;
   };
 
-  const handleView = (file: GeneratedFile) => {
-    console.log(`Preview ${file.filename}`);
+  const handlePrint = async (file: GeneratedFile, type: string) => {
+    const pdfBytes = await processClearance(file, type);
+
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const blobUrl = URL.createObjectURL(blob);
+
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "none";
+    iframe.src = blobUrl;
+    document.body.appendChild(iframe);
+
+    iframe.onload = () => {
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      }, 500);
+    };
+
+    return pdfBytes;
   };
 
   const handlePageChange = (type: string, newPage: number) => {
@@ -96,6 +174,58 @@ const EstablishmentDetails: React.FC = () => {
     const start = (page - 1) * itemsPerPage;
     return list.slice(start, start + itemsPerPage);
   };
+
+
+  const [establishmentData, setEstablishmentData] = useState<EstablishmentSchema | null>(null);
+  const mockGeneratedData: Record<string, GeneratedFile[]> = {
+    new: establishmentData?.barangay_clearances_new.map((clearance) => ({
+      id: clearance.id,
+      applicant: clearance.applicant_name,
+      business: clearance.business_name,
+      address: clearance.location,
+      issueDate: clearance.issued_date,
+      ownership: clearance.ownership,
+      recordNo: clearance.record_no,
+      clearanceFee: clearance.clearance_fee,
+      orNumber: clearance.or_no,
+      remarks: clearance.remarks,
+      filename: clearance.file_name,
+      generatedAt: clearance.created_at,
+      status: clearance.status,
+    })),
+    renewal: establishmentData?.barangay_clearances_renewal.map((clearance) => ({
+      id: clearance.id,
+      applicant: clearance.applicant_name,
+      business: clearance.business_name,
+      address: clearance.location,
+      issueDate: clearance.issued_date,
+      ownership: clearance.ownership,
+      recordNo: clearance.record_no,
+      clearanceFee: clearance.clearance_fee,
+      orNumber: clearance.or_no,
+      remarks: clearance.remarks,
+      filename: clearance.file_name,
+      generatedAt: clearance.created_at,
+      status: clearance.status,
+    })),
+    retirement: [],
+    signage: [],
+    custom: [],
+    liquor: [],
+  };
+
+  const fetchEstablishment = async () => {
+    try {
+      const data = await establishmentService.getEstablishment(Number(id));
+      setEstablishmentData(data);
+    } catch (error) {
+      console.error('Error fetching establishment:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEstablishment();
+  }, []);
 
   return (
     <div className="p-6">
@@ -116,40 +246,80 @@ const EstablishmentDetails: React.FC = () => {
 
       {/* Establishment Info */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
+        {/* Header / Business Name */}
         <h2 className="text-lg font-semibold text-darktext mb-4">
-          {establishment.name}
+          {establishmentData?.business_name ?? "Unnamed Establishment"}
         </h2>
 
+        {/* Info Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-3 text-gray-700 text-sm">
           <div>
-            <span className="font-medium">Owner:</span> {establishment.owner}
+            <span className="font-medium">Owner:</span>{" "}
+            {establishmentData?.owner ?? "N/A"}
           </div>
+
           <div>
-            <span className="font-medium">Business Type:</span>{" "}
-            {establishment.type}
+            <span className="font-medium">Nature of Business:</span>{" "}
+            {establishmentData?.nature_of_business ?? "N/A"}
           </div>
-          <div>
-            <span className="font-medium">Permit No:</span>{" "}
-            {establishment.permit_no}
-          </div>
+
           <div>
             <span className="font-medium">Address:</span>{" "}
-            {establishment.address}
+            {[
+              establishmentData?.room_unit,
+              establishmentData?.building,
+              establishmentData?.no,
+              establishmentData?.location,
+            ]
+              .filter(Boolean)
+              .join(", ") || "N/A"}
           </div>
+
+          <div>
+            <span className="font-medium">Type:</span>{" "}
+            {establishmentData?.type ?? "N/A"}
+          </div>
+
           <div>
             <span className="font-medium">Status:</span>{" "}
             <span
               className={`${
-                establishment.status === "Active"
+                establishmentData?.status === "Active"
                   ? "text-green-600 font-medium"
                   : "text-gray-500"
               }`}
             >
-              {establishment.status}
+              {establishmentData?.status ?? "N/A"}
             </span>
+          </div>
+
+          <div>
+            <span className="font-medium">Date Approved:</span>{" "}
+            {establishmentData?.date_approved
+              ? new Date(establishmentData.date_approved).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })
+              : "N/A"}
+          </div>
+
+          <div>
+            <span className="font-medium">Last Renewal:</span>{" "}
+            {establishmentData?.date_of_last_renewal
+              ? new Date(establishmentData.date_of_last_renewal).toLocaleDateString(
+                  "en-GB",
+                  {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  }
+                )
+              : "N/A"}
           </div>
         </div>
       </div>
+
 
       {/* Barangay Clearance Section */}
       <section>
@@ -158,7 +328,7 @@ const EstablishmentDetails: React.FC = () => {
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {clearanceOptions.map((clearance) => {
+          {clearanceOptions.map((clearance, index) => {
             const allFiles = mockGeneratedData[clearance.type] || [];
             const displayedFiles = paginate(allFiles, clearance.type);
             const totalPages = Math.ceil(allFiles.length / itemsPerPage);
@@ -212,19 +382,25 @@ const EstablishmentDetails: React.FC = () => {
                                   {file.filename}
                                 </p>
                                 <p className="text-xs text-gray-500">
-                                  Generated on {file.generated_at}
+                                  Generated on {file.generatedAt}
                                 </p>
                               </div>
                               <div className="flex space-x-2 text-gray-500">
                                 <button
-                                  className="hover:text-smblue-400"
-                                  onClick={() => handleView(file)}
+                                  className="hover:text-red-500 cursor-pointer"
+                                  onClick={() => handlePrint(file, clearance.type)}
+                                >
+                                  <FiPrinter />
+                                </button>
+                                <button
+                                  className="hover:text-smblue-400 cursor-pointer"
+                                  onClick={() => handleView(file, clearance.type)}
                                 >
                                   <FiEye />
                                 </button>
                                 <button
-                                  className="hover:text-green-500"
-                                  onClick={() => handleDownload(file)}
+                                  className="hover:text-green-500 cursor-pointer"
+                                  onClick={() => handleDownload(file, clearance.type)}
                                 >
                                   <FiDownload />
                                 </button>
@@ -274,7 +450,7 @@ const EstablishmentDetails: React.FC = () => {
       </section>
 
       {/* Modal - View All Files */}
-      {modalType && (
+      {/* {modalType && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl mx-4 p-6 relative">
             <button
@@ -299,7 +475,7 @@ const EstablishmentDetails: React.FC = () => {
                   <div>
                     <p className="font-medium text-gray-800">{file.filename}</p>
                     <p className="text-xs text-gray-500">
-                      Generated on {file.generated_at}
+                      Generated on {file.generatedAt}
                     </p>
                   </div>
                   <div className="flex space-x-2 text-gray-500">
@@ -321,7 +497,7 @@ const EstablishmentDetails: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Models\Establishment;
 use App\Http\Controllers\Controller;
-use App\Services\EstablishmentService;
-use App\Http\Requests\EstablishmentRequest;
-use App\Http\Resources\EstablishmentResource;
+use App\Http\Requests\Establishment\EstablishmentRequest;
+use App\Models\Establishment\Establishment;
+use App\Services\Estabishment\EstablishmentService;
+use App\Http\Resources\Establishment\EstablishmentResource;
 
 class EstablishmentController extends Controller
 {
@@ -40,6 +40,7 @@ class EstablishmentController extends Controller
 
     public function show(Establishment $establishment)
     {
+        $establishment->load('barangayClearancesNew.issuedByUser', 'barangayClearancesRenewal.issuedByUser');
         return EstablishmentResource::make($establishment);
     }
 
@@ -73,6 +74,62 @@ class EstablishmentController extends Controller
         return response()->json([
             'message' => 'Import successful',
             'imported' => $importedCount,
+        ]);
+    }
+
+    public function attachNewClearance(Request $request, Establishment $establishment)
+    {
+        $request->validate([
+            'id' => 'required|exists:establishments,id',
+            'file' => 'required|file|mimes:pdf',
+        ]);
+
+        $data = [
+            'id' => $establishment->id,
+            'applicant_name' => $request->applicant_name,
+            'business_name' => $request->business_name,
+            'location' => $request->location,
+            'issued_date' => $request->issued_date,
+            'ownership' => $request->ownership,
+            'record_no' => $request->record_no,
+            'clearance_fee' => $request->clearance_fee,
+            'or_no' => $request->or_no,
+            'remarks' => $request->remarks,
+        ];
+
+        $this->service->attachNewClearance($establishment, $data, $request->file('file'));
+
+        return response()->json([
+            'message' => 'Clearance attached successfully',
+            'data' => $establishment,
+        ]);
+    }
+
+    public function attachRenewalClearance(Request $request, Establishment $establishment)
+    {
+        $request->validate([
+            'id' => 'required|exists:establishments,id',
+            'file' => 'required|file|mimes:pdf',
+        ]);
+
+        $data = [
+            'id' => $establishment->id,
+            'applicant_name' => $request->applicant_name,
+            'business_name' => $request->business_name,
+            'location' => $request->location,
+            'issued_date' => $request->issued_date,
+            'ownership' => $request->ownership,
+            'record_no' => $request->record_no,
+            'clearance_fee' => $request->clearance_fee,
+            'or_no' => $request->or_no,
+            'remarks' => $request->remarks,
+        ];
+
+        $this->service->attachRenewalClearance($establishment, $data, $request->file('file'));
+
+        return response()->json([
+            'message' => 'Clearance attached successfully',
+            'data' => $establishment,
         ]);
     }
 }

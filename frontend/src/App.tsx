@@ -1,7 +1,7 @@
-import { createBrowserRouter, RouterProvider, Navigate, useNavigate } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate, useNavigate, useParams } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { NotificationProvider } from "./components/_global/NotificationSystem";
-import ProtectedRoute from "./components/_auth/ProtectedRoute"; 
+import ProtectedRoute from "./components/_auth/ProtectedRoute";
 import AppLayout from "./components/AppLayout";
 import Dashboard from "./components/dashboard/Dashboard";
 import ResidentManagement from "./components/residentManagement/ResidentManagement";
@@ -67,9 +67,15 @@ import CashBondPrint from "./components/processDocument/CashBondPrint";
 import SummonPrint from "./components/processDocument/SummonPrint";
 import SummonForm from "./components/processDocument/SummonForm";
 
-import Establishment from "./components/barangayRecords/Establishment";
-import AddNewEstablishment from "./components/barangayRecords/AddNewEstablishment";
-import EstablishmentDetails from "./components/barangayRecords/EstablishmentDetails";
+import Establishment from "./components/barangayRecords/establishment/Establishment";
+import AddNewEstablishment from "./components/barangayRecords/establishment/AddNewEstablishment";
+import EstablishmentDetails from "./components/barangayRecords/establishment/EstablishmentDetails";
+import Infrastructure from "./components/barangayRecords/infrastructure/Infrastructure";
+import ClearanceGenerateNew from "./components/barangayRecords/establishment/ClearanceGenerateNew";
+import ClearanceGenerateRenewal from "./components/barangayRecords/establishment/ClearanceGenerateRenewal";
+import AddNewInfrastructure from "./components/barangayRecords/infrastructure/AddNewInfrastructure";
+import InfrastructureDetails from "./components/barangayRecords/infrastructure/InfrastructureDetails";
+import ClearanceGenerate from "./components/barangayRecords/infrastructure/ClearanceGenerate";
 
 
 // Wrapper components to handle navigation prop
@@ -132,6 +138,15 @@ const RetirementFormWrapper = () => {
   const navigate = useNavigate();
   return <RetirementForm onNavigate={(item) => navigate(`/${item}`)} />;
 };
+
+const ClearanceGenerateConditional = () => {
+  const { type } = useParams<{ type: string }>();
+
+  if (type === "new") return <ClearanceGenerateNew />;
+  if (type === "renewal") return <ClearanceGenerateRenewal />;
+
+  return <div>Invalid clearance type</div>;
+}
 
 // Define routes using data format
 const router = createBrowserRouter([
@@ -387,6 +402,46 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard>
                 <EstablishmentDetails />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "establishments/:id/clearance/:type/generate",
+            element: (
+              <PermissionGuard>
+                <ClearanceGenerateConditional />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "infrastructures",
+            element: (
+                <PermissionGuard>
+                  <Infrastructure />
+                </PermissionGuard>
+            ),
+          },
+          {
+            path: "infrastructures/add",
+            element: (
+              <PermissionGuard>
+                <AddNewInfrastructure  />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "infrastructures/:id",
+            element: (
+              <PermissionGuard>
+                <InfrastructureDetails />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "infrastructures/:id/clearance/generate",
+            element: (
+              <PermissionGuard>
+                <ClearanceGenerate />
               </PermissionGuard>
             ),
           },
@@ -650,7 +705,7 @@ const router = createBrowserRouter([
 
   {
     path: "/print/retirement-cessation-dissolution/:documentId",
-    element: (  
+    element: (
       <ProtectedRoute requireAuth={true}>
         <RetirementPrint />
       </ProtectedRoute>
@@ -659,7 +714,7 @@ const router = createBrowserRouter([
 
   {
     path: "/print/retirement-cessation-dissolution/:documentId/colored-print",
-    element: (  
+    element: (
       <ProtectedRoute requireAuth={true}>
         <RetirementColoredPrint />
       </ProtectedRoute>

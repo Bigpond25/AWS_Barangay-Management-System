@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FiPlus, FiEye, FiEdit, FiTrash2, FiX } from 'react-icons/fi';
-import Breadcrumb from '../_global/Breadcrumb';
-import ImportButton from './components/ImportButton';
+import Breadcrumb from '../../_global/Breadcrumb';
+import ImportButton from '../components/ImportButton';
 import { establishmentService } from '@/services/establishments/establishment.service'
 import { useNavigate } from 'react-router-dom';
+import type { EstablishmentSchema } from '@/services/establishments/establishment.types';
 
 const BASE_URL = import.meta.env.VITE_API_URL + '/api';
 
@@ -105,6 +106,10 @@ const Establishment: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleView = (establishment: EstablishmentSchema) => {
+    navigate(`/barangay-records/establishments/${establishment.id}`);
   };
 
   return (
@@ -209,7 +214,7 @@ const Establishment: React.FC = () => {
                     <td className="px-6 py-4 text-sm text-gray-700">{estab.date_of_retirement}</td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       <div className="flex space-x-3">
-                        <button className="text-smblue-400 hover:text-smblue-300">
+                        <button onClick={() => handleView(estab)} className="text-smblue-400 hover:text-smblue-300">
                           <FiEye />
                         </button>
                         <button className="text-yellow-500 hover:text-yellow-400">

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Imports;
+namespace App\Imports\Establishment;
 
-use App\Models\Establishment;
+
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
+use App\Models\Establishment\Establishment;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 

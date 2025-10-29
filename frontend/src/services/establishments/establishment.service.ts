@@ -68,6 +68,40 @@ export class EstablishmentService extends BaseApiService {
     return response.data;
   }
 
+  async attachNewClearance(id: number, data: FormData): Promise<Establishment> {
+    const response = await this.request(
+      `/establishments/${id}/clearance/new`,
+      ApiResponseSchema(EstablishmentSchema),
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        method: 'POST',
+        data
+      }
+    );
+
+    if (!response.data) throw new Error('Failed to attach clearance');
+    return response.data;
+  }
+
+  async attachRenewalClearance(id: number, data: FormData): Promise<Establishment> {
+    const response = await this.request(
+      `/establishments/${id}/clearance/renewal`,
+      ApiResponseSchema(EstablishmentSchema),
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        method: 'POST',
+        data
+      }
+    );
+
+    if (!response.data) throw new Error('Failed to attach clearance');
+    return response.data;
+  }
+
   /**
    * Update establishment
    */

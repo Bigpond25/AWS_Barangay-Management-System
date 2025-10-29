@@ -106,7 +106,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       hasSubmenu: true,
       submenu: [
         { id: "establishments", label: "Establishment / Business Clearance" },
-        { id: "infrastructure", label: "Infrastructure / Building Permit" },  
+        { id: "infrastructures", label: "Infrastructure / Building Permit" },  
         { id: "lupon-cases", label: "Lupon Cases" },                          
         { id: "personal-clearance", label: "Personal Clearance" },            
         { id: "shooting-permit", label: "Shooting Permit" },                  
