@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Shooting\Shooting;
 use Illuminate\Http\Request;
-use App\Services\Shooting\ShootingService;
-use App\Http\Requests\Shooting\ShootingRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Shooting\ShootingRequest;
+use App\Http\Resources\Shooting\ShootingResource;
+use App\Models\Shooting\Shooting;
+use App\Services\Shooting\ShootingService;
 
 class ShootingController extends Controller
 {
@@ -17,35 +18,57 @@ class ShootingController extends Controller
         $this->service = $service;
     }
 
+    /**
+     * Display a paginated listing of shootings.
+     */
     public function index(Request $request)
     {
-        $search = $request->query('search');
-        return response()->json($this->service->list($search));
+        $search = $request->get('search');
+        $shootings = $this->service->list($search);
+        return ShootingResource::collection($shootings);
     }
 
+    /**
+     * Store a newly created shooting record.
+     */
     public function store(ShootingRequest $request)
     {
-        $shooting = $this->service->store($request->validated());
-        return response()->json($shooting, 201);
+        $data = $request->validated();
+
+        $shooting = $this->service->store($data);
+        return ShootingResource::make($shooting);
     }
 
+    /**
+     * Display the specified shooting record.
+     */
     public function show(Shooting $shooting)
     {
-        return response()->json($shooting);
+        return ShootingResource::make($shooting);
     }
 
+    /**
+     * Update the specified shooting record.
+     */
     public function update(ShootingRequest $request, Shooting $shooting)
     {
-        $shooting = $this->service->update($shooting, $request->validated());
-        return response()->json($shooting);
+        $data = $request->validated();
+        $updated = $this->service->update($shooting, $data);
+        return ShootingResource::make($updated);
     }
 
+    /**
+     * Remove the specified shooting record.
+     */
     public function destroy(Shooting $shooting)
     {
         $this->service->delete($shooting);
         return response()->json(['message' => 'Deleted successfully']);
     }
 
+    /**
+     * Import shootings from an Excel or CSV file.
+     */
     public function import(Request $request)
     {
         $request->validate([

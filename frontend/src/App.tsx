@@ -76,6 +76,7 @@ import ClearanceGenerateRenewal from "./components/barangayRecords/establishment
 import AddNewInfrastructure from "./components/barangayRecords/infrastructure/AddNewInfrastructure";
 import InfrastructureDetails from "./components/barangayRecords/infrastructure/InfrastructureDetails";
 import ClearanceGenerate from "./components/barangayRecords/infrastructure/ClearanceGenerate";
+import Shooting from "./components/barangayRecords/shooting/Shooting";
 
 
 // Wrapper components to handle navigation prop
@@ -445,6 +446,14 @@ const router = createBrowserRouter([
               </PermissionGuard>
             ),
           },
+          {
+            path: "shootings",
+            element: (
+              <PermissionGuard>
+                <Shooting />
+              </PermissionGuard>
+            ),
+          }
         ],
       },
       {

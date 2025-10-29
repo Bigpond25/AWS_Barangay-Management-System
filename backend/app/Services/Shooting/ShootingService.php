@@ -13,13 +13,19 @@ class ShootingService
     public function list($search = null)
     {
         return Shooting::query()
-            ->when(
-                $search,
-                fn($q) =>
-                $q->where('program_title', 'ILIKE', "%{$search}%")
-                    ->orWhere('name_of_outfit', 'ILIKE', "%{$search}%")
-                    ->orWhere('location', 'ILIKE', "%{$search}%")
-            )
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($query) use ($search) {
+                    $query->where('program_title', 'ILIKE', "%{$search}%")
+                        ->orWhere('name_of_outfit', 'ILIKE', "%{$search}%")
+                        ->orWhere('location', 'ILIKE', "%{$search}%")
+                        ->orWhere('requested_by', 'ILIKE', "%{$search}%")
+                        ->orWhere('or_no', 'ILIKE', "%{$search}%")
+                        ->orWhere('remarks', 'ILIKE', "%{$search}%")
+                        ->orWhere('date_of_application', 'ILIKE', "%{$search}%")
+                        ->orWhere('date_of_shooting', 'ILIKE', "%{$search}%")
+                        ->orWhere('time', 'ILIKE', "%{$search}%");
+                });
+            })
             ->orderBy('id', 'desc')
             ->paginate(10);
     }

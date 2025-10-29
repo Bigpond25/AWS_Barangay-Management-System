@@ -9,10 +9,7 @@ const MenuButton = ({ infra }: { infra: any }) => {
 
   const downloadClearance = async () => {
     const existingPdfBytes = await fetch(barangayTemplate).then(res => res.arrayBuffer());
-
-    console.log('====================================');
-    console.log(infra);
-    console.log('====================================');
+    
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
     const pdfForm = pdfDoc.getForm();

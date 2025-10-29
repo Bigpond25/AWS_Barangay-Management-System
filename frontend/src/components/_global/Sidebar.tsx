@@ -109,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         { id: "infrastructures", label: "Infrastructure / Building Permit" },  
         { id: "lupon-cases", label: "Lupon Cases" },                          
         { id: "personal-clearance", label: "Personal Clearance" },            
-        { id: "shooting-permit", label: "Shooting Permit" },                  
+        { id: "shootings", label: "Shooting Permit" },                  
       ],
     },
     {
