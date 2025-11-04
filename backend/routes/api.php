@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\SuggestionController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\EstablishmentController;
 use App\Http\Controllers\Api\InfrastructureController;
+use App\Http\Controllers\Api\LuponCaseController;
 use App\Http\Controllers\Api\BarangayOfficialController;
 
 /*
@@ -117,8 +118,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/import', [ShootingController::class, 'import'])->name('import');
     });
 
-    // Import/Export functionality
-    Route::prefix('import')->middleware('permission:manage-users')->group(function () {
+    Route::prefix('lupon-cases')->name('lupon.')->group(function () {
+        Route::get('/', [LuponCaseController::class, 'index'])->name('index');
+        Route::get('/{luponCase}', [LuponCaseController::class, 'show'])->name('show');
+        Route::post('/', [LuponCaseController::class, 'store'])->name('store');
+        Route::put('/{luponCase}', [LuponCaseController::class, 'update'])->name('update');
+        Route::delete('/{luponCase}', [LuponCaseController::class, 'destroy'])->name('destroy');
+        Route::post('/import', [LuponCaseController::class, 'import'])->name('import');
+    });
+
+
+// Import/Export functionality
+Route::prefix('import')->middleware('permission:manage-users')->group(function () {
         Route::post('/residents', [ImportController::class, 'importResidents'])->middleware('permission:create-residents');
         Route::post('/households', [ImportController::class, 'importHouseholds'])->middleware('permission:create-households');
         Route::get('/history', [ImportController::class, 'getImportHistory'])->middleware('permission:view-reports');
