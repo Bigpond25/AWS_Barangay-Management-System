@@ -78,7 +78,7 @@ const AddNewEstablishment: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting form data:", form);
+    
     const formData = new FormData();
 
     for (const key in form) {

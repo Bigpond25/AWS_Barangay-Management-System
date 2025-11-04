@@ -77,6 +77,7 @@ import AddNewInfrastructure from "./components/barangayRecords/infrastructure/Ad
 import InfrastructureDetails from "./components/barangayRecords/infrastructure/InfrastructureDetails";
 import ClearanceGenerate from "./components/barangayRecords/infrastructure/ClearanceGenerate";
 import Shooting from "./components/barangayRecords/shooting/Shooting";
+import AddNewShooting from "./components/barangayRecords/shooting/AddNewShooting";
 
 
 // Wrapper components to handle navigation prop
@@ -453,7 +454,15 @@ const router = createBrowserRouter([
                 <Shooting />
               </PermissionGuard>
             ),
-          }
+          },
+          {
+            path: "shootings/add",
+            element: (
+              <PermissionGuard>
+                <AddNewShooting />
+              </PermissionGuard>
+            ),
+          },
         ],
       },
       {
