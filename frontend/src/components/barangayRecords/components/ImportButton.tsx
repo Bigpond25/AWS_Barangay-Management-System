@@ -1,7 +1,12 @@
 import React, { useRef, useState } from "react";
 import { Download } from "lucide-react";
+import { establishmentService } from "@/services/establishments/establishment.service";
 
-export default function ImportButton() {
+export default function ImportButton({
+  onImportSuccess
+}: {
+  onImportSuccess?: () => void;
+}) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -14,34 +19,15 @@ export default function ImportButton() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
     setIsUploading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/establishments/import`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Upload failed");
-      }
-
-      const result = await response.json();
-      alert(`✅ Successfully imported ${result.count || "records"} records!`);
-    } catch (error: any) {
+      await establishmentService.importEstablishments(file);
+      onImportSuccess?.();
+    } catch (error) {
       console.error(error);
-      alert(`❌ Import failed: ${error.message}`);
     } finally {
       setIsUploading(false);
-      e.target.value = ""; // reset input
     }
   };
 

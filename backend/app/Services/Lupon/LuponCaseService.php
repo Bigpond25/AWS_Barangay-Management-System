@@ -20,6 +20,7 @@ class LuponCaseService
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('case_no', 'ILIKE', "%{$search}%")
+                        ->orWhere('case_type', 'ILIKE', "%{$search}%")
                         ->orWhere('case_title', 'ILIKE', "%{$search}%")
                         ->orWhere('mediator', 'ILIKE', "%{$search}%")
                         ->orWhere('remarks', 'ILIKE', "%{$search}%");

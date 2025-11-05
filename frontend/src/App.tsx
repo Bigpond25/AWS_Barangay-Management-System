@@ -78,6 +78,7 @@ import InfrastructureDetails from "./components/barangayRecords/infrastructure/I
 import ClearanceGenerate from "./components/barangayRecords/infrastructure/ClearanceGenerate";
 import Shooting from "./components/barangayRecords/shooting/Shooting";
 import AddNewShooting from "./components/barangayRecords/shooting/AddNewShooting";
+import LuponCase from "./components/barangayRecords/lupon/LuponCase";
 
 
 // Wrapper components to handle navigation prop
@@ -460,6 +461,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard>
                 <AddNewShooting />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "lupon-cases",
+            element: (
+              <PermissionGuard>
+                <LuponCase />
               </PermissionGuard>
             ),
           },

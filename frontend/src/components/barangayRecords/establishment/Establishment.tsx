@@ -124,7 +124,7 @@ const Establishment: React.FC = () => {
       >
         <h1 className="text-2xl font-bold text-darktext">Establishments</h1>
         <div className="flex items-center gap-2">
-          <ImportButton />
+          <ImportButton onImportSuccess={fetchEstablishments} />
           <button
             onClick={handleAddNew}
             disabled={isLoading}

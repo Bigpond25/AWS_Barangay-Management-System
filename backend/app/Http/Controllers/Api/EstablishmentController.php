@@ -73,7 +73,7 @@ class EstablishmentController extends Controller
 
         return response()->json([
             'message' => 'Import successful',
-            'imported' => $importedCount,
+            'data' => $importedCount,
         ]);
     }
 
