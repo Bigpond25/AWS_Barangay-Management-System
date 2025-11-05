@@ -108,12 +108,72 @@ const Establishment: React.FC = () => {
     }
   };
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedEstablishment, setSelectedEstablishment] = useState<EstablishmentSchema | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleView = (establishment: EstablishmentSchema) => {
     navigate(`/barangay-records/establishments/${establishment.id}`);
   };
 
+  const handleDelete = async (establishment: EstablishmentSchema) => {
+    try {
+      setIsDeleting(true);
+      await establishmentService.deleteEstablishment(establishment.id);
+      fetchEstablishments();
+      
+    } catch (error) {
+      console.error('Error deleting establishment:', error);
+    } finally {
+      setShowDeleteModal(false);
+      setIsDeleting(false);
+    }
+  };
+
+  const renderDeleteModal = () => {
+    if (!showDeleteModal || !selectedEstablishment) return null;
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Agenda</h3>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to delete "{selectedEstablishment.business_name}"? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => {
+                setShowDeleteModal(false);
+                setSelectedEstablishment(null);
+              }}
+              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => handleDelete(selectedEstablishment)}
+              // disabled={deleteEstablishmentMutation.isPending}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const handleImport = async (file: File) => {
+    try {
+      await establishmentService.importEstablishments(file);
+      fetchEstablishments();
+    } catch (error) {
+      console.error('Error importing establishment:', error);
+    }
+  };
+
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-4">
+      {renderDeleteModal()}
       <Breadcrumb isLoaded={isLoaded} />
 
       {/* Header */}
@@ -124,7 +184,7 @@ const Establishment: React.FC = () => {
       >
         <h1 className="text-2xl font-bold text-darktext">Establishments</h1>
         <div className="flex items-center gap-2">
-          <ImportButton onImportSuccess={fetchEstablishments} />
+          <ImportButton onImportSuccess={fetchEstablishments} uploadFile={handleImport} />
           <button
             onClick={handleAddNew}
             disabled={isLoading}
@@ -220,7 +280,10 @@ const Establishment: React.FC = () => {
                         <button className="text-yellow-500 hover:text-yellow-400">
                           <FiEdit />
                         </button>
-                        <button className="text-red-500 hover:text-red-400">
+                        <button onClick={() => {
+                          setShowDeleteModal(true);
+                          setSelectedEstablishment(estab);
+                        }} className="text-red-500 hover:text-red-400">
                           <FiTrash2 />
                         </button>
                       </div>

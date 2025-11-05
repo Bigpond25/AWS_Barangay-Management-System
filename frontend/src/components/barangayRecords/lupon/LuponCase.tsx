@@ -3,6 +3,7 @@ import { FiPlus, FiEdit, FiTrash2, FiEye } from 'react-icons/fi';
 import Breadcrumb from '../../_global/Breadcrumb';
 import { luponCaseService } from '@/services/lupon/luponCase.service';
 import { useNavigate } from 'react-router-dom';
+import ImportButton from '../components/ImportButton';
 
 const LuponCase: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -89,6 +90,15 @@ const LuponCase: React.FC = () => {
     fetchCases();
   }, []);
 
+  const handleImport = async (file: File) => {
+    try {
+      await luponCaseService.importLuponCases(file);
+      fetchCases();
+    } catch (error) {
+      console.error('Error importing lupon case:', error);
+    }
+  };
+
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-4">
       <Breadcrumb isLoaded={isLoaded} />
@@ -100,6 +110,8 @@ const LuponCase: React.FC = () => {
         }`}
       >
         <h1 className="text-2xl font-bold text-darktext">Lupon Cases</h1>
+        <div className="flex items-center gap-2">
+        <ImportButton onImportSuccess={fetchCases} uploadFile={handleImport} />
         <button
           onClick={handleAddNew}
           disabled={isLoading}
@@ -108,6 +120,7 @@ const LuponCase: React.FC = () => {
           <FiPlus className="w-4 h-4" />
           <span>Add New Case</span>
         </button>
+        </div>
       </div>
 
       {/* Table Section */}

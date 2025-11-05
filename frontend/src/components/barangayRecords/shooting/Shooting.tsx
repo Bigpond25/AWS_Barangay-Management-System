@@ -5,6 +5,7 @@ import { shootingService } from '@/services/shootings/shooting.service.ts';
 import { useNavigate } from 'react-router-dom';
 import shootingTemplate  from '@/assets/shooting_permit.pdf';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
+import ImportButton from '../components/ImportButton';
 
 const Shootings: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -133,6 +134,15 @@ const Shootings: React.FC = () => {
     return pdfBytes;
   };
 
+  const handleImport = async (file: File) => {
+    try {
+      await shootingService.importShootings(file);
+      fetchShootings();
+    } catch (error) {
+      console.error('Error importing shootings:', error);
+    }
+  };
+
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-4">
       <Breadcrumb isLoaded={isLoaded} />
@@ -145,6 +155,7 @@ const Shootings: React.FC = () => {
       >
         <h1 className="text-2xl font-bold text-darktext">Shootings</h1>
         <div className="flex items-center gap-2">
+          <ImportButton onImportSuccess={fetchShootings} uploadFile={handleImport} />
           <button
             onClick={handleAddNew}
             disabled={isLoading}

@@ -6,9 +6,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Establishment\Clearances\BarangayClearanceNew;
 use App\Models\Establishment\Clearances\BarangayClearanceRenewal;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Establishment extends Model
 {
+
+    use SoftDeletes;
+
     protected $fillable = [
         'business_name',
         'room_unit',

@@ -3,9 +3,11 @@ import { Download } from "lucide-react";
 import { establishmentService } from "@/services/establishments/establishment.service";
 
 export default function ImportButton({
-  onImportSuccess
+  onImportSuccess,
+  uploadFile,
 }: {
   onImportSuccess?: () => void;
+  uploadFile: (file: File) => Promise<void>;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -22,7 +24,7 @@ export default function ImportButton({
     setIsUploading(true);
 
     try {
-      await establishmentService.importEstablishments(file);
+      await uploadFile(file);
       onImportSuccess?.();
     } catch (error) {
       console.error(error);

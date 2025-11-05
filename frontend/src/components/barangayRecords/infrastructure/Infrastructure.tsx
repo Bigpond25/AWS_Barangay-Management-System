@@ -113,6 +113,15 @@ const Infrastructure: React.FC = () => {
     navigate(`/barangay-records/infrastructures/${infrastructure.id}`);
   };
 
+  const handleImport = async (file: File) => {
+    try {
+      await infrastructureService.importInfrastructures(file);
+      fetchInfrastructures();
+    } catch (error) {
+      console.error('Error importing infrastructure:', error);
+    }
+  };
+
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-4">
       <Breadcrumb isLoaded={isLoaded} />
@@ -125,7 +134,7 @@ const Infrastructure: React.FC = () => {
       >
         <h1 className="text-2xl font-bold text-darktext">Infrastructures</h1>
         <div className="flex items-center gap-2">
-          <ImportButton />
+          <ImportButton onImportSuccess={fetchInfrastructures} uploadFile={handleImport} />
           <button
             onClick={handleAddNew}
             disabled={isLoading}
