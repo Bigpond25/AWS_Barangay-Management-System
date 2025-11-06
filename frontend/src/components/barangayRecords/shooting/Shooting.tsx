@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import shootingTemplate  from '@/assets/shooting_permit.pdf';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import ImportButton from '../components/ImportButton';
+import RenderDeleteModal from '../components/RenderDeleteModal';
+import type { Shooting } from '@/services/shootings/shooting.type';
 
 const Shootings: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -68,16 +70,17 @@ const Shootings: React.FC = () => {
     navigate(`/barangay-records/shootings/${id}/edit`);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this record?')) return;
+  const handleDelete = async (shooting: Shooting) => {
     try {
-      setIsLoading(true);
-      await shootingService.deleteShooting(id);
+      setIsDeleting(true);
+      await shootingService.deleteShooting(shooting.id);
       fetchShootings(pagination.current_page, searchTerm);
     } catch (error) {
       console.error('Error deleting shooting:', error);
     } finally {
-      setIsLoading(false);
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setSelectedShooting(null);
     }
   };
 
@@ -143,8 +146,21 @@ const Shootings: React.FC = () => {
     }
   };
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedShooting, setSelectedShooting] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-4">
+      {RenderDeleteModal({
+        showDeleteModal,
+        selectedItem: selectedShooting,
+        textItem: selectedShooting?.program_title || '',
+        setShowDeleteModal,
+        setSelectedItem: setSelectedShooting,
+        handleDelete,
+        isDeleting,
+      })}
       <Breadcrumb isLoaded={isLoaded} />
 
       {/* Header */}
@@ -274,7 +290,10 @@ const Shootings: React.FC = () => {
                           <FiEdit />
                         </button>
                         <button
-                          onClick={() => handleDelete(shoot.id)}
+                          onClick={() => {
+                            setShowDeleteModal(true);
+                            setSelectedShooting(shoot);
+                          }}
                           className="text-red-500 hover:text-red-400"
                         >
                           <FiTrash2 />

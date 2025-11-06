@@ -177,6 +177,7 @@ Route::prefix('import')->middleware('permission:manage-users')->group(function (
         Route::get('/{resident}', [ResidentController::class, 'show'])->name('show');
         Route::put('/{resident}', [ResidentController::class, 'update'])->name('update')->middleware('permission:edit-residents');
         Route::delete('/{resident}', [ResidentController::class, 'destroy'])->name('destroy')->middleware('permission:delete-residents');
+        Route::post('/import', [ResidentController::class, 'import'])->name('import')->middleware('permission:create-residents');
     });
 
     // Household Management

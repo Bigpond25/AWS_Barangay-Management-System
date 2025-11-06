@@ -12,6 +12,8 @@ import Breadcrumb from '../_global/Breadcrumb';
 import { ResidentStatistics } from './_components/ResidentStatistics';
 import { ResidentSearch } from './_components/ResidentSearch';
 import { ResidentTable } from './_components/ResidentTable';
+import ImportButton from './_components/ImportButton';
+import { residentsService } from '@/services/residents/residents.service';
 
 const ResidentManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -220,6 +222,15 @@ const ResidentManagement: React.FC = () => {
     });
   }, [refetch, showNotification]);
 
+  const handleImport = async (file: File) => {
+    console.log("🚀 ~ handleImport ~ file:", file)
+    try {
+      await residentsService.importResidents(file);
+    } catch (error) {
+      console.error('Error importing residents:', error);
+    }
+  };
+
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-4">
       {/* Breadcrumbs */}
@@ -271,13 +282,16 @@ const ResidentManagement: React.FC = () => {
           </h3>
 
           {/* Enhanced Search with Real-time Feedback */}
+     
           <ResidentSearch
             searchTerm={searchTerm}
             onSearchChange={handleSearchChange}
             onAddNew={handleAddNew}
             isLoading={isLoading || isFetching}
+            onImportSuccess={refetch}
+            handleImport={handleImport}
           />
-          
+      
           {/* Search Results Info */}
           <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
             <div className="flex items-center space-x-4">

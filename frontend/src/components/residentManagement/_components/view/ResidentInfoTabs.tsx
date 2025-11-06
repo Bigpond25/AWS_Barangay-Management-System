@@ -24,6 +24,7 @@ import { GovernmentIdsSection } from './sections/GovernmentIdsSection';
 import { HealthMedicalSection } from './sections/HealthMedicalSection';
 import { SpecialClassificationsSection } from './sections/SpecialClassificationsSection';
 import { SystemInfoSection } from './sections/SystemInfoSection';
+import { ClearanceSection } from './sections/ClearanceSection';
 
 interface ResidentInfoTabsProps {
   resident: Resident;
@@ -87,6 +88,12 @@ const TABS: TabItem[] = [
     label: 'residents.view.tabs.system',
     icon: FiClock,
     component: SystemInfoSection
+  },
+  {
+    id: 'clearance',
+    label: 'residents.view.tabs.clearance',
+    icon: FiFileText,
+    component: ClearanceSection
   }
 ];
 

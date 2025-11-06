@@ -50,6 +50,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('barangay_clearance_renewal');
+        Schema::dropIfExists('barangay_clearances_renewal');
     }
 };

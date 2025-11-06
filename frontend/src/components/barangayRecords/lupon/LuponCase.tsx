@@ -4,6 +4,8 @@ import Breadcrumb from '../../_global/Breadcrumb';
 import { luponCaseService } from '@/services/lupon/luponCase.service';
 import { useNavigate } from 'react-router-dom';
 import ImportButton from '../components/ImportButton';
+import RenderDeleteModal from '../components/RenderDeleteModal';
+import type { LuponCase } from '@/services/lupon/luponCase.type';
 
 const LuponCase: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -72,16 +74,16 @@ const LuponCase: React.FC = () => {
   };
 
   // 🔹 Delete
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this case?')) return;
+  const handleDelete = async (luponCase: LuponCase) => {
     try {
-      setIsLoading(true);
-      await luponCaseService.deleteLuponCase(id);
+      setIsDeleting(true);
+      await luponCaseService.deleteLuponCase(luponCase.id);
       fetchCases(pagination.current_page, searchTerm);
     } catch (error) {
       console.error('Error deleting lupon case:', error);
     } finally {
-      setIsLoading(false);
+      setIsDeleting(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -99,8 +101,23 @@ const LuponCase: React.FC = () => {
     }
   };
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-4">
+      {
+        RenderDeleteModal({
+          showDeleteModal,
+          selectedItem,
+          textItem: selectedItem?.case_no,
+          setShowDeleteModal,
+          setSelectedItem,
+          handleDelete,
+          isDeleting,
+        })
+      }
       <Breadcrumb isLoaded={isLoaded} />
 
       {/* Header */}
@@ -208,7 +225,10 @@ const LuponCase: React.FC = () => {
                           <FiEdit />
                         </button>
                         <button
-                          onClick={() => handleDelete(lupon.id)}
+                          onClick={() => {
+                            setShowDeleteModal(true);
+                            setSelectedItem(lupon);
+                          }}
                           className="text-red-500 hover:text-red-400"
                         >
                           <FiTrash2 />

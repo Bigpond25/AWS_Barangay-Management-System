@@ -4,8 +4,9 @@ import Breadcrumb from '../../_global/Breadcrumb';
 import ImportButton from '../components/ImportButton';
 import { infrastructureService } from '@/services/infrastructures/infrastructure.service'
 import { useNavigate } from 'react-router-dom';
-import type { InfrastructureSchema } from '@/services/infrastructures/infrastructure.types';
+import type { Infrastructure, InfrastructureSchema } from '@/services/infrastructures/infrastructure.types';
 import MenuButton from '../components/MenuButton';
+import RenderDeleteModal from '../components/RenderDeleteModal';
 
 const BASE_URL = import.meta.env.VITE_API_URL + '/api';
 
@@ -121,9 +122,35 @@ const Infrastructure: React.FC = () => {
       console.error('Error importing infrastructure:', error);
     }
   };
+  
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedInfrastructure, setSelectedInfrastructure] = useState<Infrastructure | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async (infrastructure: Infrastructure) => {
+    try {
+      setIsDeleting(true);
+      await infrastructureService.deleteInfrastructure(infrastructure.id);
+      fetchInfrastructures(pagination.current_page, searchTerm);
+    } catch (error) {
+      console.error('Error deleting infrastructure:', error);
+    } finally {
+      setShowDeleteModal(false);
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-4">
+      {RenderDeleteModal({
+        showDeleteModal,
+        selectedItem: selectedInfrastructure,
+        textItem: selectedInfrastructure?.id.toString() || '',
+        setShowDeleteModal,
+        setSelectedItem: setSelectedInfrastructure,
+        handleDelete,
+        isDeleting,
+      })}
       <Breadcrumb isLoaded={isLoaded} />
 
       {/* Header */}
@@ -239,7 +266,10 @@ const Infrastructure: React.FC = () => {
                 <FiEdit />
               </button>
               <MenuButton infra={infra} />
-              <button className="text-red-500 hover:text-red-400">
+              <button className="text-red-500 hover:text-red-400" onClick={() => {
+                setSelectedInfrastructure(infra);
+                setShowDeleteModal(true);
+              }}>
                 <FiTrash2 />
               </button>
             </div>

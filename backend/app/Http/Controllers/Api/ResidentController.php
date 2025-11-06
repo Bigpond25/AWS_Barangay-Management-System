@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Resident;
-use App\Models\Schemas\ResidentSchema;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Schemas\ResidentSchema;
+use App\Imports\Resident\ResidentImport;
+use Illuminate\Validation\ValidationException;
 
 class ResidentController extends Controller
 {
@@ -458,7 +460,7 @@ class ResidentController extends Controller
         try {
             // Remove from any household relationships first
             $resident->leaveHousehold();
-            
+
             // Soft delete by changing status
             $resident->update(['status' => 'INACTIVE']);
 
@@ -580,7 +582,7 @@ class ResidentController extends Controller
                 'household_heads' => (int) $householdHeads,
                 'registered_voters' => (int) $basicStats->registered_voters,
                 'employed_residents' => (int) $basicStats->employed_residents,
-                
+
                 'by_age_group' => [
                     'children' => (int) $basicStats->children,
                     'adults' => (int) $basicStats->adults,
@@ -746,7 +748,7 @@ class ResidentController extends Controller
             ]);
 
             $photo = $request->file('photo');
-            
+
             // Use Supabase storage if configured, otherwise fall back to local storage
             if (config('services.supabase.url') && app()->bound('App\Contracts\StorageInterface')) {
                 $storageService = app('App\Contracts\StorageInterface');
@@ -756,7 +758,7 @@ class ResidentController extends Controller
                     "", // Let service generate UUID filename
                     true // public bucket
                 );
-                
+
                 if ($result['success']) {
                     $resident->update([
                         'profile_photo_url' => $result['path'], // Store relative path, not full URL
@@ -806,6 +808,22 @@ class ResidentController extends Controller
         }
     }
 
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,csv',
+        ]);
+
+        $residentImport = new ResidentImport();
+
+        Excel::import($residentImport, $request->file('file'));
+
+        return response()->json([
+            'message' => 'Import successful',
+            'imported' => $residentImport->getRowCount(),
+        ]);
+    }
+
     /**
      * Helper method for special lists
      */
@@ -836,4 +854,6 @@ class ResidentController extends Controller
             ], 500);
         }
     }
+
+
 }

@@ -3,13 +3,15 @@
 namespace App\Models\Infrastructure;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Infrastructure\InfrastructureClearance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Infrastructure\InfrastructureAttachment;
 
+
 class Infrastructure extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'date_of_application',

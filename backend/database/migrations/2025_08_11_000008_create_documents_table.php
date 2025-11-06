@@ -52,8 +52,8 @@ return new class extends Migration
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('released_at')->nullable();
             $table->date('expiry_date')->nullable();
-            $table->date('date_approved')->nullable();
-            $table->date('last_compliance')->nullable();
+            // $table->date('date_approved')->nullable();
+            // $table->date('last_compliance')->nullable();
 
             // Document-specific fields
             $table->string('clearance_purpose')->nullable();
@@ -158,7 +158,7 @@ return new class extends Migration
             $table->index(['released_by', 'released_at'], 'idx_documents_released_workflow');
             $table->index(['type', 'submitted_at', 'document_number'], 'idx_documents_type_date_generation');
             $table->index('serial_number', 'idx_documents_serial_unique');
-            
+
             // Additional performance indexes from performance migration
             $table->index(['document_number'], 'idx_documents_number');
             $table->index(['serial_number'], 'idx_documents_serial');
