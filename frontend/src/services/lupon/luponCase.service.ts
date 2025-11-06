@@ -35,7 +35,7 @@ export class LuponCaseService extends BaseApiService {
   /**
    * Get a specific lupon case
    */
-  async getLuponCase(id: number): Promise<LuponCase> {
+  async getLuponCaseById(id: number): Promise<LuponCase> {
     const response = await this.request(
       `/lupon-cases/${id}`,
       ApiResponseSchema(LuponCaseSchema)

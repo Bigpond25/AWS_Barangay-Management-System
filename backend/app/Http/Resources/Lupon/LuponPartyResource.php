@@ -10,10 +10,13 @@ class LuponPartyResource extends JsonResource
     {
         return [
             'id'        => $this->id,
-            'type'      => $this->type, // complainant | respondent
-            'name'      => $this->name,
-            'address'   => $this->address,
-            'created_at' => $this->created_at,
+            'type' => $this->type,
+            'name' => $this->name,
+            'address_line1' => $this->address_line1,
+            'address_line2' => $this->address_line2,
+            'address_line3' => $this->address_line3,
+            'created_by' => $this->created_by,
+            'updated_by' => $this->updated_by,
         ];
     }
 }

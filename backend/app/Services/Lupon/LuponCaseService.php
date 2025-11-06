@@ -37,15 +37,7 @@ class LuponCaseService
     {
         return DB::transaction(function () use ($data) {
             // Create main case
-            $case = LuponCase::create([
-                'case_no' => $data['case_no'] ?? null,
-                'case_title' => $data['case_title'] ?? null,
-                'date_filed' => $data['date_filed'] ?? null,
-                'mediator' => $data['mediator'] ?? null,
-                'remarks' => $data['remarks'] ?? null,
-                'final_action' => $data['final_action'] ?? null,
-                'created_by' => $data['created_by'] ?? null,
-            ]);
+            $case = LuponCase::create($data);
 
             // Parties
             if (!empty($data['parties'])) {
@@ -63,9 +55,10 @@ class LuponCaseService
 
             // Hearings
             if (!empty($data['hearings'])) {
+                $sequenceNo = 1;
                 foreach ($data['hearings'] as $hearing) {
                     $case->hearings()->create([
-                        'sequence_no' => $hearing['sequence_no'] ?? 1,
+                        'sequence_no' => $hearing['sequence_no'] ?? $sequenceNo,
                         'notice_date' => $hearing['notice_date'] ?? null,
                         'hearing_date' => $hearing['hearing_date'] ?? null,
                         'hearing_time' => $hearing['hearing_time'] ?? null,
@@ -73,6 +66,7 @@ class LuponCaseService
                         'proceedings' => $hearing['proceedings'] ?? null,
                         'created_by' => $hearing['created_by'] ?? $data['created_by'] ?? null,
                     ]);
+                    $sequenceNo++;
                 }
             }
 
@@ -100,18 +94,150 @@ class LuponCaseService
     public function update(LuponCase $case, array $data): LuponCase
     {
         return DB::transaction(function () use ($case, $data) {
-            $case->update([
-                'case_no' => $data['case_no'] ?? $case->case_no,
-                'case_title' => $data['case_title'] ?? $case->case_title,
-                'date_filed' => $data['date_filed'] ?? $case->date_filed,
-                'mediator' => $data['mediator'] ?? $case->mediator,
-                'remarks' => $data['remarks'] ?? $case->remarks,
-                'final_action' => $data['final_action'] ?? $case->final_action,
-            ]);
+            // Update main case
+            $case->update($data);
 
-            // Optionally handle nested updates later (for now, we don't overwrite)
+            // Handle parties
+            if (isset($data['parties'])) {
+                $this->syncParties($case, $data['parties']);
+            }
+
+            // Handle hearings
+            if (isset($data['hearings'])) {
+                $this->syncHearings($case, $data['hearings']);
+            }
+
+            // Handle attachments
+            if (isset($data['attachments'])) {
+                $this->syncAttachments($case, $data['attachments']);
+            }
+
             return $case->fresh(['parties', 'hearings', 'attachments']);
         });
+    }
+
+    /**
+     * Sync parties for the case
+     */
+    private function syncParties(LuponCase $case, array $parties): void
+    {
+        $existingPartyIds = [];
+
+        foreach ($parties as $partyData) {
+            if (isset($partyData['id'])) {
+                // Update existing party
+                $party = $case->parties()->where('id', $partyData['id'])->first();
+                if ($party) {
+                    $party->update([
+                        'type' => $partyData['type'] ?? $party->type,
+                        'name' => $partyData['name'] ?? $party->name,
+                        'address_line1' => $partyData['address_line1'] ?? $party->address_line1,
+                        'address_line2' => $partyData['address_line2'] ?? $party->address_line2,
+                        'address_line3' => $partyData['address_line3'] ?? $party->address_line3,
+                        'updated_by' => $data['updated_by'] ?? $party->updated_by,
+                    ]);
+                    $existingPartyIds[] = $partyData['id'];
+                }
+            } else {
+                // Create new party
+                $newParty = $case->parties()->create([
+                    'type' => $partyData['type'] ?? 'complainant',
+                    'name' => $partyData['name'] ?? '',
+                    'address_line1' => $partyData['address_line1'] ?? null,
+                    'address_line2' => $partyData['address_line2'] ?? null,
+                    'address_line3' => $partyData['address_line3'] ?? null,
+                    'created_by' => $partyData['created_by'] ?? $data['created_by'] ?? null,
+                ]);
+                $existingPartyIds[] = $newParty->id;
+            }
+        }
+
+        // Delete parties that were removed from the frontend
+        $case->parties()->whereNotIn('id', $existingPartyIds)->delete();
+    }
+
+    /**
+     * Sync hearings for the case
+     */
+    private function syncHearings(LuponCase $case, array $hearings): void
+    {
+        $existingHearingIds = [];
+        $sequenceNo = 1;
+        foreach ($hearings as $hearingData) {
+
+            if (isset($hearingData['id'])) {
+                // Update existing hearing
+                $hearing = $case->hearings()->where('id', $hearingData['id'])->first();
+                if ($hearing) {
+                    $hearing->update([
+                        'sequence_no' => $hearingData['sequence_no'] ?? $hearing->sequence_no,
+                        'notice_date' => $hearingData['notice_date'] ?? $hearing->notice_date,
+                        'hearing_date' => $hearingData['hearing_date'] ?? $hearing->hearing_date,
+                        'hearing_time' => $hearingData['hearing_time'] ?? $hearing->hearing_time,
+                        'remarks' => $hearingData['remarks'] ?? $hearing->remarks,
+                        'proceedings' => $hearingData['proceedings'] ?? $hearing->proceedings,
+                        'updated_by' => $data['updated_by'] ?? $hearing->updated_by,
+                    ]);
+                    $existingHearingIds[] = $hearingData['id'];
+                }
+            } else {
+                // Create new hearing
+                $newHearing = $case->hearings()->create([
+                    'sequence_no' => $hearingData['sequence_no'] ?? $sequenceNo,
+                    'notice_date' => $hearingData['notice_date'] ?? null,
+                    'hearing_date' => $hearingData['hearing_date'] ?? null,
+                    'hearing_time' => $hearingData['hearing_time'] ?? null,
+                    'remarks' => $hearingData['remarks'] ?? null,
+                    'proceedings' => $hearingData['proceedings'] ?? null,
+                    'created_by' => $hearingData['created_by'] ?? $data['created_by'] ?? null,
+                ]);
+                $existingHearingIds[] = $newHearing->id;
+            }
+
+            $sequenceNo++;
+        }
+
+        // Delete hearings that were removed from the frontend
+        $case->hearings()->whereNotIn('id', $existingHearingIds)->delete();
+    }
+
+    /**
+     * Sync attachments for the case
+     */
+    private function syncAttachments(LuponCase $case, array $attachments): void
+    {
+        $existingAttachmentIds = [];
+
+        foreach ($attachments as $attachmentData) {
+            if (isset($attachmentData['id'])) {
+                // Keep existing attachment
+                $attachment = $case->attachments()->where('id', $attachmentData['id'])->first();
+                if ($attachment) {
+                    // Update description if provided
+                    if (isset($attachmentData['description'])) {
+                        $attachment->update([
+                            'description' => $attachmentData['description'],
+                            'updated_by' => $data['updated_by'] ?? $attachment->updated_by,
+                        ]);
+                    }
+                    $existingAttachmentIds[] = $attachmentData['id'];
+                }
+            } else {
+                // Create new attachment (assuming file has been uploaded and path is provided)
+                $newAttachment = $case->attachments()->create([
+                    'file_name' => $attachmentData['file_name'] ?? '',
+                    'file_path' => $attachmentData['file_path'] ?? '',
+                    'file_type' => $attachmentData['file_type'] ?? null,
+                    'description' => $attachmentData['description'] ?? null,
+                    'lupon_hearing_id' => $attachmentData['lupon_hearing_id'] ?? null,
+                    'created_by' => $attachmentData['created_by'] ?? $data['created_by'] ?? null,
+                ]);
+                $existingAttachmentIds[] = $newAttachment->id;
+            }
+        }
+
+        // Delete attachments that were removed from the frontend
+        $case->attachments()->whereNotIn('id', $existingAttachmentIds)->delete();
     }
 
     /**

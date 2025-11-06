@@ -11,14 +11,16 @@ class LuponHearingResource extends JsonResource
     {
         return [
             'id'             => $this->id,
-            'hearing_no'     => $this->hearing_no,
-            'hearing_date'   => $this->hearing_date,
-            'hearing_time'   => $this->hearing_time ? Carbon::parse($this->hearing_time)->format('H:i') : null,
+            'lupon_case_id'  => $this->lupon_case_id,
+            'sequence_no'    => $this->sequence_no,
             'notice_date'    => $this->notice_date,
-            'address_line_2' => $this->address_line_2,
-            'address_line_3' => $this->address_line_3,
+            'hearing_date'   => $this->hearing_date,
+            'hearing_time'   => $this->hearing_time,
+            'remarks'        => $this->remarks,
+            'proceedings'    => $this->proceedings,
+            'created_by'     => $this->created_by,
+            'updated_by'     => $this->updated_by,
             'attachments'    => LuponAttachmentResource::collection($this->whenLoaded('attachments')),
-            'created_at'     => $this->created_at,
         ];
     }
 }

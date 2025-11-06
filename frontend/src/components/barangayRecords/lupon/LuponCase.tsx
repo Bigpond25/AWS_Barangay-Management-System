@@ -130,7 +130,7 @@ const LuponCase: React.FC = () => {
         <div className="flex items-center gap-2">
         <ImportButton onImportSuccess={fetchCases} uploadFile={handleImport} />
         <button
-          onClick={handleAddNew}
+          onClick={() => navigate('/barangay-records/lupon-cases/add')}
           disabled={isLoading}
           className="ml-4 bg-smblue-400 hover:bg-smblue-300 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
         >
@@ -213,13 +213,13 @@ const LuponCase: React.FC = () => {
                     <td className="px-6 py-4 text-sm text-gray-700">
                       <div className="flex space-x-3">
                         <button
-                          onClick={() => handleView(lupon.id)}
+                          onClick={() => navigate(`/barangay-records/lupon-cases/${lupon.id}`)}
                           className="text-blue-500 hover:text-blue-400"
                         >
                           <FiEye />
                         </button>
                         <button
-                          onClick={() => handleEdit(lupon.id)}
+                          onClick={() => navigate(`/barangay-records/lupon-cases/${lupon.id}/edit`)}
                           className="text-yellow-500 hover:text-yellow-400"
                         >
                           <FiEdit />

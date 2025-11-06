@@ -82,6 +82,9 @@ import LuponCase from "./components/barangayRecords/lupon/LuponCase";
 import EditShooting from "./components/barangayRecords/shooting/EditShooting";
 import EditInfrastructure from "./components/barangayRecords/infrastructure/EditInfrastructure";
 import EditEstablishment from "./components/barangayRecords/establishment/EditEstablishment";
+import AddNewLuponCase from "./components/barangayRecords/lupon/AddLuponCase";
+import EditLuponCase from "./components/barangayRecords/lupon/EditLuponCase";
+import LuponCaseDetails from "./components/barangayRecords/lupon/LuponCaseDetails";
 
 
 // Wrapper components to handle navigation prop
@@ -496,6 +499,30 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard>
                 <LuponCase />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "lupon-cases/add",
+            element: (
+              <PermissionGuard>
+                <AddNewLuponCase />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "lupon-cases/:id/edit",
+            element: (
+              <PermissionGuard>
+                <EditLuponCase />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "lupon-cases/:id",
+            element: (
+              <PermissionGuard>
+                <LuponCaseDetails />
               </PermissionGuard>
             ),
           },
