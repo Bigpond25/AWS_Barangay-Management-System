@@ -67,7 +67,7 @@ export class ShootingService extends BaseApiService {
    */
   async updateShooting(
     id: number,
-    data: Partial<ShootingFormData>
+    data: FormData
   ): Promise<Shooting> {
     const response = await this.request(
       `/shootings/${id}`,

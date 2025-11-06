@@ -465,6 +465,25 @@ export class ResidentsService extends BaseApiService {
     return response.data || [];
   }
 
+  /**
+   * Import residents
+   */
+  async importResidents(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const responseSchema = ApiResponseSchema(z.object({
+      message: z.string(),
+    }));
+    
+    const response = await this.request(
+      '/residents/import',
+      responseSchema,
+      { method: 'POST', data: formData, headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+    
+    return response.data;
+  }
   
 }
 

@@ -26,7 +26,7 @@ export const LuponHearingSchema = z.object({
 });
 
 export const LuponCaseSchema = z.object({
-  id: z.number().optional(),
+  id: z.number(),
   case_no: z.string().nullable().optional(),
   case_type: z.string().nullable().optional(),
   date_filed: z.string().nullable().optional(),

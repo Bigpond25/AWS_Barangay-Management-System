@@ -79,6 +79,7 @@ import ClearanceGenerate from "./components/barangayRecords/infrastructure/Clear
 import Shooting from "./components/barangayRecords/shooting/Shooting";
 import AddNewShooting from "./components/barangayRecords/shooting/AddNewShooting";
 import LuponCase from "./components/barangayRecords/lupon/LuponCase";
+import EditShooting from "./components/barangayRecords/shooting/EditShooting";
 
 
 // Wrapper components to handle navigation prop
@@ -461,6 +462,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard>
                 <AddNewShooting />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "shootings/:id/edit",
+            element: (
+              <PermissionGuard>
+                <EditShooting />
               </PermissionGuard>
             ),
           },

@@ -1294,7 +1294,8 @@
         "government": "Government IDs",
         "health": "Health & Medical",
         "classifications": "Classifications",
-        "system": "System Info"
+        "system": "System Info",
+        "clearance": "Personal Clearance"
       }
     },
     "title": "Resident Management",
