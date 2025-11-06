@@ -2,12 +2,13 @@
 
 namespace App\Models\Infrastructure;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Infrastructure\InfrastructureClearance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Infrastructure\InfrastructureAttachment;
-
 
 class Infrastructure extends Model
 {
@@ -35,6 +36,19 @@ class Infrastructure extends Model
         'updated_by',
     ];
 
+    protected static function booted()
+    {
+        parent::boot();
+
+        static::creating(function ($infrastructure) {
+            $infrastructure->created_by = Auth::user()->id;
+        });
+
+        static::updating(function ($infrastructure) {
+            $infrastructure->updated_by = Auth::user()->id;
+        });
+    }
+
     public function attachments()
     {
         return $this->hasMany(InfrastructureAttachment::class);
@@ -43,5 +57,10 @@ class Infrastructure extends Model
     public function barangayClearances()
     {
         return $this->hasMany(InfrastructureClearance::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

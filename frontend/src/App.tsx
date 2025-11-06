@@ -80,6 +80,8 @@ import Shooting from "./components/barangayRecords/shooting/Shooting";
 import AddNewShooting from "./components/barangayRecords/shooting/AddNewShooting";
 import LuponCase from "./components/barangayRecords/lupon/LuponCase";
 import EditShooting from "./components/barangayRecords/shooting/EditShooting";
+import EditInfrastructure from "./components/barangayRecords/infrastructure/EditInfrastructure";
+import EditEstablishment from "./components/barangayRecords/establishment/EditEstablishment";
 
 
 // Wrapper components to handle navigation prop
@@ -410,6 +412,14 @@ const router = createBrowserRouter([
             ),
           },
           {
+            path: "establishments/:id/edit",
+            element: (
+              <PermissionGuard>
+                <EditEstablishment />
+              </PermissionGuard>
+            ),
+          },
+          {
             path: "establishments/:id/clearance/:type/generate",
             element: (
               <PermissionGuard>
@@ -438,6 +448,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionGuard>
                 <InfrastructureDetails />
+              </PermissionGuard>
+            ),
+          },
+          {
+            path: "infrastructures/:id/edit",
+            element: (
+              <PermissionGuard>
+                <EditInfrastructure />
               </PermissionGuard>
             ),
           },

@@ -22,6 +22,12 @@ class ShootingResource extends JsonResource
             'amount_paid' => $this->amount_paid,
             'remarks' => $this->remarks,
             'created_at' => $this->created_at,
+            'creator' => $this->whenLoaded('creator', function () {
+                return [
+                    'id' => $this->creator->id,
+                    'name' => $this->creator->name,
+                ];
+            }),
         ];
     }
 }

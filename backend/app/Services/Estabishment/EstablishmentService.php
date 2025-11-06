@@ -24,7 +24,7 @@ class EstablishmentService
                     ->orWhere("location", "ILIKE", "%{$search}%")
                     ->orWhere("nature_of_business", "ILIKE", "%{$search}%")
                     ->orWhere("representative", "ILIKE", "%{$search}%")
-            )->orderBy('id', 'desc')
+            )->orderBy('id', 'desc')->with('creator')
             ->paginate(10);
     }
 

@@ -35,6 +35,12 @@ class InfrastructureResource extends JsonResource
             'bond_amount_figure'        => $this->bond_amount_figure,
 
             'created_by' => $this->created_by,
+            'creator' => $this->whenLoaded('creator', function () {
+                return [
+                    'id' => $this->creator->id,
+                    'name' => $this->creator->name,
+                ];
+            }),
             'updated_by' => $this->updated_by,
 
             'created_at' => $this->created_at?->toDateTimeString(),

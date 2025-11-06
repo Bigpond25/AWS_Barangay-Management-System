@@ -218,6 +218,7 @@ const Shootings: React.FC = () => {
                   'OR #',
                   'Amount Paid',
                   'Remarks',
+                  'Created By',
                   'Actions',
                 ].map((header) => (
                   <th
@@ -274,6 +275,9 @@ const Shootings: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {shoot.remarks || '—'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {shoot.creator?.name || '—'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       <div className="flex space-x-3">

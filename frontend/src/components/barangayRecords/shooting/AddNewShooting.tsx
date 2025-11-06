@@ -2,8 +2,10 @@ import Breadcrumb from "../../_global/Breadcrumb";
 import React, { useState } from "react";
 import { shootingService } from "@/services/shootings/shooting.service";
 import { useNotifications } from "@/components/_global/NotificationSystem";
+import { useNavigate } from "react-router-dom";
 
 const AddNewShooting = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     date_of_application: "",
     name_of_outfit: "",
@@ -23,6 +25,7 @@ const AddNewShooting = () => {
   };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showNotification } = useNotifications();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +57,8 @@ const AddNewShooting = () => {
           amount_paid: "",
           remarks: "",
         });
+
+        navigate("/barangay-records/shootings");
       })
       .catch((error: any) => {
         showNotification({
@@ -67,7 +72,7 @@ const AddNewShooting = () => {
       });
   };
 
-  const { showNotification } = useNotifications();
+
 
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-6">

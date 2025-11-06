@@ -19,7 +19,7 @@ class InfrastructureService
                 $q->where('type_of_project', 'ILIKE', "%{$search}%")
                 ->orWhere('name_of_applicant', 'ILIKE', "%{$search}%")
             )
-            ->orderBy('id', 'desc')
+            ->orderBy('id', 'desc')->with(['creator'])
             ->paginate(10);
     }
 

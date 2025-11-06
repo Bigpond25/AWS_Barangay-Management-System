@@ -107,7 +107,7 @@ export class EstablishmentService extends BaseApiService {
    */
   async updateEstablishment(
     id: number,
-    data: Partial<EstablishmentFormData>
+    data: FormData
   ): Promise<Establishment> {
     const response = await this.request(
       `/establishments/${id}`,

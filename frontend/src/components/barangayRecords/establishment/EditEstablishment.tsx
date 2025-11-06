@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Breadcrumb from "../../_global/Breadcrumb";
 import { establishmentService } from "@/services/establishments/establishment.service";
 import { useNotifications } from "@/components/_global/NotificationSystem";
 
-const AddNewEstablishment: React.FC = () => {
+const EditEstablishment: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { showNotification } = useNotifications();
 
   const [form, setForm] = useState({
@@ -47,6 +48,9 @@ const AddNewEstablishment: React.FC = () => {
     signature: "",
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const locations = [
     "EDSA",
     "WEST AVE.",
@@ -69,6 +73,25 @@ const AddNewEstablishment: React.FC = () => {
     "DALISAY EXT.",
   ];
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await establishmentService.getEstablishment(id!);
+        setForm(data);
+      } catch (error) {
+        showNotification({
+          type: "error",
+          title: "Error",
+          message: "Failed to fetch establishment data.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, files } = e.target as any;
     if (files) {
@@ -78,66 +101,59 @@ const AddNewEstablishment: React.FC = () => {
     }
   };
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     const formData = new FormData();
 
     for (const key in form) {
-      formData.append(key, form[key]);
+        if (form[key]) {
+          formData.append(key, form[key]);
+        }
     }
 
     try {
       setIsSubmitting(true);
-      await establishmentService.createEstablishment(formData);
+      await establishmentService.updateEstablishment(Number(id), formData);
       showNotification({
         type: "success",
-        title: "Success",
-        message: "Establishment added successfully",
+        title: "Updated",
+        message: "Establishment updated successfully.",
       });
       navigate("/barangay-records/establishments");
     } catch (error) {
       showNotification({
         type: "error",
         title: "Error",
-        message: "Failed to add establishment",
+        message: "Failed to update establishment.",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleBack = () => {
-    navigate("/barangay-records/establishments");
-  };
+  const handleBack = () => navigate("/barangay-records/establishments");
+
+  if (isLoading) {
+    return (
+      <main className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Loading establishment data...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-6">
-
       <Breadcrumb isLoaded={true} />
 
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* <button
-            onClick={handleBack}
-            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-500 font-medium"
-          >
-            <FiArrowLeft className="w-4 h-4" />
-            Back to list
-          </button> */}
-          <h1 className="text-2xl font-bold text-gray-800">Add New Establishment</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Edit Establishment</h1>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Card 1: Business Information */}
-        <section className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-smblue-400 pl-3">
-            Business Information
-          </h2>
+        {/* Reuse same section structure as AddNewEstablishment */}
+        <Section title="Business Information">
           <div className="grid grid-cols-2 gap-4">
             <Input name="business_name" label="Business Name" onChange={handleChange} value={form.business_name} />
             <Input name="nature_of_business" label="Nature of Business" onChange={handleChange} value={form.nature_of_business} />
@@ -148,13 +164,9 @@ const AddNewEstablishment: React.FC = () => {
             <Input name="type" label="Type" onChange={handleChange} value={form.type} />
             <Input name="status" label="Status" onChange={handleChange} value={form.status} />
           </div>
-        </section>
+        </Section>
 
-        {/* Card 2: Ownership Details */}
-        <section className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-smblue-400 pl-3">
-            Ownership Details
-          </h2>
+        <Section title="Ownership Details">
           <div className="grid grid-cols-2 gap-4">
             <Input name="owner" label="Owner" onChange={handleChange} value={form.owner} />
             <Input name="telephone" label="Telephone" onChange={handleChange} value={form.telephone} />
@@ -164,13 +176,9 @@ const AddNewEstablishment: React.FC = () => {
             <Input name="ctc_no" label="CTC No." onChange={handleChange} value={form.ctc_no} />
             <Input type="date" name="date_issued" label="Date Issued" onChange={handleChange} value={form.date_issued} />
           </div>
-        </section>
+        </Section>
 
-        {/* Card 3: Approval & Renewal */}
-        <section className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-smblue-400 pl-3">
-            Approval & Renewal
-          </h2>
+        <Section title="Approval & Renewal">
           <div className="grid grid-cols-3 gap-4">
             <Input type="date" name="date_approved" label="Date Approved" onChange={handleChange} value={form.date_approved} />
             <Input type="date" name="date_of_last_renewal" label="Date of Last Renewal" onChange={handleChange} value={form.date_of_last_renewal} />
@@ -185,13 +193,9 @@ const AddNewEstablishment: React.FC = () => {
               value={form.remarks_on_print_business}
             />
           </div>
-        </section>
+        </Section>
 
-        {/* Card 4: Fees & Payments */}
-        <section className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-smblue-400 pl-3">
-            Fees & Payments
-          </h2>
+        <Section title="Fees & Payments">
           <div className="grid grid-cols-3 gap-4">
             <Input type="number" name="amount_paid" label="Amount Paid" onChange={handleChange} value={form.amount_paid} />
             <Input type="number" name="clearance_fee" label="Clearance Fee" onChange={handleChange} value={form.clearance_fee} />
@@ -204,48 +208,23 @@ const AddNewEstablishment: React.FC = () => {
             <Input type="number" name="custom_paid" label="Custom Paid" onChange={handleChange} value={form.custom_paid} />
             <Input name="custom_or" label="Custom OR" onChange={handleChange} value={form.custom_or} />
           </div>
-        </section>
+        </Section>
 
-        {/* Card 5: Signage Details */}
-        <section className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-smblue-400 pl-3">
-            Signage Details
-          </h2>
+        <Section title="Signage Details">
           <div className="grid grid-cols-3 gap-4">
             <Input name="sign_wordings" label="Sign Wordings" onChange={handleChange} value={form.sign_wordings} />
             <Input name="size" label="Size" onChange={handleChange} value={form.size} />
             <Input name="material" label="Material" onChange={handleChange} value={form.material} />
           </div>
-        </section>
+        </Section>
 
-        {/* Card 6: Attachments & Signature */}
-        <section className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-smblue-400 pl-3">
-            Attachments & Signature
-          </h2>
+        <Section title="Attachments & Signature">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Docs Attachment</label>
-              <input
-                type="file"
-                name="docs_attachment"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Signature</label>
-              <input
-                type="file"
-                name="signature"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                onChange={handleChange}
-              />
-            </div>
+            <FileInput name="docs_attachment" label="Docs Attachment" onChange={handleChange} />
+            <FileInput name="signature" label="Signature" onChange={handleChange} />
           </div>
-        </section>
+        </Section>
 
-        {/* Submit Button */}
         <div className="flex justify-end">
           <button
             type="submit"
@@ -253,7 +232,7 @@ const AddNewEstablishment: React.FC = () => {
             disabled={isSubmitting}
           >
             <FiSave className="w-4 h-4" />
-            {isSubmitting ? "Saving..." : "Save Record"}
+            {isSubmitting ? "Updating..." : "Update Record"}
           </button>
         </div>
       </form>
@@ -261,14 +240,23 @@ const AddNewEstablishment: React.FC = () => {
   );
 };
 
-// Helper Input Component
+// --- Helper Components ---
+const Section = ({ title, children }: any) => (
+  <section className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
+    <h2 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-smblue-400 pl-3">
+      {title}
+    </h2>
+    {children}
+  </section>
+);
+
 const Input = ({ name, label, type = "text", value, onChange }: any) => (
   <div>
     <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>
     <input
       type={type}
       name={name}
-      value={value}
+      value={value || ""}
       onChange={onChange}
       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-400 focus:border-blue-400 outline-none"
     />
@@ -280,7 +268,7 @@ const Textarea = ({ name, label, value, onChange }: any) => (
     <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>
     <textarea
       name={name}
-      value={value}
+      value={value || ""}
       onChange={onChange}
       rows={4}
       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:ring-blue-400 focus:border-blue-400 outline-none"
@@ -293,7 +281,7 @@ const Select = ({ name, label, options, value, onChange }: any) => (
     <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>
     <select
       name={name}
-      value={value}
+      value={value || ""}
       onChange={onChange}
       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-400 focus:border-blue-400 outline-none"
     >
@@ -307,4 +295,16 @@ const Select = ({ name, label, options, value, onChange }: any) => (
   </div>
 );
 
-export default AddNewEstablishment;
+const FileInput = ({ name, label, onChange }: any) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>
+    <input
+      type="file"
+      name={name}
+      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+      onChange={onChange}
+    />
+  </div>
+);
+
+export default EditEstablishment;

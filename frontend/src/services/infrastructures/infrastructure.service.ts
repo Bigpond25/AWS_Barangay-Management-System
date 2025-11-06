@@ -90,7 +90,7 @@ export class InfrastructureService extends BaseApiService {
    */
   async updateInfrastructure(
     id: number,
-    data: Partial<InfrastructureFormData>
+    data: FormData
   ): Promise<Infrastructure> {
     const response = await this.request(
       `/infrastructures/${id}`,

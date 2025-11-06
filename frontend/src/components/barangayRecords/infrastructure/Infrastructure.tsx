@@ -211,8 +211,9 @@ const Infrastructure: React.FC = () => {
         'Contractor',
         'Contractor Contact Person',
         'Bond Amount (Figure)',
-        'Bond Amount (Words)',
+        // 'Bond Amount (Words)',
         'Remarks on Clearance',
+        'Created By',
         'Actions',
       ].map((header) => (
         <th
@@ -255,14 +256,15 @@ const Infrastructure: React.FC = () => {
           <td className="px-6 py-4 text-sm text-gray-700">{infra.contractor}</td>
           <td className="px-6 py-4 text-sm text-gray-700">{infra.contractors_contact_person}</td>
           <td className="px-6 py-4 text-sm text-gray-700">{infra.bond_amount_figure}</td>
-          <td className="px-6 py-4 text-sm text-gray-700">{infra.bond_amount_words}</td>
+          {/* <td className="px-6 py-4 text-sm text-gray-700">{infra.bond_amount_words}</td> */}
           <td className="px-6 py-4 text-sm text-gray-700">{infra.remarks_on_clearance}</td>
+          <td className="px-6 py-4 text-sm text-gray-700">{infra.creator.name}</td>
           <td className="px-6 py-4 text-sm text-gray-700">
             <div className="flex space-x-3">
               {/* <button onClick={() => handleView(infra)} className="text-blue-500 hover:text-blue-400">
                 <FiEye />
               </button> */}
-              <button className="text-yellow-500 hover:text-yellow-400">
+              <button onClick={() => navigate(`/barangay-records/infrastructures/${infra.id}/edit`)} className="text-yellow-500 hover:text-yellow-400">
                 <FiEdit />
               </button>
               <MenuButton infra={infra} />

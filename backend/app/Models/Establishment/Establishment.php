@@ -2,11 +2,12 @@
 
 namespace App\Models\Establishment;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Establishment\Clearances\BarangayClearanceNew;
 use App\Models\Establishment\Clearances\BarangayClearanceRenewal;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Establishment extends Model
 {
@@ -78,5 +79,10 @@ class Establishment extends Model
     public function barangayClearancesRenewal()
     {
         return $this->hasMany(BarangayClearanceRenewal::class)->latest();
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

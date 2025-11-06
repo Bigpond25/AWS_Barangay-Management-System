@@ -1,7 +1,11 @@
+import { useNotifications } from "@/components/_global/NotificationSystem";
 import Breadcrumb from "../../_global/Breadcrumb";
 import React, { useState } from "react";
+import { infrastructureService } from "@/services/infrastructures/infrastructure.service";
+import { useNavigate } from "react-router-dom";
 
 const AddNewInfrastructure = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     date_of_application: "",
     type_of_project: "",
@@ -45,11 +49,60 @@ const AddNewInfrastructure = () => {
     setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitting form data:", form);
-    // API call would go here
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showNotification } = useNotifications();
+  
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      const formData = new FormData();
+      
+      for (const key in form) {
+        formData.append(key, form[key]);
+      }
+      
+      setIsSubmitting(true);
+      infrastructureService.createInfrastructure(formData)
+        .then((response: any) => {
+          showNotification({
+            title: "Success",
+            message: "Infrastructure created successfully",
+            type: "success",
+          });
+  
+          // clear form
+          setForm({
+            date_of_application: "",
+            type_of_project: "",
+            classification: "",
+            name_of_applicant: "",
+            address_of_applicant: "",
+            applicant_contact_no: "",
+            applicants_representative: "",
+            location_of_project: "",
+            property_owner: "",
+            contractor: "",
+            contractors_address: "",
+            contractors_contact_person: "",
+            contractors_contact_no: "",
+            remarks_on_clearance: "",
+            remarks_hidden: "",
+            bond_amount_words: "",
+            bond_amount_figure: "",
+          });
+
+          navigate("/barangay-records/infrastructures");
+        })
+        .catch((error: any) => {
+          showNotification({
+            title: "Error",
+            message: "Error creating infrastructure: " + error.message,
+            type: "error",
+          });
+        })
+        .finally(() => {
+          setIsSubmitting(false);
+        });
+    };
 
   return (
     <main className="p-6 bg-gray-50 min-h-screen flex flex-col gap-6">
@@ -259,11 +312,12 @@ const AddNewInfrastructure = () => {
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Bond Amount (Figure)</label>
               <input
-                type="text"
+                type="number"
                 name="bond_amount_figure"
                 value={form.bond_amount_figure}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-smblue-400 focus:border-smblue-400 outline-none"
+                min={1}
               />
             </div>
           </div>
@@ -308,10 +362,10 @@ const AddNewInfrastructure = () => {
           </button>
           <button
             onClick={handleSubmit}
-            className="flex items-center gap-2 bg-smblue-400 hover:bg-smblue-500 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-smblue-400 hover:bg-smblue-500 text-white font-medium px-6 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
           >
-            <span>💾</span>
-            Save Record
+            {isSubmitting ? 'Saving...' : 'Save Record'}
           </button>
         </div>
       </div>

@@ -26,7 +26,7 @@ class ShootingService
                         ->orWhere('time', 'ILIKE', "%{$search}%");
                 });
             })
-            ->orderBy('id', 'desc')
+            ->orderBy('id', 'desc')->with(['creator'])
             ->paginate(10);
     }
 

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Establishment\EstablishmentRequest;
 use App\Models\Establishment\Establishment;
 use App\Services\Estabishment\EstablishmentService;
+use App\Http\Requests\Establishment\EstablishmentRequest;
 use App\Http\Resources\Establishment\EstablishmentResource;
 
 class EstablishmentController extends Controller

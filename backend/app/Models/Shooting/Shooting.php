@@ -2,6 +2,7 @@
 
 namespace App\Models\Shooting;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,4 +25,9 @@ class Shooting extends Model
         'created_by',
         'updated_by',
     ];
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

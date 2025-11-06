@@ -209,6 +209,7 @@ const Establishment: React.FC = () => {
                   'Date Approved',
                   'Date of Last Renewal',
                   'Date of Retirement',
+                  'Created By',
                   'Actions',
                 ].map((header) => (
                   <th
@@ -249,12 +250,13 @@ const Establishment: React.FC = () => {
                     <td className="px-6 py-4 text-sm text-gray-700">{estab.date_approved}</td>
                     <td className="px-6 py-4 text-sm text-gray-700">{estab.date_of_last_renewal}</td>
                     <td className="px-6 py-4 text-sm text-gray-700">{estab.date_of_retirement}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{estab.creator.name}</td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       <div className="flex space-x-3">
                         <button onClick={() => handleView(estab)} className="text-smblue-400 hover:text-smblue-300">
                           <FiEye />
                         </button>
-                        <button className="text-yellow-500 hover:text-yellow-400">
+                        <button onClick={() => navigate(`/barangay-records/establishments/${estab.id}/edit`)} className="text-yellow-500 hover:text-yellow-400">
                           <FiEdit />
                         </button>
                         <button onClick={() => {
