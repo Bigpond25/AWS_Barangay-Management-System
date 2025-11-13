@@ -10,9 +10,16 @@ class HouseholdSchema
      */
     public static function getFields(): array
     {
+
+        $houseHold =  ['type' => 'string', 'max' => 50, 'required' => true, 'unique' => true];
+
+        if (request()->method() == 'PUT') {
+            $houseHold = ['type' => 'string', 'max' => 50, 'required' => true, 'exists' => 'households.household_number'];
+        }
+
         return [
             // Household Identification
-            'household_number' => ['type' => 'string', 'max' => 50, 'required' => true, 'unique' => true], // Changed to required since frontend generates it
+            'household_number' => $houseHold,
             'household_type' => ['type' => 'enum', 'values' => ['NUCLEAR', 'EXTENDED', 'SINGLE', 'SINGLE_PARENT', 'OTHER'], 'required' => true, 'default' => 'NUCLEAR'],
             'head_resident_id' => ['type' => 'string', 'references' => 'residents.id', 'nullable' => true],
             
