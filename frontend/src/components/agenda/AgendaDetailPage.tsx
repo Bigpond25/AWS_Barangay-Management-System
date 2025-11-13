@@ -48,7 +48,7 @@ const AgendaDetailPage: React.FC = () => {
         title: agenda.title,
         description: agenda.description,
         date: agenda.date,
-        time: agenda.time,
+        time: agenda.time ? agenda.time.slice(0, 5) : '',
         location: agenda.location,
       });
       setIsEditing(true);
@@ -234,7 +234,7 @@ const AgendaDetailPage: React.FC = () => {
                     {isEditing ? (
                       <input
                         type="date"
-                        value={editForm.date || agenda.date}
+                        value={isEditing ? new Date(editForm.date as string).toISOString().split('T')[0] : new Date(agenda.date).toISOString().split('T')[0]}
                         onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
                         className="font-medium text-gray-900 border border-gray-300 rounded px-2 py-1"
                       />

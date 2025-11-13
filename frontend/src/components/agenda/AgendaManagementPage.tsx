@@ -7,10 +7,12 @@ import React, { useState } from 'react';
 import { Calendar, Clock, Users, Plus, Search, Filter, Eye, Edit, Trash2 } from 'lucide-react';
 
 import Breadcrumb from '@/components/_global/Breadcrumb';
-import { useAgendas, useDeleteAgenda } from '@/services/agenda/useAgenda';
+import { useAgendas, useCreateAgenda, useDeleteAgenda } from '@/services/agenda/useAgenda';
 import { useNotifications } from '@/components/_global/NotificationSystem';
 import { AgendaCalendar } from './AgendaCalendar';
-import type { Agenda } from '@/services/agenda/agenda.types';
+import type { Agenda, AgendaFormData } from '@/services/agenda/agenda.types';
+import AddAgenda from '../dashboard/AddAgenda';
+import { useNavigate } from 'react-router-dom';
 
 type AgendaView = 'calendar' | 'list' | 'upcoming';
 
@@ -179,6 +181,27 @@ const AgendaManagementPage: React.FC = () => {
     </div>
   );
 
+
+    const createAgendaMutation = useCreateAgenda();
+    const { refetch } = useAgendas();
+
+    const [showAddAgendaModal, setShowAddAgendaModal] = useState(false);
+
+
+    const handleSaveAgenda = async (newAgendaData: AgendaFormData): Promise<void> => {
+      try {
+        await createAgendaMutation.mutateAsync(newAgendaData);
+        // Refetch calendar events after creating a new agenda
+        refetch();
+        console.log('Agenda saved successfully:', newAgendaData);
+      } catch (error) {
+        console.error('Error saving agenda:', error);
+        // Show error notification to user
+        alert('Failed to create agenda. Please try again.');
+        throw error; // Re-throw so AddAgenda component can handle it
+      }
+    };
+
   const renderSearchAndFilters = () => (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
       <div className="relative flex-1">
@@ -207,12 +230,15 @@ const AgendaManagementPage: React.FC = () => {
         </select>
       </div>
 
-      <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+      <button onClick={() => setShowAddAgendaModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
         <Plus className="w-4 h-4" />
-        New Agenda
+        New Agendad
       </button>
+      <AddAgenda isOpen={showAddAgendaModal} onClose={() => setShowAddAgendaModal(false)} onSave={handleSaveAgenda} />
     </div>
   );
+
+  const navigate = useNavigate();
 
   const renderAgendaList = (agendasToRender: Agenda[]) => (
     <div className="space-y-4">
@@ -257,7 +283,7 @@ const AgendaManagementPage: React.FC = () => {
               </div>
               
               <div className="flex items-center gap-2 ml-4">
-                <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                <button onClick={() => navigate(`/agenda/${agenda.id}`)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                   <Eye className="w-4 h-4" />
                 </button>
                 <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
