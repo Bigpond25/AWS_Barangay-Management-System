@@ -52,14 +52,15 @@ class UserController extends Controller
             // Advanced search functionality
             if ($request->has('search')) {
                 $search = $request->search;
+
                 $query->where(function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                      ->orWhere('last_name', 'like', "%{$search}%")
-                      ->orWhere('username', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('employee_id', 'like', "%{$search}%")
-                      ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
-                      ->orWhereRaw("CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) LIKE ?", ["%{$search}%"]);
+                    $q->where('first_name', 'ILIKE', "%{$search}%")
+                    ->orWhere('last_name', 'ILIKE', "%{$search}%")
+                    ->orWhere('username', 'ILIKE', "%{$search}%")
+                    ->orWhere('email', 'ILIKE', "%{$search}%")
+                    ->orWhere('employee_id', 'ILIKE', "%{$search}%")
+                    ->orWhereRaw("(first_name || ' ' || last_name) ILIKE ?", ["%{$search}%"])
+                    ->orWhereRaw("(first_name || ' ' || COALESCE(middle_name, '') || ' ' || last_name) ILIKE ?", ["%{$search}%"]);
                 });
             }
 
