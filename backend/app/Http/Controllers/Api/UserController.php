@@ -647,7 +647,7 @@ class UserController extends Controller
                 ->toArray();
 
             // Recent logins (last 30 days)
-            $recentLogins = User::where('last_login_at', '>=', now()->subDays(30))->count();
+            $recentLogins = User::where('created_at', '>=', now()->subDays(30))->count();
 
             // Never logged in
             $neverLoggedIn = User::whereNull('last_login_at')->count();
