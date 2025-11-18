@@ -105,15 +105,15 @@ class UserController extends Controller
     /**
      * Store a newly created user.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         try {
             DB::beginTransaction();
 
             // Get validation rules from schema
             $rules = UserSchema::getCreateValidationRules();
+            
             $rules['confirm_password'] = 'required|same:password';
-
             $validatedData = $request->validate($rules);
 
             // Remove confirm_password from data to be saved
@@ -134,7 +134,7 @@ class UserController extends Controller
             $user = User::create($validatedData);
 
             // Log activity
-            $this->logUserActivity($user->id, 'created', 'user', $user->id);
+            // $this->logUserActivity($user->id, 'created', 'user', $user->id);
 
             // Send credentials email if requested
             if ($request->boolean('send_credentials')) {
