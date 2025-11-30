@@ -85,6 +85,16 @@ class BarangayOfficial extends Model implements Auditable
         return $this->belongsTo(User::class);
     }
 
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
     /**
      * Boot the model to enforce business rules
      */
@@ -115,6 +125,8 @@ class BarangayOfficial extends Model implements Auditable
             
             // Auto-populate personal details from resident
             $official->syncPersonalDataFromResident();
+
+            $official->created_by = Auth::user()->id;
         });
         
         // Enforce business rules when updating
@@ -132,6 +144,8 @@ class BarangayOfficial extends Model implements Auditable
             if ($official->isDirty('resident_id')) {
                 $official->syncPersonalDataFromResident();
             }
+
+            $official->updated_by = Auth::user()->id;
         });
     }
 

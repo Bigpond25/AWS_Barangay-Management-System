@@ -54,7 +54,7 @@ class BarangayOfficialController extends Controller
         $sortOrder = $request->get('sort_order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $officials = $query->with(['resident', 'user'])->paginate($request->get('per_page', 15));
+        $officials = $query->with(['resident', 'user', 'creator'])->paginate($request->get('per_page', 15));
 
         // Return Laravel pagination structure directly (frontend expects this format)
         return response()->json($officials);

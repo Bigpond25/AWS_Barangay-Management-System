@@ -20,7 +20,6 @@ export const BarangayOfficialsTableRow: React.FC<BarangayOfficialsTableRowProps>
     isDeleting
 }) => {
     const { t } = useTranslation();
-    console.log(official);
 
     return (
         <tr key={official.id} className="hover:bg-gray-50">
@@ -59,7 +58,7 @@ export const BarangayOfficialsTableRow: React.FC<BarangayOfficialsTableRowProps>
                 {official.committee_assignment}
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {official.user?.created_by?.full_name ?? 'N/A'}
+                {official.creator?.full_name ?? 'N/A'}
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div className="flex items-center space-x-2">
