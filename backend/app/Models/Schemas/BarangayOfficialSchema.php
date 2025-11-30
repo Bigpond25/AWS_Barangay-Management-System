@@ -19,7 +19,7 @@ class BarangayOfficialSchema
             'user_id' => ['type' => 'foreignId', 'references' => 'users.id', 'required' => true],
             
             // Personal Information (auto-synced from resident)
-            'prefix' => ['type' => 'enum', 'values' => ['Mr.', 'Ms.', 'Mrs.', 'Dr.', 'Hon.'], 'nullable' => true],
+            'prefix' => ['type' => 'string', 'max' => 10, 'nullable' => true],
             'first_name' => ['type' => 'string', 'max' => 255, 'required' => true],
             'last_name' => ['type' => 'string', 'max' => 255, 'required' => true],
             'middle_name' => ['type' => 'string', 'max' => 255, 'nullable' => true],

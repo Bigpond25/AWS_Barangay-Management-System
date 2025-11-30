@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\BarangayOfficial;
+use App\Models\User;
 use App\Models\Resident;
 use Illuminate\Http\Request;
+use App\Models\BarangayOfficial;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class BarangayOfficialController extends Controller
@@ -70,7 +71,7 @@ class BarangayOfficialController extends Controller
         $validator = Validator::make($requestData, [
             'prefix' => 'nullable|string|in:Mr.,Ms.,Mrs.,Dr.,Hon.',
             'resident_id' => 'required|string|uuid|exists:residents,id',
-            'user_id' => 'required|string|uuid|exists:users,id',
+            'user_id' => 'nullable|string|uuid|exists:users,id',
 
             // Position Information
             'position' => 'required|in:BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,KAGAWAD,SK_CHAIRPERSON,SK_KAGAWAD,BARANGAY_CLERK,BARANGAY_TANOD',
@@ -98,8 +99,8 @@ class BarangayOfficialController extends Controller
         $validated = $validator->validated();
 
         // Validate business rule: user must also be a resident if resident_id is different from user's resident_id
-        $user = User::find($validated['user_id']);
-        if ($user && $user->resident_id && $user->resident_id !== $validated['resident_id']) {
+        $user = User::where('resident_id', $validated['resident_id'])->first();
+        if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Business rule violation: The user is already associated with a different resident record.',
@@ -129,6 +130,8 @@ class BarangayOfficialController extends Controller
 
         // The model's boot method will automatically populate personal details from resident
         // and enforce business rules, so we don't need to do it manually here
+
+        $validated['user_id'] = $user->id;
 
         $official = BarangayOfficial::create($validated);
 
