@@ -17,13 +17,13 @@ export const BarangayOfficialsQuickActions:React.FC<BarangayOfficialsQuickAction
             <FiUsers className="w-5 h-5 text-white" />
             <span className="font-medium text-white">Add New Official</span>
             </button>
-            <button
+            {/* <button
                 onClick={ onEditOfficersClick }
                 className="cursor-pointer w-full bg-smblue-300 hover:bg-smblue-200 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 shadow-sm hover:shadow-md"
             >
                 <FiEdit className="w-5 h-5 text-white" />
                 <span className="font-medium text-white">Update Officers</span>
-            </button>
+            </button> */}
             </div>
         </div>
     )
