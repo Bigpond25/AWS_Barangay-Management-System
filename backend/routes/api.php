@@ -209,6 +209,10 @@ Route::prefix('import')->middleware('permission:manage-users')->group(function (
 
     // User Management
     Route::prefix('users')->name('users.')->middleware('permission:manage-users')->group(function () {
+
+        // Statistics
+        Route::get('/statistics', [UserController::class, 'statistics'])->middleware('permission:view-reports')->name('statistics');
+
         // Core CRUD
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::post('/', [UserController::class, 'store'])->name('store');
@@ -265,9 +269,6 @@ Route::prefix('import')->middleware('permission:manage-users')->group(function (
         Route::post('/bulk-action', [UserController::class, 'bulkAction'])->middleware('permission:manage-users')->name('bulk-action');
         Route::get('/export', [UserController::class, 'export'])->name('export');
         Route::post('/import', [UserController::class, 'import'])->name('import');
-
-        // Statistics
-        Route::get('/statistics', [UserController::class, 'statistics'])->middleware('permission:view-reports')->name('statistics');
     });
 
     // Barangay Officials Management

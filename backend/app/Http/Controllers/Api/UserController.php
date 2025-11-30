@@ -52,14 +52,15 @@ class UserController extends Controller
             // Advanced search functionality
             if ($request->has('search')) {
                 $search = $request->search;
+
                 $query->where(function ($q) use ($search) {
-                    $q->where('first_name', 'like', "%{$search}%")
-                      ->orWhere('last_name', 'like', "%{$search}%")
-                      ->orWhere('username', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('employee_id', 'like', "%{$search}%")
-                      ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
-                      ->orWhereRaw("CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) LIKE ?", ["%{$search}%"]);
+                    $q->where('first_name', 'ILIKE', "%{$search}%")
+                    ->orWhere('last_name', 'ILIKE', "%{$search}%")
+                    ->orWhere('username', 'ILIKE', "%{$search}%")
+                    ->orWhere('email', 'ILIKE', "%{$search}%")
+                    ->orWhere('employee_id', 'ILIKE', "%{$search}%")
+                    ->orWhereRaw("(first_name || ' ' || last_name) ILIKE ?", ["%{$search}%"])
+                    ->orWhereRaw("(first_name || ' ' || COALESCE(middle_name, '') || ' ' || last_name) ILIKE ?", ["%{$search}%"]);
                 });
             }
 
@@ -104,15 +105,15 @@ class UserController extends Controller
     /**
      * Store a newly created user.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         try {
             DB::beginTransaction();
 
             // Get validation rules from schema
             $rules = UserSchema::getCreateValidationRules();
+            
             $rules['confirm_password'] = 'required|same:password';
-
             $validatedData = $request->validate($rules);
 
             // Remove confirm_password from data to be saved
@@ -133,7 +134,7 @@ class UserController extends Controller
             $user = User::create($validatedData);
 
             // Log activity
-            $this->logUserActivity($user->id, 'created', 'user', $user->id);
+            // $this->logUserActivity($user->id, 'created', 'user', $user->id);
 
             // Send credentials email if requested
             if ($request->boolean('send_credentials')) {
@@ -646,7 +647,7 @@ class UserController extends Controller
                 ->toArray();
 
             // Recent logins (last 30 days)
-            $recentLogins = User::where('last_login_at', '>=', now()->subDays(30))->count();
+            $recentLogins = User::where('created_at', '>=', now()->subDays(30))->count();
 
             // Never logged in
             $neverLoggedIn = User::whereNull('last_login_at')->count();

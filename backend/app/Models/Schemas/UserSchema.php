@@ -90,7 +90,7 @@ class UserSchema
                 'required' => true,
                 'fillable' => true,
                 'min' => 8,
-                'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/',
+                // 'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/',
                 'cast' => 'hashed'
             ],
             'remember_token' => [
@@ -128,7 +128,7 @@ class UserSchema
                 'max' => 20,
                 'required' => true,
                 'fillable' => true,
-                'regex' => '/^(\+639|09)\d{9}$/'
+                // 'regex' => '/^(\+639|09)\d{9}$/'
             ],
 
             // Role and Department
