@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Spatie\Permission\Models\Role;
 
 class PermissionController extends Controller
 {
@@ -91,102 +92,37 @@ class PermissionController extends Controller
      */
     public function getRolePermissions(): JsonResponse
     {
-        $rolePermissions = [
-            'SUPER_ADMIN' => ['*'], // All permissions
-            'ADMIN' => [
-                'view-residents', 'create-residents', 'edit-residents', 'delete-residents', 'export-residents',
-                'view-households', 'create-households', 'edit-households', 'delete-households',
-                'view-documents', 'create-documents', 'process-documents', 'approve-documents', 'release-documents', 'delete-documents',
-                'view-projects', 'create-projects', 'edit-projects', 'delete-projects', 'manage-project-team',
-                'view-complaints', 'create-complaints', 'assign-complaints', 'resolve-complaints',
-                'view-suggestions', 'create-suggestions', 'review-suggestions',
-                'view-blotter-cases', 'create-blotter-cases', 'investigate-blotter-cases', 'mediate-blotter-cases',
-                'view-appointments', 'create-appointments', 'manage-appointments',
-                'view-officials', 'create-officials', 'edit-officials', 'delete-officials',
-                'view-reports', 'generate-reports', 'view-analytics',
-                'manage-users', 'manage-roles', 'system-settings'
-            ],
-            'BARANGAY_CAPTAIN' => [
-                'view-residents', 'create-residents', 'edit-residents', 'export-residents',
-                'view-households', 'create-households', 'edit-households',
-                'view-documents', 'create-documents', 'process-documents', 'approve-documents', 'release-documents',
-                'view-projects', 'create-projects', 'edit-projects', 'manage-project-team',
-                'view-complaints', 'assign-complaints', 'resolve-complaints',
-                'view-suggestions', 'review-suggestions',
-                'view-blotter-cases', 'create-blotter-cases', 'investigate-blotter-cases', 'mediate-blotter-cases',
-                'view-appointments', 'create-appointments', 'manage-appointments',
-                'view-officials', 'create-officials', 'edit-officials',
-                'view-reports', 'generate-reports', 'view-analytics'
-            ],
-            'BARANGAY_SECRETARY' => [
-                'view-residents', 'create-residents', 'edit-residents',
-                'view-households', 'create-households', 'edit-households',
-                'view-documents', 'create-documents', 'process-documents', 'release-documents',
-                'view-appointments', 'create-appointments', 'manage-appointments',
-                'view-complaints', 'create-complaints',
-                'view-reports'
-            ],
-            'BARANGAY_TREASURER' => [
-                'view-residents', 'view-households',
-                'view-documents', 'create-documents', 'process-documents',
-                'view-appointments', 'create-appointments',
-                'view-reports', 'generate-reports'
-            ],
-            'BARANGAY_COUNCILOR' => [
-                'view-residents', 'view-households',
-                'view-documents', 'create-documents',
-                'view-projects', 'view-complaints',
-                'view-suggestions', 'review-suggestions',
-                'view-blotter-cases', 'mediate-blotter-cases',
-                'view-appointments',
-                'view-reports'
-            ],
-            'BARANGAY_CLERK' => [
-                'view-residents', 'create-residents', 'edit-residents',
-                'view-households', 'create-households', 'edit-households',
-                'view-documents', 'create-documents', 'process-documents',
-                'view-appointments', 'create-appointments',
-                'view-complaints', 'create-complaints'
-            ],
-            'HEALTH_WORKER' => [
-                'view-residents', 'edit-residents',
-                'view-households',
-                'view-documents', 'create-documents',
-                'view-appointments', 'create-appointments'
-            ],
-            'SOCIAL_WORKER' => [
-                'view-residents', 'edit-residents',
-                'view-households',
-                'view-documents', 'create-documents',
-                'view-appointments', 'create-appointments',
-                'view-complaints', 'create-complaints'
-            ],
-            'SECURITY_OFFICER' => [
-                'view-residents',
-                'view-blotter-cases', 'create-blotter-cases', 'investigate-blotter-cases',
-                'view-complaints', 'create-complaints'
-            ],
-            'DATA_ENCODER' => [
-                'view-residents', 'create-residents', 'edit-residents',
-                'view-households', 'create-households', 'edit-households',
-                'view-documents', 'create-documents'
-            ],
-            'VIEWER' => [
-                'view-residents', 'view-households', 'view-documents',
-                'view-appointments', 'view-complaints', 'view-suggestions'
-            ]
-        ];
+        // Load all roles with their permissions
+        $roles = Role::with('permissions')->get();
+
+        $output = [];
+
+        foreach ($roles as $role) {
+            // Convert DB role name (slug format) → PAYROLL FORMAT
+            // barangay-captain → BARANGAY_CAPTAIN
+            $keyName = strtoupper(str_replace('-', '_', $role->name));
+
+            // Get list of permission names
+            $permissions = $role->permissions->pluck('name')->toArray();
+
+            // SUPER_ADMIN should always return "*"
+            if ($role->name === 'super-admin') {
+                $permissions = ['*'];
+            }
+
+            $output[$keyName] = $permissions;
+        }
 
         return response()->json([
             'success' => true,
-            'data' => $rolePermissions
+            'data' => $output
         ]);
     }
 
     /**
      * Update role permissions
      */
-    public function updateRolePermissions(Request $request): JsonResponse
+    public function updateRolePermissions(Request $request)
     {
         $request->validate([
             'role' => 'required|string|in:SUPER_ADMIN,ADMIN,BARANGAY_CAPTAIN,BARANGAY_SECRETARY,BARANGAY_TREASURER,BARANGAY_COUNCILOR,BARANGAY_CLERK,HEALTH_WORKER,SOCIAL_WORKER,SECURITY_OFFICER,DATA_ENCODER,VIEWER',
@@ -197,6 +133,18 @@ class PermissionController extends Controller
         // For this demo, we'll return success
         // In a real implementation, you'd update the permissions in the database
         // and regenerate the middleware permission cache
+        // Here you would typically sync the permissions with the role
+        // $role->syncPermissions($request->permissions);
+
+        $roleName = strtolower(str_replace('_', '-', $request->role));
+
+        $role = Role::findByName($roleName, 'web');
+
+        if (!$role) {
+            return response()->json(['error' => 'Role not found'], 404);
+        }
+      
+        $role->syncPermissions($request->permissions);
 
         return response()->json([
             'success' => true,

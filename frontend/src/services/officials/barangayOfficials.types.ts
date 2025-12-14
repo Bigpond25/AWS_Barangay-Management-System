@@ -205,6 +205,9 @@ export const BarangayOfficialSchema = BarangayOfficialBaseSchema.extend({
       full_name: z.string().optional(),
     }).optional(),
   }).optional(),
+  creator: z.object({
+    full_name: z.string().optional(),
+  }).optional(),
   
   // Computed attributes (can be added if needed)
   // full_name: z.string().optional(),
